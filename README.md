@@ -62,7 +62,7 @@ package directly with `pnpm --filter <app> build`, build `@mealmesh/domain` firs
 
 ## Current state
 
-Phases 0-2 are done, Phase 3 is partial, and Phase 4 is split by subscription tier
+Phases 0-3 are done, and Phase 4 is split by subscription tier
 (`docs/open-questions.md` item 11) — the Free/manual path (**Build My Week**) is done,
 the Pro/AI path (**Plan My Week**) is not. Nothing described below is scaffolding —
 every item was typechecked, built, and exercised end-to-end over real HTTP against a
@@ -78,16 +78,21 @@ real local Postgres database, not just trusted to compile. Full detail in
   costing, the basket optimizer's three strategies, the MealMesh Score) plus a
   conflict-checker (allergy hard block, dislike soft warning). 34 tests, all passing,
   each traceable to a `docs/algorithms.md` test case.
-- **Seed data**: 101 ingredients + 15 recipes (of the P0 target of 30) from
-  `packages/seed-data`, seeded into Postgres and idempotent to re-run.
+- **Seed data**: 30 recipes, 101 ingredients, 5 fictional stores, 432 products with
+  approximate prices (current, previous, and sale), 15 active deals, and a demo account
+  with a sample pantry — all from `packages/seed-data`, seeded into Postgres and
+  idempotent to re-run. Log in as `demo@mealmesh.app` / `mealmesh-demo` after
+  `pnpm db:seed` (local dev only).
+- **`MockGroceryProvider`**: product search, current price (a sale beats the regular
+  price), active deals per store, stores within a radius — reading the seeded tables.
 - **Build My Week**: browse the local recipe library, pick a dish per day/slot, get
   blocked on an allergy match, get warned (with a confirm-to-override) on a dislike
   match, mark a slot as leftover of an earlier meal — all working on both the API and
   in the mobile UI (onboarding → Week grid → recipe picker).
 
-**Not built yet**: Plan My Week (Pro/AI auto-generate), score display in the UI (needs
-Phase 3's pricing data first), the remaining 15 recipes, all store/product/price/deal
-seed data, and `pnpm lint` (no `eslint.config.js` exists yet despite every package
+**Not built yet**: Plan My Week (Pro/AI auto-generate), the grocery list, pantry, and
+optimization screens (Phases 6–7 — the pantry API still returns "not yet implemented"),
+score display in the UI, and `pnpm lint` (no `eslint.config.js` exists yet despite every package
 having a `lint` script — a known gap, not yet fixed).
 
 <details>

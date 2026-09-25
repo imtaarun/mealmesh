@@ -140,13 +140,37 @@ typecheck:
   become **direct** `apps/mobile` dependencies — Metro can't resolve a dependency of a
   dependency under pnpm's strict `node_modules` layout.
 
-**Not done**: Plan My Week (Pro/AI path), score display in the UI (needs Phase 3
-pricing data first), the remaining 15 recipes, all store/product/price/deal seed data,
-and the `pnpm lint` gap (still no `eslint.config.js` anywhere, flagged in an earlier
+**Not done** (at the end of that session): Plan My Week (Pro/AI path), score display
+in the UI, the remaining 15 recipes, all store/product/price/deal seed data, and the
+`pnpm lint` gap (still no `eslint.config.js` anywhere, flagged in an earlier
 session, not yet fixed).
+
+## Phase 3 (seed data) — completed
+
+- **Recipes 16–30** in `packages/seed-data/src/recipes.json`, written from scratch
+  (item 3), picked for ingredient reuse with the existing 15 — they add breakfasts
+  (egg bhurji, omelette, pancakes), lunches (hummus wraps, peanut noodles), and a few
+  stir-fries so the previously unused Asian pantry items get used.
+- **Conversion gaps fixed**: three existing lines (butter, tomato paste, flour in tbsp)
+  silently came out `needsReview` because those ingredients had no `density`. Added
+  densities, and `validateSeedData` now fails on any recipe line that can't convert —
+  which immediately caught two of the new recipes measuring spinach in cups.
+- **Pricing catalog**: `reference-prices.json` (one pack + regular price per
+  ingredient), `stores.json` (5 fictional stores: price factor, variance, what they
+  stock, this week's deals), and `catalog.ts`, which generates products, price
+  timelines, and deals from them. Deterministic — a hash of the product id, not
+  `Math.random` — so every seed produces the same prices and tests can rely on them.
+- **Demo household** (`demo-household.json`): the product-spec demo scenario, Pro tier
+  (the scenario uses Plan My Week), 28 pantry items including spinach expiring in 2
+  days for Use It First. `PriceHistory` isn't seeded — see open-questions item 15.
+- **`MockGroceryProvider`** implemented and exercised against the seeded database.
+- **Tests**: `packages/seed-data` now has vitest (10 tests), including a full demo
+  week through the domain pipeline so a bad data change that makes the optimizer
+  "look broken" (product-spec's warning) fails CI instead of a demo.
 
 ## Open items carried forward
 
 Everything else in `docs/open-questions.md` still applies (recipe content licensing,
 name/trademark, AI cost/latency budget, offline behaviour in-store, nutrition data,
-store distance/trip cost) except items 1, 2, 5, 9, and 11, which are now resolved.
+store distance/trip cost) except items 1, 2, 5, 9, and 11, which are now resolved. Items 12–15 were added
+during Phase 3.

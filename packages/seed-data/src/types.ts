@@ -60,3 +60,38 @@ export interface SeedRecipe {
   ingredients: SeedRecipeIngredient[];
   instructions: SeedRecipeInstruction[];
 }
+
+export interface SeedReferencePrice {
+  ingredientId: string;
+  productName: string;
+  packSize: number; // in the ingredient's baseUnit
+  priceCents: number; // regular shelf price at a mainstream supermarket
+}
+
+export interface SeedStore {
+  id: string;
+  name: string;
+  chain: string;
+  address: string;
+  lat: number;
+  lng: number;
+  houseBrand: string | null;
+  priceFactor: number; // multiplier on the reference price
+  priceVariance: number; // max per-product deviation from priceFactor, e.g. 0.1 = ±10%
+  onlyIngredientIds?: string[]; // specialty store: carries just these
+  excludedIngredientIds?: string[]; // full-line store: carries everything except these
+  deals: Array<{ ingredientId: string; discountPercent: number }>;
+}
+
+export interface SeedDemoHousehold {
+  email: string;
+  password: string;
+  householdName: string;
+  weeklyBudgetCents: number;
+  budgetTier: "budget" | "balanced" | "premium";
+  subscriptionTier: "free" | "pro";
+  defaultServings: number;
+  timezone: string;
+  preferences: Array<{ type: string; value: string }>;
+  pantry: Array<{ ingredientId: string; quantity: number; location: "pantry" | "fridge" | "freezer"; expiresInDays?: number }>;
+}

@@ -12,14 +12,11 @@ import type {
 
 /**
  * Reads the seeded tables (docs/data-model.md: Store, Product, ProductPrice, Deal),
- * populated with approximate pricing — per-ingredient reference unit prices grounded
- * in published Canadian average grocery costs, not live retailer data (see
- * docs/open-questions.md item 1). Every result renders with isDemo: true, and callers
- * must show the "Estimated pricing" badge — see CLAUDE.md rule 2 and
- * docs/product-spec.md. Prices must never be fabricated on the fly; they come from
- * the seed data only.
- * TODO(Phase 3): implement once the seed data includes stores/products/prices —
- * packages/seed-data currently only covers food content, not pricing.
+ * populated with approximate pricing — per-ingredient reference prices with per-store
+ * variance, not live retailer data (see docs/open-questions.md item 1 and
+ * packages/seed-data/src/catalog.ts). isDemo is true, so callers must show the
+ * "Estimated pricing" badge — see CLAUDE.md rule 2. Prices are never made up here;
+ * they come from the seed data only.
  */
 @Injectable()
 export class MockGroceryProvider implements GroceryProvider {
@@ -28,23 +25,64 @@ export class MockGroceryProvider implements GroceryProvider {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async searchProducts(_query: ProductQuery): Promise<Product[]> {
-    throw new Error("MockGroceryProvider.searchProducts: not yet implemented");
+  async searchProducts(query: ProductQuery): Promise<Product[]> {
+    return this.prisma.product.findMany({
+      where: {
+        ...(query.ingredientId ? { ingredientId: query.ingredientId } : {}),
+        ...(query.storeId ? { storeId: query.storeId } : {}),
+        ...(query.text ? { name: { contains: query.text, mode: "insensitive" as const } } : {}),
+      },
+      select: PRODUCT_FIELDS,
+      orderBy: { id: "asc" },
+    });
   }
 
-  async getProduct(_id: string): Promise<Product | null> {
-    throw new Error("MockGroceryProvider.getProduct: not yet implemented");
+  async getProduct(id: string): Promise<Product | null> {
+    return this.prisma.product.findUnique({ where: { id }, select: PRODUCT_FIELDS });
   }
 
-  async getPrice(_productId: string): Promise<ProductPrice | null> {
-    throw new Error("MockGroceryProvider.getPrice: not yet implemented");
+  /** The price in effect now; when a sale overlaps the regular price, the sale wins. */
+  async getPrice(productId: string): Promise<ProductPrice | null> {
+    const now = new Date();
+    return this.prisma.productPrice.findFirst({
+      where: { productId, effectiveFrom: { lte: now }, OR: [{ effectiveTo: null }, { effectiveTo: { gt: now } }] },
+      orderBy: { priceCents: "asc" },
+      select: { productId: true, priceCents: true, isSale: true, regularPriceCents: true, source: true },
+    });
   }
 
-  async getDeals(_storeId: string): Promise<Deal[]> {
-    throw new Error("MockGroceryProvider.getDeals: not yet implemented");
+  async getDeals(storeId: string): Promise<Deal[]> {
+    const now = new Date();
+    return this.prisma.deal.findMany({
+      where: { storeId, startsAt: { lte: now }, endsAt: { gt: now } },
+      select: { id: true, storeId: true, productId: true, discountPercent: true, description: true },
+      orderBy: { discountPercent: "desc" },
+    });
   }
 
-  async getStoreLocations(_near: LatLng, _radiusKm: number): Promise<Store[]> {
-    throw new Error("MockGroceryProvider.getStoreLocations: not yet implemented");
+  async getStoreLocations(near: LatLng, radiusKm: number): Promise<Store[]> {
+    const stores = await this.prisma.store.findMany({
+      select: { id: true, name: true, chain: true, lat: true, lng: true, isDemo: true },
+    });
+    return stores.filter((store) => distanceKm(near, store) <= radiusKm);
   }
+}
+
+const PRODUCT_FIELDS = {
+  id: true,
+  storeId: true,
+  ingredientId: true,
+  name: true,
+  brand: true,
+  packSize: true,
+  packUnit: true,
+} as const;
+
+/** Great-circle (haversine) distance between two points, in km. */
+function distanceKm(a: LatLng, b: LatLng): number {
+  const rad = (deg: number) => (deg * Math.PI) / 180;
+  const h =
+    Math.sin(rad(b.lat - a.lat) / 2) ** 2 +
+    Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(rad(b.lng - a.lng) / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
 }

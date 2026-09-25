@@ -4,9 +4,9 @@ One phase ≈ one Claude Code session. **Each phase ends with the app running an
 own tests passing.** Do not start a phase before the previous one's DoD is met. Update
 the status line below as you go.
 
-**Current phase: 4, partially done** (Phases 0-2 done; Phase 3 partial — 15/30 recipes,
-no stores/products/prices; Phase 4's Build My Week/Free path is done and verified
-end-to-end, Plan My Week/Pro path is not built. See `IMPLEMENTATION_PLAN.md`.)
+**Current phase: 4, partially done** (Phases 0-3 done; Phase 4's Build My Week/Free
+path is done and verified end-to-end, Plan My Week/Pro path is not built. See
+`IMPLEMENTATION_PLAN.md`.)
 
 ---
 
@@ -26,8 +26,7 @@ Project skeleton, `apps/backend/src/{modules,providers}` layout, Prisma schema f
 (`AuthGuard`, `Session` model, bcrypt), seed script structure.
 
 **DoD:** `pnpm db:migrate` works (verified against a real local Postgres); signup →
-onboarding → landing works end-to-end over real HTTP. `pnpm db:seed` writes food
-content (ingredients + recipes) but not yet stores/products/prices — see Phase 3.
+onboarding → landing works end-to-end over real HTTP.
 
 ## Phase 2 — The deterministic core — DONE
 
@@ -38,16 +37,30 @@ Written against `docs/algorithms.md`; exact score formulas now documented there 
 **DoD met:** 34 tests across 6 files pass (`pnpm --filter @mealmesh/domain test`),
 covering every documented test case in `docs/algorithms.md`.
 
-## Phase 3 — Seed data — PARTIAL
+## Phase 3 — Seed data — DONE
 
-15 of 30 target recipes (5 each: Indian, Mediterranean, North American), 101
-ingredients with full conversion data — in `packages/seed-data`, seeded into Postgres
-via `apps/backend/prisma/seed.ts` (idempotent upsert by slug id, verified).
+All in `packages/seed-data`, written to Postgres by `apps/backend/prisma/seed.ts`
+(idempotent — verified by running it twice and comparing row counts):
 
-**Still missing:** 15 more recipes, and all store/product/price/deal data (approximate
-pricing per `docs/open-questions.md` item 1 — not yet implemented as seed content).
-Without prices, cost-per-serving and the MealMesh Score's budget/waste sub-scores
-can't be wired into the UI yet.
+- 30 recipes (Indian, Mediterranean, North American, plus a few Chinese/Mexican
+  weeknight dishes and three breakfasts), chosen for ingredient reuse. 101 ingredients,
+  every recipe line converting cleanly to its base unit (now enforced by
+  `validateSeedData`).
+- 5 fictional Toronto stores (mainstream, discount, premium, South Asian specialty,
+  neighbourhood), 432 products, 879 price rows (a previous and a current regular
+  price per product, plus sale rows), 15 active deals. Approximate pricing: one
+  reference pack + price per ingredient (`reference-prices.json`), times a per-store
+  factor with a deterministic per-product deviation (`catalog.ts`). See
+  `docs/open-questions.md` items 1 and 12.
+- One demo account (`demo@mealmesh.app` / `mealmesh-demo`, local dev only) set up as
+  the `docs/product-spec.md` demo scenario, with a 28-item sample pantry including
+  items about to expire.
+- `MockGroceryProvider` implemented against those tables.
+
+**DoD met:** 10 seed-data tests pass, including a realistic demo week run through the
+real aggregation → pantry → optimizer pipeline: single store $166.87 → two stores
+$143.27, top savings from chicken thighs, tomatoes, and yogurt. The optimizer and
+costing behaviours this surfaced are items 13 and 14 in `docs/open-questions.md`.
 
 ## Phase 4 — Planner UI + Plan My Week — Build My Week DONE, Plan My Week NOT STARTED
 
@@ -65,13 +78,13 @@ Per `docs/open-questions.md` item 11, this phase forked into two paths:
   still a stub (`MealPlansService.generate`/`regenerateMeal`). Needs
   `subscriptionTier === 'pro'` gating, `AIProvider` wiring, and the greedy-selection
   algorithm.
-- **Score display** is not wired into the UI yet — blocked on Phase 3's pricing data
-  (`computeMealPlanScore` needs spend/consumed-value figures that don't exist without
-  seeded products/prices).
+- **Score display** is not wired into the UI yet. Phase 3's pricing data now exists;
+  what's missing is the grocery-list/costing service that turns a plan into
+  spend/consumed-value figures for `computeMealPlanScore` (Phases 6–7).
 
 **DoD** ("demo preferences in → coherent 7-day plan out... respecting budget") is only
-fully met for the manual Build My Week path, and only up to what Phase 3's current data
-supports (no budget/cost figures yet).
+fully met for the manual Build My Week path, and without budget/cost figures in the UI
+yet.
 
 ## Phase 5 — Recipes + cooking mode
 

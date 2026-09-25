@@ -455,5 +455,473 @@
       { "step": 5, "text": "Slice the tomato and red onion." },
       { "step": 6, "text": "Assemble the burgers with mustard, lettuce, tomato, onion, and bacon." }
     ]
+  },
+  {
+    "id": "aloo-gobi",
+    "title": "Aloo Gobi",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 25,
+    "difficulty": "easy",
+    "cuisines": ["indian"],
+    "dietTags": ["vegan", "vegetarian", "gluten_free", "dairy_free", "healthy"],
+    "ingredients": [
+      { "ingredientId": "potato", "quantity": 3, "unit": "piece", "note": "cut into 2 cm cubes" },
+      { "ingredientId": "cauliflower", "quantity": 1, "unit": "piece", "note": "cut into florets" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece", "note": "chopped" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "green-chili", "quantity": 1, "unit": "piece", "note": "slit", "optional": true },
+      { "ingredientId": "vegetable-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "cumin-seeds", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "turmeric", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "coriander-ground", "quantity": 2, "unit": "tsp" },
+      { "ingredientId": "garam-masala", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful", "note": "chopped, to finish" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oil in a wide pan over medium heat and add the cumin seeds. When they sizzle, add the onion and cook until softened." },
+      { "step": 2, "text": "Stir in the garlic, ginger and green chili and cook for 1 minute.", "timerSeconds": 60 },
+      { "step": 3, "text": "Add the turmeric, ground coriander and salt, then the tomatoes. Cook, stirring, until the tomatoes break down." },
+      { "step": 4, "text": "Add the potatoes and cauliflower, toss to coat, splash in 60 ml water, cover and cook on medium-low until tender, stirring every few minutes.", "timerSeconds": 1080 },
+      { "step": 5, "text": "Uncover, sprinkle over the garam masala and cook a few minutes more to dry off any liquid. Finish with cilantro." }
+    ]
+  },
+  {
+    "id": "egg-bhurji",
+    "title": "Egg Bhurji (Spiced Scrambled Eggs)",
+    "servings": 4,
+    "prepMinutes": 5,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["indian"],
+    "dietTags": ["vegetarian", "gluten_free", "high_protein", "low_carb"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 6, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece", "note": "finely chopped" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece", "note": "finely chopped" },
+      { "ingredientId": "green-chili", "quantity": 1, "unit": "piece", "note": "minced", "optional": true },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "turmeric", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "chili-powder", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful", "note": "chopped" },
+      { "ingredientId": "naan", "quantity": 2, "unit": "piece", "note": "warmed, for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Whisk the eggs with the salt in a bowl." },
+      { "step": 2, "text": "Melt the butter in a non-stick pan over medium heat. Add the onion and green chili and cook until the onion is soft.", "timerSeconds": 180 },
+      { "step": 3, "text": "Add the tomato, turmeric and chili powder and cook until the tomato softens.", "timerSeconds": 120 },
+      { "step": 4, "text": "Lower the heat, pour in the eggs and stir gently until just set but still soft.", "timerSeconds": 120 },
+      { "step": 5, "text": "Fold through the cilantro and serve with warm naan." }
+    ]
+  },
+  {
+    "id": "keema-matar",
+    "title": "Chicken Keema Matar",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 25,
+    "difficulty": "easy",
+    "cuisines": ["indian"],
+    "dietTags": ["gluten_free", "dairy_free", "high_protein"],
+    "ingredients": [
+      { "ingredientId": "ground-chicken", "quantity": 500, "unit": "g" },
+      { "ingredientId": "frozen-peas", "quantity": 1, "unit": "cup" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece", "note": "finely chopped" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece", "note": "chopped" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "cumin-seeds", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "coriander-ground", "quantity": 2, "unit": "tsp" },
+      { "ingredientId": "turmeric", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "chili-powder", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "garam-masala", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful", "note": "chopped" },
+      { "ingredientId": "basmati-rice", "quantity": 300, "unit": "g", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oil in a large pan over medium-high heat. Add the cumin seeds, then the onion, and cook until golden." },
+      { "step": 2, "text": "Add the garlic and ginger and cook for 1 minute.", "timerSeconds": 60 },
+      { "step": 3, "text": "Add the ground chicken and cook, breaking it up, until no pink remains.", "timerSeconds": 360 },
+      { "step": 4, "text": "Stir in the coriander, turmeric, chili powder and salt, then the tomatoes." },
+      { "step": 5, "text": "Cover and simmer until the tomatoes have cooked down into the meat.", "timerSeconds": 600 },
+      { "step": 6, "text": "Add the peas and garam masala and cook until the peas are hot.", "timerSeconds": 240 },
+      { "step": 7, "text": "Scatter with cilantro and serve with basmati rice." }
+    ]
+  },
+  {
+    "id": "hummus-veggie-wraps",
+    "title": "Hummus Veggie Wraps",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean", "middle_eastern"],
+    "dietTags": ["vegan", "vegetarian", "dairy_free", "healthy"],
+    "ingredients": [
+      { "ingredientId": "chickpeas-canned", "quantity": 1, "unit": "can", "note": "drained, liquid reserved" },
+      { "ingredientId": "tahini", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "lemon", "quantity": 1, "unit": "piece", "note": "juiced" },
+      { "ingredientId": "garlic", "quantity": 1, "unit": "clove" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "cumin-ground", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "tortilla", "quantity": 4, "unit": "piece", "note": "large" },
+      { "ingredientId": "cucumber", "quantity": 1, "unit": "piece", "note": "cut into sticks" },
+      { "ingredientId": "carrot", "quantity": 2, "unit": "piece", "note": "grated" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "lettuce", "quantity": 0.5, "unit": "piece", "note": "shredded" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Blend the chickpeas, tahini, lemon juice, garlic, olive oil, cumin and salt until smooth, adding a spoonful or two of the reserved chickpea liquid to loosen." },
+      { "step": 2, "text": "Spread a thick layer of hummus over each tortilla, leaving a border." },
+      { "step": 3, "text": "Layer on the lettuce, cucumber, carrot and tomato." },
+      { "step": 4, "text": "Roll up tightly, tucking in the sides, and cut in half to serve. Leftover hummus keeps in the fridge for 4 days." }
+    ]
+  },
+  {
+    "id": "chicken-souvlaki-pitas",
+    "title": "Chicken Souvlaki Pitas with Tzatziki",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "medium",
+    "cuisines": ["mediterranean"],
+    "dietTags": ["high_protein", "healthy"],
+    "ingredients": [
+      { "ingredientId": "chicken-breast", "quantity": 600, "unit": "g", "note": "cut into 3 cm pieces" },
+      { "ingredientId": "lemon", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "olive-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "oregano-dried", "quantity": 2, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "black-pepper", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "greek-yogurt", "quantity": 1, "unit": "cup" },
+      { "ingredientId": "cucumber", "quantity": 0.5, "unit": "piece", "note": "grated and squeezed dry" },
+      { "ingredientId": "pita-bread", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "red-onion", "quantity": 0.5, "unit": "piece", "note": "thinly sliced" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Mix the juice of half the lemon with 2 tbsp olive oil, 2 cloves of garlic (grated), the oregano, salt and pepper. Toss the chicken in it." },
+      { "step": 2, "text": "For the tzatziki, stir the grated cucumber, remaining garlic, remaining lemon juice and 1 tbsp olive oil into the Greek yogurt. Season with a pinch of salt." },
+      { "step": 3, "text": "Cook the chicken in a hot grill pan or skillet over medium-high heat, turning, until charred and cooked through.", "timerSeconds": 600 },
+      { "step": 4, "text": "Warm the pitas in the pan.", "timerSeconds": 60 },
+      { "step": 5, "text": "Fill each pita with chicken, tomato, red onion and a generous spoonful of tzatziki." }
+    ]
+  },
+  {
+    "id": "baked-feta-pasta",
+    "title": "Baked Feta Tomato Pasta",
+    "servings": 4,
+    "prepMinutes": 5,
+    "cookMinutes": 30,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean", "italian"],
+    "dietTags": ["vegetarian"],
+    "ingredients": [
+      { "ingredientId": "pasta", "quantity": 400, "unit": "g" },
+      { "ingredientId": "feta-cheese", "quantity": 200, "unit": "g", "note": "block" },
+      { "ingredientId": "tomato", "quantity": 5, "unit": "piece", "note": "cut into wedges" },
+      { "ingredientId": "garlic", "quantity": 4, "unit": "clove", "note": "smashed" },
+      { "ingredientId": "olive-oil", "quantity": 4, "unit": "tbsp" },
+      { "ingredientId": "red-pepper-flakes", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "black-pepper", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "basil", "quantity": 1, "unit": "handful", "note": "torn" },
+      { "ingredientId": "spinach", "quantity": 60, "unit": "g", "note": "optional stir-in", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oven to 200°C (400°F)." },
+      { "step": 2, "text": "Put the tomatoes and garlic in a baking dish, set the feta block in the middle, drizzle everything with the olive oil and season with the salt, pepper and chili flakes. Bake until the tomatoes burst and the feta is soft.", "timerSeconds": 1500 },
+      { "step": 3, "text": "Meanwhile, cook the pasta in salted boiling water until al dente. Reserve a cup of pasta water, then drain.", "timerSeconds": 600 },
+      { "step": 4, "text": "Mash the feta and tomatoes together in the dish, adding a splash of pasta water to make a creamy sauce." },
+      { "step": 5, "text": "Toss in the pasta, and the spinach if using, until coated. Finish with torn basil." }
+    ]
+  },
+  {
+    "id": "chicken-shawarma-rice-bowls",
+    "title": "Chicken Shawarma Rice Bowls",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 20,
+    "difficulty": "medium",
+    "cuisines": ["middle_eastern", "mediterranean"],
+    "dietTags": ["gluten_free", "high_protein", "healthy"],
+    "ingredients": [
+      { "ingredientId": "chicken-thigh", "quantity": 600, "unit": "g" },
+      { "ingredientId": "plain-yogurt", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "lemon", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "paprika", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "turmeric", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "cinnamon-ground", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "white-rice", "quantity": 1.5, "unit": "cup" },
+      { "ingredientId": "cucumber", "quantity": 1, "unit": "piece", "note": "diced" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece", "note": "diced" },
+      { "ingredientId": "lettuce", "quantity": 0.5, "unit": "piece", "note": "shredded" },
+      { "ingredientId": "tahini", "quantity": 2, "unit": "tbsp", "note": "thinned with lemon and water, to drizzle", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Mix half the yogurt with the juice of half the lemon, the garlic, cumin, paprika, turmeric, cinnamon, salt and olive oil. Coat the chicken thighs and let them sit while the rice cooks." },
+      { "step": 2, "text": "Rinse the rice and cook it with 3 cups of water, covered, over low heat.", "timerSeconds": 900 },
+      { "step": 3, "text": "Cook the chicken in a hot skillet over medium-high heat until charred and cooked through, turning once.", "timerSeconds": 720 },
+      { "step": 4, "text": "Rest the chicken, then slice it.", "timerSeconds": 180 },
+      { "step": 5, "text": "Build bowls with rice, chicken, lettuce, cucumber and tomato. Top with the remaining yogurt and a drizzle of tahini." }
+    ]
+  },
+  {
+    "id": "black-bean-sweet-potato-tacos",
+    "title": "Black Bean & Sweet Potato Tacos",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 25,
+    "difficulty": "easy",
+    "cuisines": ["mexican", "north_american"],
+    "dietTags": ["vegetarian", "healthy"],
+    "ingredients": [
+      { "ingredientId": "sweet-potato", "quantity": 2, "unit": "piece", "note": "cut into 1.5 cm cubes" },
+      { "ingredientId": "black-beans-canned", "quantity": 1, "unit": "can", "note": "drained and rinsed" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "chili-powder", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "tortilla", "quantity": 8, "unit": "piece", "note": "small" },
+      { "ingredientId": "avocado", "quantity": 1, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "red-onion", "quantity": 0.5, "unit": "piece", "note": "finely chopped" },
+      { "ingredientId": "lime", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "sour-cream", "quantity": 0.5, "unit": "cup", "note": "to serve", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oven to 220°C (425°F)." },
+      { "step": 2, "text": "Toss the sweet potato with the olive oil, chili powder, cumin and salt and roast on a sheet pan until tender and browned at the edges.", "timerSeconds": 1320 },
+      { "step": 3, "text": "Warm the black beans in a small pot with a splash of water and a squeeze of lime.", "timerSeconds": 300 },
+      { "step": 4, "text": "Char the tortillas briefly in a dry pan or over a gas flame." },
+      { "step": 5, "text": "Fill the tortillas with sweet potato and beans, then top with avocado, red onion, cilantro, a squeeze of lime and sour cream if you like." }
+    ]
+  },
+  {
+    "id": "fluffy-pancakes",
+    "title": "Fluffy Weekend Pancakes",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["vegetarian"],
+    "ingredients": [
+      { "ingredientId": "all-purpose-flour", "quantity": 2, "unit": "cup" },
+      { "ingredientId": "baking-powder", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "white-sugar", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "salt", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "milk", "quantity": 1.5, "unit": "cup" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "butter", "quantity": 3, "unit": "tbsp", "note": "melted, plus more for the pan" },
+      { "ingredientId": "honey", "quantity": 2, "unit": "tbsp", "note": "to serve", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Whisk the flour, baking powder, sugar and salt in a large bowl." },
+      { "step": 2, "text": "In another bowl, whisk the milk, eggs and melted butter." },
+      { "step": 3, "text": "Pour the wet ingredients into the dry and stir until just combined — a few lumps are fine." },
+      { "step": 4, "text": "Heat a lightly buttered pan over medium heat. Pour in about 1/4 cup of batter per pancake and cook until bubbles appear on top.", "timerSeconds": 120 },
+      { "step": 5, "text": "Flip and cook until golden underneath.", "timerSeconds": 60 },
+      { "step": 6, "text": "Keep warm while you cook the rest. Serve with honey." }
+    ]
+  },
+  {
+    "id": "veggie-omelette",
+    "title": "Loaded Veggie Omelette",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["north_american", "french"],
+    "dietTags": ["vegetarian", "gluten_free", "high_protein", "low_carb"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 6, "unit": "piece" },
+      { "ingredientId": "milk", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "bell-pepper", "quantity": 1, "unit": "piece", "note": "diced" },
+      { "ingredientId": "spinach", "quantity": 60, "unit": "g" },
+      { "ingredientId": "green-onion", "quantity": 2, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "cheddar-cheese", "quantity": 0.5, "unit": "cup", "note": "grated" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "salt", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "black-pepper", "quantity": 0.25, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Whisk the eggs with the milk, salt and pepper." },
+      { "step": 2, "text": "Melt half the butter in a non-stick pan over medium heat. Cook the bell pepper until softened, then add the spinach and green onion and cook until wilted. Set the vegetables aside.", "timerSeconds": 240 },
+      { "step": 3, "text": "Melt the rest of the butter, pour in half the eggs and cook, pulling the set edges into the middle, until almost set.", "timerSeconds": 120 },
+      { "step": 4, "text": "Spoon half the vegetables and cheese over one side, fold, and slide onto a plate." },
+      { "step": 5, "text": "Repeat with the remaining eggs and filling for a second omelette. Cut each in half to serve four." }
+    ]
+  },
+  {
+    "id": "honey-garlic-chicken-stir-fry",
+    "title": "Honey Garlic Chicken Stir-Fry",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["chinese", "north_american"],
+    "dietTags": ["dairy_free", "high_protein"],
+    "ingredients": [
+      { "ingredientId": "chicken-breast", "quantity": 500, "unit": "g", "note": "thinly sliced" },
+      { "ingredientId": "broccoli", "quantity": 1, "unit": "piece", "note": "cut into florets" },
+      { "ingredientId": "carrot", "quantity": 2, "unit": "piece", "note": "sliced thinly" },
+      { "ingredientId": "bell-pepper", "quantity": 1, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "garlic", "quantity": 4, "unit": "clove", "note": "minced" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "soy-sauce", "quantity": 4, "unit": "tbsp" },
+      { "ingredientId": "honey", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "rice-vinegar", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "sesame-oil", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "green-onion", "quantity": 2, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "white-rice", "quantity": 1.5, "unit": "cup", "note": "for serving" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Rinse the rice and cook it with 3 cups of water, covered, over low heat.", "timerSeconds": 900 },
+      { "step": 2, "text": "Whisk the soy sauce, honey, rice vinegar and sesame oil in a small bowl." },
+      { "step": 3, "text": "Heat 1 tbsp vegetable oil in a wok or large skillet over high heat and stir-fry the chicken until cooked through. Remove.", "timerSeconds": 300 },
+      { "step": 4, "text": "Add the remaining oil, then the broccoli, carrot and bell pepper. Stir-fry until crisp-tender, adding a splash of water if the pan is dry.", "timerSeconds": 240 },
+      { "step": 5, "text": "Add the garlic and ginger for 30 seconds, then return the chicken, pour in the sauce and toss until glossy.", "timerSeconds": 90 },
+      { "step": 6, "text": "Serve over rice, scattered with green onion." }
+    ]
+  },
+  {
+    "id": "tofu-veggie-stir-fry",
+    "title": "Crispy Tofu & Vegetable Stir-Fry",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["chinese"],
+    "dietTags": ["vegan", "vegetarian", "dairy_free", "healthy"],
+    "ingredients": [
+      { "ingredientId": "tofu", "quantity": 1, "unit": "piece", "note": "extra-firm, pressed and cubed" },
+      { "ingredientId": "broccoli", "quantity": 1, "unit": "piece", "note": "cut into florets" },
+      { "ingredientId": "bell-pepper", "quantity": 1, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "carrot", "quantity": 1, "unit": "piece", "note": "sliced thinly" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove", "note": "minced" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "soy-sauce", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "rice-vinegar", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "brown-sugar", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "sesame-oil", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "green-onion", "quantity": 2, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "white-rice", "quantity": 1.5, "unit": "cup", "note": "for serving" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Rinse the rice and cook it with 3 cups of water, covered, over low heat.", "timerSeconds": 900 },
+      { "step": 2, "text": "Heat 2 tbsp vegetable oil in a large non-stick pan over medium-high heat. Fry the tofu, turning, until golden and crisp on most sides. Remove.", "timerSeconds": 480 },
+      { "step": 3, "text": "Whisk the soy sauce, rice vinegar, brown sugar and sesame oil together." },
+      { "step": 4, "text": "Add the remaining oil and stir-fry the broccoli, bell pepper and carrot until crisp-tender.", "timerSeconds": 240 },
+      { "step": 5, "text": "Add the garlic and ginger for 30 seconds, return the tofu, pour over the sauce and toss to coat." },
+      { "step": 6, "text": "Serve over rice with green onion." }
+    ]
+  },
+  {
+    "id": "peanut-sesame-noodles",
+    "title": "Peanut Sesame Noodles",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["chinese", "thai"],
+    "dietTags": ["vegan", "vegetarian", "dairy_free"],
+    "ingredients": [
+      { "ingredientId": "pasta", "quantity": 350, "unit": "g", "note": "spaghetti or linguine" },
+      { "ingredientId": "peanut-butter", "quantity": 0.33, "unit": "cup" },
+      { "ingredientId": "soy-sauce", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "rice-vinegar", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "brown-sugar", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "sesame-oil", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "garlic", "quantity": 1, "unit": "clove", "note": "grated" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "cucumber", "quantity": 1, "unit": "piece", "note": "cut into matchsticks" },
+      { "ingredientId": "carrot", "quantity": 2, "unit": "piece", "note": "grated" },
+      { "ingredientId": "green-onion", "quantity": 3, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "red-pepper-flakes", "quantity": 0.25, "unit": "tsp", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the pasta in boiling water until just tender. Reserve 1/2 cup of the cooking water, then drain and rinse under cold water.", "timerSeconds": 600 },
+      { "step": 2, "text": "Whisk the peanut butter, soy sauce, rice vinegar, brown sugar, sesame oil, garlic and ginger, loosening with the reserved water until pourable." },
+      { "step": 3, "text": "Toss the noodles with the sauce, cucumber, carrot and most of the green onion." },
+      { "step": 4, "text": "Top with the remaining green onion and chili flakes. Good cold the next day for lunch." }
+    ]
+  },
+  {
+    "id": "chicken-noodle-soup",
+    "title": "Classic Chicken Noodle Soup",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["dairy_free", "high_protein", "healthy"],
+    "ingredients": [
+      { "ingredientId": "chicken-breast", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "chicken-broth", "quantity": 2, "unit": "l" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece", "note": "diced" },
+      { "ingredientId": "carrot", "quantity": 3, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "celery", "quantity": 2, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "garlic", "quantity": 2, "unit": "clove", "note": "minced" },
+      { "ingredientId": "olive-oil", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "bay-leaf", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "pasta", "quantity": 150, "unit": "g", "note": "short shapes or broken spaghetti" },
+      { "ingredientId": "parsley", "quantity": 1, "unit": "handful", "note": "chopped" },
+      { "ingredientId": "salt", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "black-pepper", "quantity": 0.5, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the olive oil in a large pot over medium heat. Cook the onion, carrot and celery until softened.", "timerSeconds": 360 },
+      { "step": 2, "text": "Add the garlic for 30 seconds, then pour in the broth and add the bay leaves." },
+      { "step": 3, "text": "Bring to a simmer, add the whole chicken breasts and poach gently until cooked through.", "timerSeconds": 900 },
+      { "step": 4, "text": "Lift out the chicken, shred it with two forks and discard the bay leaves." },
+      { "step": 5, "text": "Add the pasta to the pot and simmer until tender.", "timerSeconds": 480 },
+      { "step": 6, "text": "Return the chicken, season with salt and pepper, and stir in the parsley." }
+    ]
+  },
+  {
+    "id": "shrimp-fried-rice",
+    "title": "Shrimp Fried Rice",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["chinese"],
+    "dietTags": ["pescatarian", "dairy_free", "high_protein"],
+    "ingredients": [
+      { "ingredientId": "shrimp", "quantity": 400, "unit": "g", "note": "peeled and deveined" },
+      { "ingredientId": "white-rice", "quantity": 1.5, "unit": "cup", "note": "cooked and cooled — day-old is best" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece", "note": "beaten" },
+      { "ingredientId": "frozen-peas", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "frozen-corn", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "carrot", "quantity": 1, "unit": "piece", "note": "finely diced" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove", "note": "minced" },
+      { "ingredientId": "green-onion", "quantity": 3, "unit": "piece", "note": "sliced" },
+      { "ingredientId": "soy-sauce", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "sesame-oil", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "If you don't have leftover rice, cook it with 3 cups of water, then spread it on a tray to cool and dry before frying." },
+      { "step": 2, "text": "Heat 1 tbsp oil in a wok over high heat. Cook the shrimp until pink, then remove.", "timerSeconds": 180 },
+      { "step": 3, "text": "Scramble the eggs in the wok until just set, then remove.", "timerSeconds": 60 },
+      { "step": 4, "text": "Add the remaining oil, the carrot, peas and corn, and stir-fry for 2 minutes. Add the garlic.", "timerSeconds": 120 },
+      { "step": 5, "text": "Add the rice and fry, pressing it against the hot wok, until heated through and slightly crisp.", "timerSeconds": 240 },
+      { "step": 6, "text": "Return the shrimp and egg, add the soy sauce, sesame oil and most of the green onion, and toss. Top with the rest of the green onion." }
+    ]
   }
 ]
