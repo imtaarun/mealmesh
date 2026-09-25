@@ -1,0 +1,459 @@
+[
+  {
+    "id": "butter-chicken",
+    "title": "Butter Chicken",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "difficulty": "medium",
+    "cuisines": ["indian"],
+    "dietTags": ["gluten_free", "high_protein"],
+    "ingredients": [
+      { "ingredientId": "chicken-thigh", "quantity": 600, "unit": "g" },
+      { "ingredientId": "butter", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "tomato-paste", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "canned-diced-tomatoes", "quantity": 1, "unit": "can" },
+      { "ingredientId": "heavy-cream", "quantity": 120, "unit": "ml" },
+      { "ingredientId": "garam-masala", "quantity": 2, "unit": "tsp" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "turmeric", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "chili-powder", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "salt", "quantity": 1, "unit": "pinch" },
+      { "ingredientId": "basmati-rice", "quantity": 300, "unit": "g", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cut the chicken thighs into bite-sized pieces and season lightly with salt." },
+      { "step": 2, "text": "Melt half the butter in a large pan over medium heat. Add the onion and cook until soft and golden.", "timerSeconds": 300 },
+      { "step": 3, "text": "Stir in the garlic and ginger and cook until fragrant." },
+      { "step": 4, "text": "Add the garam masala, cumin, turmeric, and chili powder. Toast the spices for 30 seconds, stirring constantly." },
+      { "step": 5, "text": "Add the tomato paste and canned tomatoes. Simmer, stirring occasionally, until the sauce thickens slightly.", "timerSeconds": 600 },
+      { "step": 6, "text": "Add the chicken and simmer until cooked through.", "timerSeconds": 600 },
+      { "step": 7, "text": "Stir in the remaining butter and the cream. Simmer gently for 2 more minutes and adjust salt to taste.", "timerSeconds": 120 },
+      { "step": 8, "text": "Serve hot over basmati rice." }
+    ]
+  },
+  {
+    "id": "chana-masala",
+    "title": "Chana Masala",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 25,
+    "difficulty": "easy",
+    "cuisines": ["indian"],
+    "dietTags": ["vegan", "vegetarian", "gluten_free", "dairy_free", "high_protein", "healthy"],
+    "ingredients": [
+      { "ingredientId": "chickpeas-canned", "quantity": 2, "unit": "can" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "canned-diced-tomatoes", "quantity": 1, "unit": "can" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "coriander-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "turmeric", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "chili-powder", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful", "note": "for garnish" },
+      { "ingredientId": "basmati-rice", "quantity": 300, "unit": "g", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oil in a pot over medium heat. Add the onion and cook until golden.", "timerSeconds": 300 },
+      { "step": 2, "text": "Add the garlic and ginger and cook until fragrant." },
+      { "step": 3, "text": "Stir in the cumin, coriander, turmeric, and chili powder, and toast for 30 seconds." },
+      { "step": 4, "text": "Add the canned tomatoes and simmer until slightly reduced.", "timerSeconds": 300 },
+      { "step": 5, "text": "Add the chickpeas with their liquid. Simmer until thickened, mashing a few chickpeas against the pot to thicken the sauce.", "timerSeconds": 600 },
+      { "step": 6, "text": "Season with salt to taste and top with fresh cilantro." },
+      { "step": 7, "text": "Serve hot over basmati rice." }
+    ]
+  },
+  {
+    "id": "saag-paneer",
+    "title": "Saag Paneer",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 20,
+    "difficulty": "medium",
+    "cuisines": ["indian"],
+    "dietTags": ["vegetarian", "high_protein"],
+    "ingredients": [
+      { "ingredientId": "paneer", "quantity": 250, "unit": "g" },
+      { "ingredientId": "frozen-spinach", "quantity": 400, "unit": "g" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "cumin-seeds", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "garam-masala", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "heavy-cream", "quantity": 60, "unit": "ml" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "naan", "quantity": 4, "unit": "piece", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Thaw the spinach and roughly puree it in a blender with a splash of water." },
+      { "step": 2, "text": "Cut the paneer into cubes. Pan-fry in a little oil until lightly golden on each side, then set aside." },
+      { "step": 3, "text": "In the same pan, heat the remaining oil and toast the cumin seeds until they sizzle." },
+      { "step": 4, "text": "Add the onion and cook until soft, then add the garlic and ginger and cook until fragrant.", "timerSeconds": 300 },
+      { "step": 5, "text": "Stir in the pureed spinach and garam masala. Simmer gently.", "timerSeconds": 300 },
+      { "step": 6, "text": "Fold in the cream and paneer, and warm through without boiling.", "timerSeconds": 180 },
+      { "step": 7, "text": "Season with salt and serve hot with naan." }
+    ]
+  },
+  {
+    "id": "red-lentil-dal",
+    "title": "Red Lentil Dal",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 25,
+    "difficulty": "easy",
+    "cuisines": ["indian"],
+    "dietTags": ["vegan", "vegetarian", "gluten_free", "dairy_free", "high_protein", "healthy"],
+    "ingredients": [
+      { "ingredientId": "lentils-red", "quantity": 300, "unit": "g" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "cumin-seeds", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "turmeric", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "mustard-seeds", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful", "note": "for garnish" },
+      { "ingredientId": "basmati-rice", "quantity": 300, "unit": "g", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Rinse the lentils until the water runs mostly clear." },
+      { "step": 2, "text": "Simmer the lentils with the turmeric in enough water to cover by an inch, until soft.", "timerSeconds": 900 },
+      { "step": 3, "text": "Meanwhile, heat the oil in a small pan. Add the mustard and cumin seeds and cook until they pop." },
+      { "step": 4, "text": "Add the onion and cook until golden, then the garlic and ginger, cooking until fragrant." },
+      { "step": 5, "text": "Stir in the chopped tomato and cook until it breaks down.", "timerSeconds": 180 },
+      { "step": 6, "text": "Pour the onion-tomato mixture into the cooked lentils and stir to combine. Season with salt." },
+      { "step": 7, "text": "Garnish with cilantro and serve hot over basmati rice." }
+    ]
+  },
+  {
+    "id": "vegetable-biryani-rice",
+    "title": "Vegetable Biryani-Style Rice",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "difficulty": "medium",
+    "cuisines": ["indian"],
+    "dietTags": ["vegetarian", "gluten_free", "healthy"],
+    "ingredients": [
+      { "ingredientId": "basmati-rice", "quantity": 350, "unit": "g" },
+      { "ingredientId": "carrot", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "frozen-peas", "quantity": 150, "unit": "g" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 2, "unit": "clove" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "garam-masala", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "cumin-seeds", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "cardamom-ground", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "bay-leaf", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "plain-yogurt", "quantity": 120, "unit": "g", "note": "for serving", "optional": true },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful", "note": "for garnish" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Rinse the rice until the water runs mostly clear and set aside to drain." },
+      { "step": 2, "text": "Heat the oil in a heavy pot. Add the bay leaf and cumin seeds and cook until fragrant." },
+      { "step": 3, "text": "Add the onion and cook until golden, then add the garlic and ginger.", "timerSeconds": 300 },
+      { "step": 4, "text": "Add the carrots, garam masala, and cardamom, and stir to coat." },
+      { "step": 5, "text": "Add the rice and enough water to cook it through, along with the peas. Bring to a boil, then cover and simmer on low heat until the rice is tender.", "timerSeconds": 900 },
+      { "step": 6, "text": "Let the rice rest off the heat, covered, for 5 minutes before fluffing with a fork.", "timerSeconds": 300 },
+      { "step": 7, "text": "Garnish with cilantro and serve with a dollop of yogurt." }
+    ]
+  },
+  {
+    "id": "greek-salad-grilled-chicken",
+    "title": "Greek Salad with Grilled Chicken",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean"],
+    "dietTags": ["gluten_free", "high_protein", "healthy", "low_carb"],
+    "ingredients": [
+      { "ingredientId": "chicken-breast", "quantity": 500, "unit": "g" },
+      { "ingredientId": "cucumber", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 3, "unit": "piece" },
+      { "ingredientId": "red-onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "kalamata-olives", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "feta-cheese", "quantity": 150, "unit": "g" },
+      { "ingredientId": "olive-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "lemon", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "oregano-dried", "quantity": 1, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Season the chicken breasts with salt, pepper, and half the oregano." },
+      { "step": 2, "text": "Grill or pan-sear the chicken over medium-high heat until cooked through and lightly charred.", "timerSeconds": 480 },
+      { "step": 3, "text": "Rest the chicken for a few minutes, then slice.", "timerSeconds": 180 },
+      { "step": 4, "text": "Chop the cucumber and tomatoes into large chunks, and thinly slice the red onion." },
+      { "step": 5, "text": "Toss the vegetables and olives with the olive oil, lemon juice, and remaining oregano." },
+      { "step": 6, "text": "Top the salad with crumbled feta and the sliced chicken. Season with salt and pepper to taste." }
+    ]
+  },
+  {
+    "id": "chickpea-spinach-stew",
+    "title": "Chickpea and Spinach Stew",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean"],
+    "dietTags": ["vegan", "vegetarian", "dairy_free", "healthy"],
+    "ingredients": [
+      { "ingredientId": "chickpeas-canned", "quantity": 2, "unit": "can" },
+      { "ingredientId": "spinach", "quantity": 200, "unit": "g" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "canned-diced-tomatoes", "quantity": 1, "unit": "can" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "paprika", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "lemon", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "pita-bread", "quantity": 4, "unit": "piece", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the olive oil in a pot. Add the onion and cook until soft.", "timerSeconds": 300 },
+      { "step": 2, "text": "Add the garlic, cumin, and paprika, and cook until fragrant." },
+      { "step": 3, "text": "Add the tomatoes and chickpeas with their liquid. Simmer until slightly thickened.", "timerSeconds": 600 },
+      { "step": 4, "text": "Stir in the spinach and cook until just wilted.", "timerSeconds": 120 },
+      { "step": 5, "text": "Finish with a squeeze of lemon juice and season with salt to taste." },
+      { "step": 6, "text": "Serve warm with pita bread." }
+    ]
+  },
+  {
+    "id": "lemon-garlic-salmon-couscous",
+    "title": "Lemon Garlic Salmon with Couscous",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean"],
+    "dietTags": ["pescatarian", "high_protein", "healthy"],
+    "ingredients": [
+      { "ingredientId": "salmon-fillet", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "couscous", "quantity": 250, "unit": "g" },
+      { "ingredientId": "lemon", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "olive-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "parsley", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "zucchini", "quantity": 1, "unit": "piece" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Preheat the oven to 200°C (400°F)." },
+      { "step": 2, "text": "Slice the zucchini and toss with a little olive oil, salt, and pepper on a sheet pan. Place the salmon fillets alongside." },
+      { "step": 3, "text": "Mix the minced garlic with the remaining olive oil and lemon juice, and spoon over the salmon." },
+      { "step": 4, "text": "Roast until the salmon flakes easily and the zucchini is tender.", "timerSeconds": 720 },
+      { "step": 5, "text": "Meanwhile, pour boiling water or hot broth over the couscous, cover, and let it steam.", "timerSeconds": 300 },
+      { "step": 6, "text": "Fluff the couscous with a fork and stir in the chopped parsley." },
+      { "step": 7, "text": "Serve the salmon and zucchini over the couscous with a lemon wedge." }
+    ]
+  },
+  {
+    "id": "falafel-chickpea-patties",
+    "title": "Falafel-Style Chickpea Patties with Tahini Sauce",
+    "servings": 4,
+    "prepMinutes": 20,
+    "cookMinutes": 15,
+    "difficulty": "medium",
+    "cuisines": ["mediterranean", "middle_eastern"],
+    "dietTags": ["vegan", "vegetarian", "healthy"],
+    "ingredients": [
+      { "ingredientId": "chickpeas-canned", "quantity": 2, "unit": "can" },
+      { "ingredientId": "garlic", "quantity": 2, "unit": "clove" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "coriander-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "parsley", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "all-purpose-flour", "quantity": 4, "unit": "tbsp" },
+      { "ingredientId": "tahini", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "lemon", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "vegetable-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "pita-bread", "quantity": 4, "unit": "piece", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Pat the chickpeas dry and pulse them in a food processor with the garlic, cumin, coriander, and parsley until coarsely ground — not pureed." },
+      { "step": 2, "text": "Mix in the flour until the mixture holds together, then shape into small patties." },
+      { "step": 3, "text": "Heat the oil in a pan over medium heat. Pan-fry the patties until golden and crisp on both sides.", "timerSeconds": 480 },
+      { "step": 4, "text": "Whisk the tahini with lemon juice and a splash of water until smooth and pourable, seasoning with salt." },
+      { "step": 5, "text": "Serve the patties warm in pita with tahini sauce drizzled over top." }
+    ]
+  },
+  {
+    "id": "shakshuka",
+    "title": "Shakshuka",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean", "middle_eastern"],
+    "dietTags": ["vegetarian", "high_protein", "healthy"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 6, "unit": "piece" },
+      { "ingredientId": "canned-diced-tomatoes", "quantity": 2, "unit": "can" },
+      { "ingredientId": "bell-pepper", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "paprika", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "feta-cheese", "quantity": 80, "unit": "g", "optional": true },
+      { "ingredientId": "pita-bread", "quantity": 4, "unit": "piece", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the olive oil in a large skillet. Add the onion and bell pepper and cook until soft.", "timerSeconds": 360 },
+      { "step": 2, "text": "Add the garlic, cumin, and paprika, and cook until fragrant." },
+      { "step": 3, "text": "Pour in the canned tomatoes and simmer until the sauce thickens.", "timerSeconds": 480 },
+      { "step": 4, "text": "Make small wells in the sauce and crack an egg into each one." },
+      { "step": 5, "text": "Cover and cook until the egg whites are set but the yolks are still soft.", "timerSeconds": 360 },
+      { "step": 6, "text": "Crumble feta over top and serve straight from the pan with pita bread." }
+    ]
+  },
+  {
+    "id": "creamy-garlic-chicken-pasta",
+    "title": "Creamy Garlic Chicken Pasta",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["north_american", "italian"],
+    "dietTags": ["high_protein"],
+    "ingredients": [
+      { "ingredientId": "pasta", "quantity": 350, "unit": "g" },
+      { "ingredientId": "chicken-breast", "quantity": 500, "unit": "g" },
+      { "ingredientId": "garlic", "quantity": 4, "unit": "clove" },
+      { "ingredientId": "heavy-cream", "quantity": 300, "unit": "ml" },
+      { "ingredientId": "parmesan-cheese", "quantity": 60, "unit": "g" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "parsley", "quantity": 1, "unit": "handful", "note": "for garnish" },
+      { "ingredientId": "black-pepper", "quantity": 1, "unit": "pinch" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Bring a large pot of salted water to a boil and cook the pasta until al dente.", "timerSeconds": 600 },
+      { "step": 2, "text": "Meanwhile, cut the chicken into thin strips and season with salt and pepper." },
+      { "step": 3, "text": "Heat the olive oil in a large pan and cook the chicken until golden and cooked through. Remove and set aside.", "timerSeconds": 420 },
+      { "step": 4, "text": "In the same pan, cook the garlic until fragrant, then add the cream and bring to a gentle simmer.", "timerSeconds": 180 },
+      { "step": 5, "text": "Stir in the parmesan until the sauce is smooth, then return the chicken to the pan." },
+      { "step": 6, "text": "Toss the drained pasta through the sauce and garnish with parsley and black pepper." }
+    ]
+  },
+  {
+    "id": "beef-tacos",
+    "title": "Beef Tacos",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["north_american", "mexican"],
+    "dietTags": ["high_protein"],
+    "ingredients": [
+      { "ingredientId": "ground-beef", "quantity": 500, "unit": "g" },
+      { "ingredientId": "tortilla", "quantity": 8, "unit": "piece" },
+      { "ingredientId": "cheddar-cheese", "quantity": 100, "unit": "g" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "red-onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "lettuce", "quantity": 0.25, "unit": "piece" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "lime", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "chili-powder", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "sour-cream", "quantity": 100, "unit": "g", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Brown the ground beef in a skillet over medium-high heat, breaking it up as it cooks.", "timerSeconds": 480 },
+      { "step": 2, "text": "Drain excess fat, then stir in the chili powder, cumin, and a splash of water. Simmer until thickened.", "timerSeconds": 180 },
+      { "step": 3, "text": "Warm the tortillas in a dry pan or in the oven." },
+      { "step": 4, "text": "Dice the tomato and red onion, and shred the lettuce." },
+      { "step": 5, "text": "Assemble the tacos with beef, cheddar, tomato, onion, lettuce, and cilantro." },
+      { "step": 6, "text": "Finish with a squeeze of lime and a dollop of sour cream." }
+    ]
+  },
+  {
+    "id": "classic-beef-chili",
+    "title": "Classic Beef Chili",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 35,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["high_protein", "gluten_free"],
+    "ingredients": [
+      { "ingredientId": "ground-beef", "quantity": 500, "unit": "g" },
+      { "ingredientId": "black-beans-canned", "quantity": 1, "unit": "can" },
+      { "ingredientId": "canned-diced-tomatoes", "quantity": 2, "unit": "can" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "bell-pepper", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "chili-powder", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "cumin-ground", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "paprika", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "cheddar-cheese", "quantity": 100, "unit": "g", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Brown the ground beef in a large pot over medium-high heat.", "timerSeconds": 420 },
+      { "step": 2, "text": "Add the onion, garlic, and bell pepper, and cook until softened." },
+      { "step": 3, "text": "Stir in the chili powder, cumin, and paprika, and toast for 30 seconds." },
+      { "step": 4, "text": "Add the canned tomatoes and black beans with their liquid. Bring to a simmer." },
+      { "step": 5, "text": "Simmer uncovered, stirring occasionally, until thickened.", "timerSeconds": 1500 },
+      { "step": 6, "text": "Season with salt to taste and serve topped with shredded cheddar." }
+    ]
+  },
+  {
+    "id": "sheet-pan-chicken-veggies",
+    "title": "Sheet Pan Chicken and Veggies",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 35,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["gluten_free", "dairy_free", "healthy", "high_protein"],
+    "ingredients": [
+      { "ingredientId": "chicken-thigh", "quantity": 600, "unit": "g" },
+      { "ingredientId": "potato", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "carrot", "quantity": 3, "unit": "piece" },
+      { "ingredientId": "broccoli", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "olive-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "garlic-powder", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "paprika", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "black-pepper", "quantity": 1, "unit": "pinch" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Preheat the oven to 210°C (410°F)." },
+      { "step": 2, "text": "Cut the potatoes and carrots into similarly sized chunks." },
+      { "step": 3, "text": "Toss the chicken, potatoes, and carrots with olive oil, garlic powder, paprika, salt, and pepper on a sheet pan." },
+      { "step": 4, "text": "Roast until the chicken and potatoes are almost cooked through.", "timerSeconds": 1200 },
+      { "step": 5, "text": "Add the broccoli florets to the pan and toss with the remaining oil." },
+      { "step": 6, "text": "Return to the oven and roast until the chicken is fully cooked and the vegetables are tender.", "timerSeconds": 600 }
+    ]
+  },
+  {
+    "id": "bacon-cheddar-burgers",
+    "title": "Bacon Cheddar Burgers",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["high_protein"],
+    "ingredients": [
+      { "ingredientId": "ground-beef", "quantity": 600, "unit": "g" },
+      { "ingredientId": "burger-bun", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "cheddar-cheese", "quantity": 100, "unit": "g" },
+      { "ingredientId": "bacon", "quantity": 8, "unit": "g", "note": "strips" },
+      { "ingredientId": "lettuce", "quantity": 0.25, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "red-onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "dijon-mustard", "quantity": 2, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Divide the ground beef into four patties, season with salt and pepper, and press a shallow dimple in the center of each." },
+      { "step": 2, "text": "Cook the bacon in a pan until crisp, then set aside." },
+      { "step": 3, "text": "In the same pan, cook the patties over medium-high heat to your desired doneness, topping with cheddar in the last minute.", "timerSeconds": 480 },
+      { "step": 4, "text": "Toast the buns lightly in the same pan." },
+      { "step": 5, "text": "Slice the tomato and red onion." },
+      { "step": 6, "text": "Assemble the burgers with mustard, lettuce, tomato, onion, and bacon." }
+    ]
+  }
+]

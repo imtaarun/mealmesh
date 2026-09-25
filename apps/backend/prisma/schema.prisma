@@ -1,0 +1,477 @@
+// Prisma schema — transcribed from docs/data-model.md. Do not add fields here that
+// aren't in that doc without updating the doc first; it is the source of truth.
+//
+// Invariants enforced in application code, not the schema (Prisma can't express them):
+// money is integer cents; quantities are stored in the ingredient's baseUnit; a
+// leftover Meal must reference leftoverOfMealId and contributes zero grocery demand;
+// allergies are hard filters, dislikes are soft; every ProductPrice carries `source`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum BudgetTier {
+  budget
+  balanced
+  premium
+}
+
+// Gates AIProvider access (docs/open-questions.md item 11) — unrelated to BudgetTier,
+// which is a grocery-spend preference, not a subscription plan.
+enum SubscriptionTier {
+  free
+  pro
+}
+
+enum PreferenceType {
+  cuisine_like
+  dislike
+  allergy
+  diet
+  skill
+  max_cook_minutes
+  leftover_tolerance
+  busy_day
+  eat_out_day
+}
+
+enum BaseUnit {
+  g
+  ml
+  piece
+}
+
+enum Difficulty {
+  easy
+  medium
+  hard
+}
+
+enum RecipeSource {
+  seed
+  ai
+  user
+}
+
+enum MealSlot {
+  breakfast
+  lunch
+  dinner
+  snack
+}
+
+enum MealType {
+  cook
+  leftover
+  eat_out
+  skip
+}
+
+enum PantryLocation {
+  pantry
+  fridge
+  freezer
+}
+
+enum GroceryListStatus {
+  draft
+  confirmed
+}
+
+enum PriceSource {
+  mock
+  receipt
+  provider
+}
+
+enum OptimizationStrategy {
+  min_cost
+  min_stores
+  best_overall
+}
+
+enum ReceiptParseStatus {
+  pending
+  parsed
+  failed
+}
+
+enum MealRatingValue {
+  love
+  fine
+  no
+}
+
+// ---------- Household & people ----------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+
+  members  HouseholdMember[]
+  ratings  MealRating[]
+  sessions Session[]
+}
+
+// Session-based auth (docs/architecture.md "Cross-cutting / Auth"): the client holds
+// the raw token, only its hash is stored, so a DB leak doesn't hand out usable
+// credentials. Revocable by deleting the row — unlike a stateless JWT.
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Household {
+  id                String           @id @default(cuid())
+  name              String
+  weeklyBudgetCents Int
+  budgetTier        BudgetTier       @default(balanced)
+  subscriptionTier  SubscriptionTier @default(free)
+  defaultServings   Int              @default(2)
+  timezone          String           @default("UTC")
+
+  users        User[]
+  members      HouseholdMember[]
+  preferences  Preference[]
+  pantryItems  PantryItem[]
+  mealPlans    MealPlan[]
+  priceHistory PriceHistory[]
+}
+
+model HouseholdMember {
+  id      String  @id @default(cuid())
+  name    String
+  isChild Boolean @default(false)
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
+
+  preferences Preference[]
+  ratings     MealRating[]
+}
+
+model Preference {
+  id     String         @id @default(cuid())
+  type   PreferenceType
+  value  String
+  weight Float          @default(1)
+
+  householdId String?
+  household   Household? @relation(fields: [householdId], references: [id])
+
+  memberId String?
+  member   HouseholdMember? @relation(fields: [memberId], references: [id])
+}
+
+// ---------- Ingredients & recipes ----------
+
+model Ingredient {
+  id            String   @id @default(cuid())
+  name          String
+  aliases       String[]
+  category      String
+  baseUnit      BaseUnit
+  gramsPerPiece Float?
+  gramsPerCup   Float?
+  density       Float?
+  shelfLifeDays Int?
+  isStaple      Boolean  @default(false)
+
+  recipeIngredients RecipeIngredient[]
+  pantryItems       PantryItem[]
+  groceryListItems  GroceryListItem[]
+  products          Product[]
+  priceHistory      PriceHistory[]
+}
+
+model Recipe {
+  id           String       @id @default(cuid())
+  title        String
+  imageUrl     String?
+  servings     Int
+  prepMinutes  Int
+  cookMinutes  Int
+  difficulty   Difficulty
+  cuisines     String[]
+  dietTags     String[]
+  instructions Json // ordered steps: { step, text, timerSeconds? }[]
+  source       RecipeSource @default(seed)
+  nutrition    Json?
+
+  ingredients RecipeIngredient[]
+  meals       Meal[]
+  ratings     MealRating[]
+}
+
+model RecipeIngredient {
+  id       String  @id @default(cuid())
+  quantity Float
+  unit     String
+  note     String?
+  optional Boolean @default(false)
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+}
+
+// ---------- Meal plans ----------
+
+model MealPlan {
+  id                String   @id @default(cuid())
+  weekStartDate     DateTime
+  status            String   @default("active")
+  estimatedCostCents Int?
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+
+  meals       Meal[]
+  groceryList GroceryList?
+  score       MealPlanScore?
+  deals       Deal[]
+}
+
+model Meal {
+  id           String    @id @default(cuid())
+  date         DateTime
+  slot         MealSlot
+  servings     Int
+  type         MealType  @default(cook)
+  customTitle  String?
+
+  mealPlanId String
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id])
+
+  recipeId String?
+  recipe   Recipe? @relation(fields: [recipeId], references: [id])
+
+  leftoverOfMealId String?
+  leftoverOfMeal   Meal?   @relation("LeftoverSource", fields: [leftoverOfMealId], references: [id])
+  leftoverMeals    Meal[]  @relation("LeftoverSource")
+
+  // Build My Week pre-creates one empty (type: skip, recipeId: null) row per
+  // day/slot when the week is created, so every pick is a PATCH against a real
+  // mealId — this constraint is what makes that pre-creation well-defined.
+  @@unique([mealPlanId, date, slot])
+}
+
+// ---------- Pantry ----------
+
+model PantryItem {
+  id        String         @id @default(cuid())
+  quantity  Float
+  unit      BaseUnit
+  location  PantryLocation
+  expiresAt DateTime?
+  addedAt   DateTime       @default(now())
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+}
+
+// ---------- Grocery list ----------
+
+model GroceryList {
+  id          String            @id @default(cuid())
+  generatedAt DateTime          @default(now())
+  status      GroceryListStatus @default(draft)
+
+  mealPlanId String   @unique
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id])
+
+  items         GroceryListItem[]
+  optimizations ShoppingOptimization[]
+}
+
+model GroceryListItem {
+  id                    String   @id @default(cuid())
+  neededQuantity        Float
+  unit                  BaseUnit
+  pantryCovered         Float
+  finalQuantity         Float
+  category              String
+  checked               Boolean  @default(false)
+  isCustom              Boolean  @default(false)
+  userOverrideQuantity  Float?
+
+  groceryListId String
+  groceryList   GroceryList @relation(fields: [groceryListId], references: [id])
+
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+}
+
+// ---------- Stores, products, prices ----------
+
+model Store {
+  id      String  @id @default(cuid())
+  name    String
+  chain   String
+  address String
+  lat     Float
+  lng     Float
+  isDemo  Boolean @default(true)
+
+  products Product[]
+  deals    Deal[]
+}
+
+model Product {
+  id       String  @id @default(cuid())
+  name     String
+  brand    String?
+  packSize Float
+  packUnit BaseUnit
+  imageUrl String?
+
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id])
+
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+
+  prices        ProductPrice[]
+  deals         Deal[]
+  receiptItems  ReceiptItem[]
+}
+
+model ProductPrice {
+  id                String      @id @default(cuid())
+  priceCents        Int
+  effectiveFrom     DateTime    @default(now())
+  effectiveTo       DateTime?
+  isSale            Boolean     @default(false)
+  regularPriceCents Int?
+  source            PriceSource @default(mock)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Deal {
+  id              String   @id @default(cuid())
+  discountPercent Float
+  startsAt        DateTime
+  endsAt          DateTime
+  description     String
+
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id])
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  mealPlanId String?
+  mealPlan   MealPlan? @relation(fields: [mealPlanId], references: [id])
+}
+
+model ShoppingOptimization {
+  id              String               @id @default(cuid())
+  strategy        OptimizationStrategy
+  totalCents      Int
+  storeBreakdown  Json
+  unavailableItems String[]
+  computedAt      DateTime             @default(now())
+
+  groceryListId String
+  groceryList   GroceryList @relation(fields: [groceryListId], references: [id])
+}
+
+// ---------- Receipts (P2) ----------
+
+model Receipt {
+  id          String             @id @default(cuid())
+  storeId     String?
+  imageUrl    String
+  purchasedAt DateTime?
+  totalCents  Int?
+  parseStatus ReceiptParseStatus @default(pending)
+
+  householdId String
+
+  items ReceiptItem[]
+}
+
+model ReceiptItem {
+  id         String  @id @default(cuid())
+  rawText    String
+  quantity   Float?
+  priceCents Int?
+
+  receiptId String
+  receipt   Receipt @relation(fields: [receiptId], references: [id])
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+}
+
+// ---------- History, ratings, score ----------
+
+model PriceHistory {
+  id             String      @id @default(cuid())
+  unitPriceCents Int
+  storeId        String?
+  observedAt     DateTime    @default(now())
+  source         PriceSource
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+
+  ingredientId String
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+}
+
+model MealRating {
+  id        String          @id @default(cuid())
+  rating    MealRatingValue
+  createdAt DateTime        @default(now())
+
+  memberId String
+  member   HouseholdMember @relation(fields: [memberId], references: [id])
+
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+}
+
+model MealPlanScore {
+  id                   String @id @default(cuid())
+  total                Int
+  budget               Int
+  ingredientEfficiency Int
+  wasteReduction       Int
+  convenience          Int
+  variety              Int
+  explanation          String
+
+  mealPlanId String   @unique
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id])
+}

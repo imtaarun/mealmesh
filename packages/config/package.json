@@ -1,0 +1,10 @@
+{
+  "name": "@mealmesh/config",
+  "private": true,
+  "version": "0.0.0",
+  "main": "index.js",
+  "files": [
+    "eslint-base.js",
+    "tsconfig.base.json"
+  ]
+}

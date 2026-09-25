@@ -1,0 +1,51 @@
+{
+  "cuisines": [
+    "indian",
+    "mediterranean",
+    "north_american",
+    "italian",
+    "mexican",
+    "chinese",
+    "thai",
+    "japanese",
+    "middle_eastern",
+    "french",
+    "korean",
+    "caribbean"
+  ],
+  "dietTags": [
+    "vegetarian",
+    "vegan",
+    "pescatarian",
+    "gluten_free",
+    "dairy_free",
+    "nut_free",
+    "low_carb",
+    "keto",
+    "paleo",
+    "high_protein",
+    "healthy"
+  ],
+  "allergens": [
+    "peanut",
+    "tree_nut",
+    "dairy",
+    "egg",
+    "gluten",
+    "soy",
+    "fish",
+    "shellfish",
+    "sesame"
+  ],
+  "skillLevels": ["beginner", "intermediate", "advanced"],
+  "mealSlots": ["breakfast", "lunch", "dinner", "snack"],
+  "difficulty": ["easy", "medium", "hard"],
+  "shoppingCategories": ["Produce", "Meat & Seafood", "Dairy", "Pantry", "Frozen", "Other"],
+  "pantryLocations": ["pantry", "fridge", "freezer"],
+  "units": {
+    "mass": ["g", "kg", "oz", "lb"],
+    "volume": ["ml", "l", "tsp", "tbsp", "cup"],
+    "count": ["piece", "clove", "bunch", "can"],
+    "nominal": ["pinch", "to_taste", "handful"]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "MealMesh",
+    "slug": "mealmesh",
+    "scheme": "mealmesh",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#FFF8F1",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.mealmesh.app"
+    },
+    "android": {
+      "package": "com.mealmesh.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF8F1"
+      }
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
