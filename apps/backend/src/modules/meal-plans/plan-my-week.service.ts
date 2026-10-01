@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundEx
 import { MealSlot, MealType, type Prisma } from "@prisma/client";
 import {
   aggregateDemand,
+  cheapestUnitPriceCents,
   applyPantryAndRound,
   checkRecipeConflicts,
   computeMealPlanScore,
@@ -20,7 +21,8 @@ import {
 } from "@mealmesh/domain";
 import { PrismaService } from "../../common/prisma.service.js";
 import { AI_PROVIDER, type AIProvider } from "../../providers/ai/ai-provider.interface.js";
-import { GROCERY_PROVIDER, type GroceryProvider } from "../../providers/grocery/grocery-provider.interface.js";
+import { GroceryPricing } from "../../providers/grocery/grocery-pricing.js";
+import { toConversion } from "../../common/ingredient-conversion.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -59,7 +61,7 @@ export class PlanMyWeekService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(AI_PROVIDER) private readonly aiProvider: AIProvider,
-    @Inject(GROCERY_PROVIDER) private readonly groceryProvider: GroceryProvider,
+    private readonly pricing: GroceryPricing,
   ) {}
 
   async generate(household: RequestHousehold, weekStartDate: string) {
@@ -184,12 +186,8 @@ export class PlanMyWeekService {
     for (const item of pantryItems) pantry[item.ingredientId] = (pantry[item.ingredientId] ?? 0) + item.quantity;
     const expiringBy = new Date(now.getTime() + EXPIRING_WITHIN_DAYS * DAY_MS);
 
-    const { productOptions, dealIngredientIds } = await this.loadPricing();
-    const unitPriceCents: Record<string, number> = {};
-    for (const option of productOptions) {
-      const unit = option.priceCents / option.packSize;
-      unitPriceCents[option.ingredientId] = Math.min(unitPriceCents[option.ingredientId] ?? Infinity, unit);
-    }
+    const { productOptions, dealIngredientIds } = await this.pricing.load();
+    const unitPriceCents = cheapestUnitPriceCents(productOptions);
 
     const days: PlannerDay[] = Array.from({ length: 7 }, (_, i) => {
       const date = new Date(weekStart.getTime() + i * DAY_MS);
@@ -229,32 +227,6 @@ export class PlanMyWeekService {
       allergyValues,
       dislikeValues,
     });
-  }
-
-  /** Current price of every product, plus which ingredients are on a deal — via the GroceryProvider (CLAUDE.md rule 3). */
-  private async loadPricing() {
-    const products = await this.groceryProvider.searchProducts({});
-    const prices = await Promise.all(products.map((p) => this.groceryProvider.getPrice(p.id)));
-    const productOptions: ProductOption[] = [];
-    products.forEach((product, i) => {
-      const price = prices[i];
-      if (price) {
-        productOptions.push({
-          productId: product.id,
-          storeId: product.storeId,
-          ingredientId: product.ingredientId,
-          priceCents: price.priceCents,
-          packSize: product.packSize,
-          packUnit: product.packUnit,
-        });
-      }
-    });
-
-    const storeIds = [...new Set(products.map((p) => p.storeId))];
-    const deals = (await Promise.all(storeIds.map((id) => this.groceryProvider.getDeals(id)))).flat();
-    const ingredientByProduct = new Map(products.map((p) => [p.id, p.ingredientId]));
-    const dealIngredientIds = [...new Set(deals.map((d) => ingredientByProduct.get(d.productId)!))];
-    return { productOptions, dealIngredientIds };
   }
 
   /**
@@ -324,16 +296,6 @@ export class PlanMyWeekService {
       this.prisma.mealPlan.update({ where: { id: mealPlanId }, data: { estimatedCostCents: spendCents } }),
     ]);
   }
-}
-
-function toConversion(ingredient: RecipeWithIngredients["ingredients"][number]["ingredient"]): IngredientConversion {
-  return {
-    id: ingredient.id,
-    baseUnit: ingredient.baseUnit,
-    ...(ingredient.gramsPerPiece !== null ? { gramsPerPiece: ingredient.gramsPerPiece } : {}),
-    ...(ingredient.gramsPerCup !== null ? { gramsPerCup: ingredient.gramsPerCup } : {}),
-    ...(ingredient.density !== null ? { density: ingredient.density } : {}),
-  };
 }
 
 /** Recipe → planner shape: optional lines dropped, quantities converted to base units. */

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
 import { MealPlansService } from "./meal-plans.service.js";
 import { PlanMyWeekService } from "./plan-my-week.service.js";
 import { CreateMealPlanDto } from "./dto/create-meal-plan.dto.js";
@@ -13,8 +13,9 @@ export class MealPlansController {
   ) {}
 
   @Get("current")
-  getCurrent(@CurrentHousehold() household: RequestHousehold) {
-    return this.mealPlansService.getCurrent(household);
+  getCurrent(@CurrentHousehold() household: RequestHousehold, @Query("date") date?: string) {
+    if (date !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new BadRequestException("date must be YYYY-MM-DD");
+    return this.mealPlansService.getCurrent(household, date);
   }
 
   @Post()

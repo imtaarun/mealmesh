@@ -15,6 +15,8 @@ export default function RootLayout() {
           <Stack.Screen name="profile-setup" />
           <Stack.Screen name="history" />
           <Stack.Screen name="my-data" />
+          <Stack.Screen name="recipe/[id]" />
+          <Stack.Screen name="cook/[id]" options={{ presentation: "fullScreenModal", gestureEnabled: false }} />
           <Stack.Screen name="recipe-picker" options={{ presentation: "modal" }} />
         </Stack>
       </ThemeProvider>

@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { RecipesService } from "./recipes.service.js";
+import { CurrentHousehold, type RequestHousehold } from "../../common/household-context.js";
 
 @Controller("api/recipes")
 export class RecipesController {
@@ -21,8 +22,8 @@ export class RecipesController {
   }
 
   @Get(":id")
-  getById(@Param("id") id: string) {
-    return this.recipesService.getById(id);
+  getById(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string) {
+    return this.recipesService.getById(household, id);
   }
 
   @Post("generate")

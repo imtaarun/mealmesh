@@ -20,9 +20,14 @@ const DAYS_PER_WEEK = 7;
 export class MealPlansService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getCurrent(household: RequestHousehold) {
+  /** The latest planned week — or, given a date (YYYY-MM-DD), the week that contains it. */
+  async getCurrent(household: RequestHousehold, date?: string) {
+    const day = date ? new Date(date) : null;
     return this.prisma.mealPlan.findFirst({
-      where: { householdId: household.householdId },
+      where: {
+        householdId: household.householdId,
+        ...(day ? { weekStartDate: { lte: day, gt: new Date(day.getTime() - 7 * 24 * 60 * 60 * 1000) } } : {}),
+      },
       orderBy: { weekStartDate: "desc" },
       include: {
         meals: {

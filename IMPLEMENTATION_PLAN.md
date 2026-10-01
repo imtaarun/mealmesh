@@ -213,10 +213,24 @@ session, not yet fixed).
   the welcome screen didn't move on; screens opened directly raced the saved session
   and called the API without a token.
 
+## Phase 5: recipes and cooking mode
+
+- **Domain**: `scaleQuantity` / `formatQuantity` (kitchen fractions, rounded metric,
+  words for vague amounts) and `cheapestUnitPriceCents`; 17 tests.
+- **Backend**: `GET /api/recipes/:id` adds cost per serving (consumed value at the
+  cheapest current price; null rather than a partial total if something has no
+  price), `estimatedPricing`, and the household's pantry matches. Price lookups moved
+  into a shared `GroceryPricing` (used by Plan My Week too, same results) and
+  `toConversion` into `common/`. `GET /api/meal-plans/current?date=` so Home finds
+  tonight even when next week is already planned.
+- **Mobile**: recipe page, cooking mode (`expo-keep-awake`, `Vibration`), meal
+  links on Week, Tonight on Home (whose greeting also stops always saying "Good
+  afternoon").
+
 ## Open items carried forward
 
 Everything else in `docs/open-questions.md` still applies (recipe content licensing,
 name/trademark, AI cost/latency budget, offline behaviour in-store, nutrition data,
 store distance/trip cost) except items 1, 2, 5, 9, and 11, which are now resolved. Items 12–15 were added
 during Phase 3; 16–19 during Phase 4;
-20–23 during Phase 4b.
+20–23 during Phase 4b; 24 during Phase 5.
