@@ -185,37 +185,40 @@ export function optimizeBasket(input: OptimizeBasketInput): OptimizationResult {
     };
   }
 
-  // best_overall: try every other store as a potential second stop; accept the one
-  // whose net savings (savings - trip cost) is highest, if any clears the trip cost
-  // and detour budget. Cap at 2 stores.
+  // best_overall: the min_stores basket, or the best pair of stores within the detour
+  // budget — any pair, not just pairs containing that store (docs/open-questions.md
+  // item 13) — whichever is cheapest once every stop after the first is charged at
+  // TRIP_COST. In a pair each item goes to the cheaper store; one neither carries is
+  // bought wherever it's cheapest, and that extra stop is charged too. Cap 2 stores
+  // in the MVP, apart from such unavoidable extra stops.
+  const withTrips = (pricedItems: PricedItem[]) =>
+    pricedItems.reduce((sum, p) => sum + p.cents, 0) +
+    tripCostCents * (new Set(pricedItems.map((p) => p.storeId)).size - 1);
   const distanceByStore = new Map(storeDistances.map((s) => [s.storeId, s.distanceKm]));
-  let bestSecondStop: { basket: SingleStoreBasket; pricedItems: PricedItem[]; netSavingsCents: number } | null = null;
+  const reachable = storeIds.filter((id) => (distanceByStore.get(id) ?? Infinity) <= maxDetourKm);
+  let chosenItems = anchor.pricedItems;
+  let chosenCents = withTrips(anchor.pricedItems);
 
-  for (const candidateStore of singleStoreBaskets) {
-    if (candidateStore.storeId === anchor.storeId) continue;
-    const detourKm = distanceByStore.get(candidateStore.storeId) ?? Infinity;
-    if (detourKm > maxDetourKm) continue;
-
-    const merged: PricedItem[] = [];
-    let savingsCents = 0;
-    for (const item of items) {
-      const atAnchor = anchor.pricedItems.find((p) => p.ingredientId === item.ingredientId);
-      const atCandidate = priceAtStore(item, candidateStore.storeId, candidatesByIngredient);
-      if (atCandidate && (!atAnchor || atCandidate.cents < atAnchor.cents)) {
-        merged.push(atCandidate);
-        if (atAnchor) savingsCents += atAnchor.cents - atCandidate.cents;
-      } else if (atAnchor) {
-        merged.push(atAnchor);
+  for (let i = 0; i < reachable.length; i++) {
+    for (let j = i + 1; j < reachable.length; j++) {
+      const pairItems: PricedItem[] = [];
+      for (const item of items) {
+        const atFirst = priceAtStore(item, reachable[i]!, candidatesByIngredient);
+        const atSecond = priceAtStore(item, reachable[j]!, candidatesByIngredient);
+        const priced =
+          atFirst && atSecond
+            ? atSecond.cents < atFirst.cents ? atSecond : atFirst
+            : atFirst ?? atSecond ?? priceAnywhere(item, candidatesByIngredient);
+        if (priced) pairItems.push(priced);
       }
-    }
-
-    const netSavingsCents = savingsCents - tripCostCents;
-    if (savingsCents > tripCostCents && (!bestSecondStop || netSavingsCents > bestSecondStop.netSavingsCents)) {
-      bestSecondStop = { basket: candidateStore, pricedItems: merged, netSavingsCents };
+      const pairCents = withTrips(pairItems);
+      if (pairCents < chosenCents) {
+        chosenItems = pairItems;
+        chosenCents = pairCents;
+      }
     }
   }
 
-  const chosenItems = bestSecondStop?.pricedItems ?? anchor.pricedItems;
   const totalCents = chosenItems.reduce((sum, p) => sum + p.cents, 0);
 
   return {

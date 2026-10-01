@@ -5,8 +5,9 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Screen } from "@/components/ui/Screen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
+import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { useTheme } from "@/theme";
-import { api, type Meal, type MealPlan, type MealSlot } from "@/lib/api";
+import { api, type Household, type Meal, type MealPlan, type MealSlot, type Members } from "@/lib/api";
 
 const SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -23,17 +24,24 @@ function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-// Build My Week — docs/product-spec.md. Free and Pro both build the week by hand,
-// slot by slot; there is no AI in this screen at all (Plan My Week, the Pro
-// auto-generate shortcut, is a separate not-yet-built entry point per
-// docs/architecture.md "Meal plan generation").
+// The week grid. Free and Pro both get Build My Week (pick each slot by hand); Pro
+// also gets Plan My Week, which fills dinners and leftover lunches in one tap and can
+// re-pick a single dinner (docs/product-spec.md, docs/ux.md "Empty states").
 export default function WeekScreen() {
   const { colors, spacing, typography, radius } = useTheme();
   const [plan, setPlan] = useState<MealPlan | null | undefined>(undefined); // undefined = loading
+  const [household, setHousehold] = useState<Household | null>(null);
+  const [members, setMembers] = useState<Members | null>(null);
   const [creating, setCreating] = useState(false);
+  const [planning, setPlanning] = useState(false);
+  const [planFailed, setPlanFailed] = useState(false);
+  const [repickingId, setRepickingId] = useState<string | null>(null);
+  const isPro = household?.subscriptionTier === "pro";
 
   const load = useCallback(() => {
     api.getCurrentPlan().then(setPlan);
+    api.getHousehold().then(setHousehold);
+    api.getMembers().then(setMembers);
   }, []);
 
   useFocusEffect(
@@ -52,6 +60,30 @@ export default function WeekScreen() {
     }
   }
 
+  async function planMyWeek() {
+    setPlanning(true);
+    setPlanFailed(false);
+    try {
+      setPlan(await api.planMyWeek(isoDate(mostRecentMonday())));
+      api.getMembers().then(setMembers);
+    } catch {
+      setPlanFailed(true);
+    } finally {
+      setPlanning(false);
+    }
+  }
+
+  async function repick(meal: Meal) {
+    if (!plan) return;
+    setRepickingId(meal.id);
+    try {
+      setPlan(await api.regenerateDinner(plan.id, meal.id));
+      api.getMembers().then(setMembers);
+    } finally {
+      setRepickingId(null);
+    }
+  }
+
   async function skip(meal: Meal) {
     if (!plan) return;
     const updated = await api.skipMealSlot(plan.id, meal.id);
@@ -66,15 +98,46 @@ export default function WeekScreen() {
     );
   }
 
+  if (planning) {
+    return (
+      <Screen>
+        <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.md }}>Week</Text>
+        <View style={{ alignItems: "center", paddingVertical: spacing.xxl, gap: spacing.md }}>
+          <ActivityIndicator color={colors.primary} />
+          <Text style={{ ...typography.body, color: colors.textMuted }}>Balancing your week…</Text>
+        </View>
+      </Screen>
+    );
+  }
+
+  if (planFailed) {
+    return (
+      <Screen>
+        <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.md }}>Week</Text>
+        <EmptyState message="Meal planning took a wrong turn. Let's try again." actionLabel="Try again" onAction={planMyWeek} />
+      </Screen>
+    );
+  }
+
   if (plan === null) {
     return (
       <Screen>
         <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.md }}>Week</Text>
-        <EmptyState
-          message="Seven days. Zero decisions."
-          actionLabel={creating ? "Building…" : "Build My Week"}
-          onAction={creating ? () => {} : buildWeek}
-        />
+        {isPro ? (
+          <EmptyState
+            message="Seven days. Zero decisions."
+            actionLabel="Plan My Week"
+            onAction={planMyWeek}
+            secondaryLabel={creating ? "Building…" : "Build it myself"}
+            onSecondary={creating ? () => {} : buildWeek}
+          />
+        ) : (
+          <EmptyState
+            message="Seven days. Zero decisions."
+            actionLabel={creating ? "Building…" : "Build My Week"}
+            onAction={creating ? () => {} : buildWeek}
+          />
+        )}
       </Screen>
     );
   }
@@ -85,10 +148,37 @@ export default function WeekScreen() {
     mealsByDate.set(key, [...(mealsByDate.get(key) ?? []), meal]);
   }
   const dates = [...mealsByDate.keys()].sort();
+  const mealsPlanned = plan.meals.filter((m) => m.type === "cook" || m.type === "leftover").length;
+  // Only meaningful with housemates, and only for the week the split was worked out on.
+  const you = members && members.members.length > 1 && members.weekStartDate?.slice(0, 10) === plan.weekStartDate.slice(0, 10)
+    ? members.members.find((m) => m.isYou)
+    : undefined;
 
   return (
     <Screen>
-      <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.lg }}>Week</Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing.lg }}>
+        <Text style={{ ...typography.title, color: colors.text }}>Week</Text>
+        {isPro ? (
+          <Pressable onPress={planMyWeek} hitSlop={8}>
+            <Text style={{ ...typography.caption, color: colors.primary }}>Plan My Week</Text>
+          </Pressable>
+        ) : null}
+      </View>
+
+      {plan.score && plan.estimatedCostCents !== null ? (
+        <Card style={{ marginBottom: spacing.lg, gap: spacing.sm }}>
+          <Text style={{ ...typography.bodyStrong, color: colors.text }}>
+            {mealsPlanned} meals planned · ${(plan.estimatedCostCents / 100).toFixed(0)} estimated · {plan.score.total}/100
+          </Text>
+          {you?.weekShareCents != null ? (
+            <Text style={{ ...typography.body, color: colors.text }}>
+              Your share: ${(you.weekShareCents / 100).toFixed(2)} of {members!.members.length} people
+            </Text>
+          ) : null}
+          <EstimatedPricingBadge />
+          <Text style={{ ...typography.caption, color: colors.textMuted }}>{plan.score.explanation}</Text>
+        </Card>
+      ) : null}
 
       {dates.map((date, dayIndex) => (
         <View key={date} style={{ marginBottom: spacing.lg }}>
@@ -102,19 +192,46 @@ export default function WeekScreen() {
 
             return (
               <Card key={meal.id} style={{ marginBottom: spacing.sm }}>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                  <View style={{ flex: 1 }}>
+                {/* A picked meal has room for its full name, with its actions on a row below;
+                    an empty slot keeps its single Add button inline. */}
+                <View
+                  style={
+                    meal.recipe
+                      ? { gap: spacing.sm }
+                      : { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }
+                  }
+                >
+                  <View style={{ flexShrink: 1 }}>
                     <Text style={{ ...typography.label, color: colors.textMuted }}>{slot.toUpperCase()}</Text>
-                    {meal.recipe ? (
+                    {meal.type === "eat_out" ? (
+                      <Text style={{ ...typography.body, color: colors.textMuted }}>Eating out</Text>
+                    ) : meal.recipe ? (
                       <Text style={{ ...typography.bodyStrong, color: colors.text }} numberOfLines={1}>
-                        {meal.recipe.title}
+                        {meal.type === "leftover" ? `Leftovers · ${meal.recipe.title}` : meal.recipe.title}
                       </Text>
                     ) : (
                       <Text style={{ ...typography.body, color: colors.textMuted }}>Nothing picked yet</Text>
                     )}
                   </View>
 
-                  <View style={{ flexDirection: "row", gap: spacing.sm }}>
+                  <View style={{ flexDirection: "row", gap: spacing.sm, justifyContent: "flex-end" }}>
+                    {isPro && meal.slot === "dinner" && meal.type === "cook" ? (
+                      <Pressable
+                        onPress={() => repick(meal)}
+                        disabled={repickingId !== null}
+                        style={{
+                          paddingVertical: spacing.xs,
+                          paddingHorizontal: spacing.md,
+                          borderRadius: radius.pill,
+                          borderWidth: 1,
+                          borderColor: colors.primary,
+                        }}
+                      >
+                        <Text style={{ ...typography.caption, color: colors.primary }}>
+                          {repickingId === meal.id ? "Picking…" : "New pick"}
+                        </Text>
+                      </Pressable>
+                    ) : null}
                     <Pressable
                       onPress={() => router.push({ pathname: "/recipe-picker", params: { mealPlanId: plan.id, mealId: meal.id } })}
                       style={{

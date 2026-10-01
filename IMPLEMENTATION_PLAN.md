@@ -168,9 +168,55 @@ session, not yet fixed).
   week through the domain pipeline so a bad data change that makes the optimizer
   "look broken" (product-spec's warning) fails CI instead of a demo.
 
+## Phase 4 completed: Plan My Week (and two optimizer fixes)
+
+- **Optimizer** (open-questions 13, 14): `best_overall` tries every pair of stores
+  within the detour limit, charging the trip for every stop after the first;
+  `costLine` costs what meals need, not the increment-rounded quantity. A first
+  attempt at item 13 changed `min_stores` instead and produced three-store "single
+  store" trips — reverted.
+- **Planner** (`packages/domain/src/planner`): pure greedy selection plus leftovers,
+  13 tests. Schema: `Recipe.mealSlots`, `Ingredient.proteinGroup` (two migrations,
+  SQL from `prisma migrate diff`).
+- **`PlanMyWeekService`**: Pro gate, context (preferences, pantry, expiring items,
+  last week's dinners, prices and deals through the `GroceryProvider`), writes the
+  grid, scores the plan, asks the AIProvider only to phrase the computed numbers. The
+  fixture provider now returns a plain sentence built from those numbers.
+- **Mobile**: Week screen per `docs/ux.md` (Pro empty state, loading and error copy,
+  summary card, leftovers, eat-out, New pick); `GET /api/households/current`
+  implemented so the app knows the tier.
+- **Bugs found by running it, not by typecheck**: three chicken dinners in one week
+  (item 17); burgers re-picked for a healthy household (item 19); the variety score
+  counting missing cooking-method data as zero (now left out of the average,
+  `docs/algorithms.md` §6); and a pre-existing one — the API client threw on an empty
+  response body, so any household without a plan got an endless spinner on Week.
+- **Verified**: over HTTP (Free → 403, other household → 404, re-pick updates the
+  leftover lunch, re-planning keeps picked breakfasts, allergy + vegetarian + eat-out
+  respected) and in the app via Expo web + Playwright at phone size. Expo web isn't a
+  project dependency; it was installed only for screenshots and removed.
+
+## Phase 4b: accounts and housemates
+
+- **Schema** (one migration): `User.passwordHash` optional; `OAuthAccount`;
+  `HouseholdInvite`; `HouseholdMember.role`, `costShare`, `profileCompletedAt`. The
+  migration backfills an owner member for every existing user.
+- **Sign-in**: `OAuthVerifier` checks Google/Apple ID tokens with `jose` (signature,
+  issuer, audience, expiry); `AuthService.oauth` signs in, links by verified email,
+  or creates an account (joining an invite's household if given).
+- **Households / Me** modules: invites, shares, remove, leave, join; profile,
+  history, data export, delete account. Planning and Build My Week conflict checks
+  include every member's allergies and dislikes. `splitCents` in `packages/domain`.
+- **Mobile**: welcome (Apple, Google, email sign-up and log-in, invite code), profile
+  setup (owner vs. housemate), Profile tab, History, Your data, your share on Week.
+- **Bugs found by running it**: no login screen existed (signing out was a dead end);
+  onboarding never asked for a budget, so every budget score was 0; after sign-in
+  the welcome screen didn't move on; screens opened directly raced the saved session
+  and called the API without a token.
+
 ## Open items carried forward
 
 Everything else in `docs/open-questions.md` still applies (recipe content licensing,
 name/trademark, AI cost/latency budget, offline behaviour in-store, nutrition data,
 store distance/trip cost) except items 1, 2, 5, 9, and 11, which are now resolved. Items 12–15 were added
-during Phase 3.
+during Phase 3; 16–19 during Phase 4;
+20–23 during Phase 4b.

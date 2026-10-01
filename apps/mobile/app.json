@@ -10,7 +10,8 @@
     "platforms": ["ios", "android"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.mealmesh.app"
+      "bundleIdentifier": "com.mealmesh.app",
+      "usesAppleSignIn": true
     },
     "android": {
       "package": "com.mealmesh.app",
@@ -18,7 +19,7 @@
         "backgroundColor": "#FFF8F1"
       }
     },
-    "plugins": ["expo-router"],
+    "plugins": ["expo-router", "expo-apple-authentication"],
     "experiments": {
       "typedRoutes": true
     }

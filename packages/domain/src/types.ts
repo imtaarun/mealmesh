@@ -110,7 +110,7 @@ export interface MealPlanScoreInput {
   busyDayCount: number;
   distinctProteins: number;
   distinctCuisines: number;
-  distinctCookingMethods: number;
+  distinctCookingMethods?: number; // omitted until recipes carry a cooking method
 }
 
 export interface MealPlanScore {

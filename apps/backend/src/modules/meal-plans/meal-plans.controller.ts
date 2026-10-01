@@ -1,12 +1,16 @@
 import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { MealPlansService } from "./meal-plans.service.js";
+import { PlanMyWeekService } from "./plan-my-week.service.js";
 import { CreateMealPlanDto } from "./dto/create-meal-plan.dto.js";
 import { UpdateMealDto } from "./dto/update-meal.dto.js";
 import { CurrentHousehold, type RequestHousehold } from "../../common/household-context.js";
 
 @Controller("api/meal-plans")
 export class MealPlansController {
-  constructor(private readonly mealPlansService: MealPlansService) {}
+  constructor(
+    private readonly mealPlansService: MealPlansService,
+    private readonly planMyWeekService: PlanMyWeekService,
+  ) {}
 
   @Get("current")
   getCurrent(@CurrentHousehold() household: RequestHousehold) {
@@ -19,13 +23,13 @@ export class MealPlansController {
   }
 
   @Post("generate")
-  generate(@CurrentHousehold() household: RequestHousehold) {
-    return this.mealPlansService.generate(household);
+  generate(@CurrentHousehold() household: RequestHousehold, @Body() dto: CreateMealPlanDto) {
+    return this.planMyWeekService.generate(household, dto.weekStartDate);
   }
 
   @Post(":id/meals/:mealId/regenerate")
   regenerateMeal(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string, @Param("mealId") mealId: string) {
-    return this.mealPlansService.regenerateMeal(household, id, mealId);
+    return this.planMyWeekService.regenerateDinner(household, id, mealId);
   }
 
   @Patch(":id/meals/:mealId")

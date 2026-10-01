@@ -1,71 +1,76 @@
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from "react";
 import { clearToken, loadToken, saveToken } from "../lib/auth-storage";
-import { setAuthToken } from "../lib/api-client";
-import { api, type OnboardingInput, type SignupInput } from "../lib/api";
+import { ApiError, setAuthToken } from "../lib/api-client";
+import { api, type AuthResult, type OAuthInput, type SignupInput } from "../lib/api";
 
-type AuthStatus = "loading" | "signed-out" | "signed-in";
+// "needs-profile": signed in, but hasn't finished profile setup yet (a brand-new
+// Google/Apple/email account) — the app sends them to /profile-setup first.
+type AuthStatus = "loading" | "signed-out" | "needs-profile" | "signed-in";
 
 interface AuthValue {
   status: AuthStatus;
-  householdId: string | null;
   signup: (input: SignupInput) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
-  onboard: (input: OnboardingInput) => Promise<void>;
+  oauth: (input: OAuthInput) => Promise<void>;
+  /** Call after profile setup is saved. */
+  profileCompleted: () => void;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [status, setStatus] = useState<AuthStatus>("loading");
-  const [householdId, setHouseholdId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadToken().then((token) => {
-      if (token) {
-        setAuthToken(token);
-        // householdId isn't persisted separately; it's only needed for display and
-        // every screen fetches it fresh from /api/meal-plans/current or similar, so a
-        // restored session doesn't need to know it up front.
-        setStatus("signed-in");
-      } else {
-        setStatus("signed-out");
+    loadToken().then(async (token) => {
+      if (!token) return setStatus("signed-out");
+      setAuthToken(token);
+      try {
+        const me = await api.getMe();
+        setStatus(me.needsProfile ? "needs-profile" : "signed-in");
+      } catch (err) {
+        // An expired or revoked session (or a deleted account) means signing in again.
+        if (err instanceof ApiError && err.status === 401) {
+          await clearToken();
+          setAuthToken(null);
+          setStatus("signed-out");
+        } else {
+          setStatus("signed-in"); // offline — let screens show their own errors
+        }
       }
     });
   }, []);
 
-  async function signup(input: SignupInput) {
-    const result = await api.signup(input);
+  async function start(result: AuthResult) {
     await saveToken(result.token);
     setAuthToken(result.token);
-    setHouseholdId(result.householdId);
-    setStatus("signed-in");
-  }
-
-  async function login(email: string, password: string) {
-    const result = await api.login(email, password);
-    await saveToken(result.token);
-    setAuthToken(result.token);
-    setHouseholdId(result.householdId);
-    setStatus("signed-in");
-  }
-
-  async function onboard(input: OnboardingInput) {
-    await api.onboard(input);
+    setStatus(result.needsProfile ? "needs-profile" : "signed-in");
   }
 
   async function logout() {
     await clearToken();
     setAuthToken(null);
-    setHouseholdId(null);
     setStatus("signed-out");
   }
 
-  return (
-    <AuthContext.Provider value={{ status, householdId, signup, login, onboard, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const value: AuthValue = {
+    status,
+    signup: async (input) => start(await api.signup(input)),
+    login: async (email, password) => start(await api.login(email, password)),
+    oauth: async (input) => start(await api.oauth(input)),
+    profileCompleted: () => setStatus("signed-in"),
+    logout,
+    deleteAccount: async () => {
+      await api.deleteAccount();
+      await logout();
+    },
+  };
+
+  // Nothing renders until the saved session is loaded — otherwise a screen opened
+  // directly (History, after a restart) makes its first request with no token.
+  return <AuthContext.Provider value={value}>{status === "loading" ? null : children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthValue {

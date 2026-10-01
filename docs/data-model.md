@@ -14,24 +14,36 @@
 
 ## Entities
 
-**User** — id, email, passwordHash, createdAt, householdId
+**User** — id, email, passwordHash? (null when the account only uses Google or Apple),
+createdAt, householdId
+
+**OAuthAccount** — id, userId, provider (`google` | `apple`), subject (the provider's
+stable user id), email?, createdAt. Unique on (provider, subject).
+
+**HouseholdInvite** — id, householdId, codeHash (only the hash of the 8-character
+code is stored), expiresAt (7 days), createdByUserId, acceptedAt?, acceptedByUserId?
 
 **Household** — id, name, weeklyBudgetCents, budgetTier, defaultServings, timezone,
 subscriptionTier (`free` | `pro` — gates `AIProvider` access, see
 `docs/open-questions.md` item 11; unrelated to `budgetTier`, which is a grocery-spend
 preference)
 
-**HouseholdMember** — id, householdId, name, isChild, userId?
+**HouseholdMember** — id, householdId, name, isChild, userId?, role (`owner` |
+`member`), costShare (weight in the cost split; 0 = not paying), profileCompletedAt?
+(null until profile setup is done). Every user has exactly one member row.
 
 **Preference** — id, householdId | memberId, type (`cuisine_like`, `dislike`,
 `allergy`, `diet`, `skill`, `max_cook_minutes`, `leftover_tolerance`, `busy_day`,
 `eat_out_day`), value, weight
 
 **Ingredient** — id, name, aliases[], category (shopping aisle), baseUnit (`g` | `ml` |
-`piece`), gramsPerPiece?, gramsPerCup?, density?, shelfLifeDays?, isStaple
+`piece`), gramsPerPiece?, gramsPerCup?, density?, shelfLifeDays?, isStaple,
+proteinGroup? (`chicken` for breast, thigh, and ground chicken alike; `legumes`,
+`eggs`, … — what Plan My Week varies; null for non-proteins)
 
 **Recipe** — id, title, imageUrl, servings, prepMinutes, cookMinutes, difficulty,
-cuisines[], dietTags[], instructions (ordered steps with optional `timerSeconds`),
+cuisines[], dietTags[], mealSlots[] (which slots the dish suits — default lunch and
+dinner), instructions (ordered steps with optional `timerSeconds`),
 source (`seed` | `ai` | `user`), nutrition?
 
 **RecipeIngredient** — id, recipeId, ingredientId, quantity, unit, note?, optional

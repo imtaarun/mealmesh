@@ -4,9 +4,7 @@ One phase ≈ one Claude Code session. **Each phase ends with the app running an
 own tests passing.** Do not start a phase before the previous one's DoD is met. Update
 the status line below as you go.
 
-**Current phase: 4, partially done** (Phases 0-3 done; Phase 4's Build My Week/Free
-path is done and verified end-to-end, Plan My Week/Pro path is not built. See
-`IMPLEMENTATION_PLAN.md`.)
+**Current phase: 5** (Phases 0-4 done. See `IMPLEMENTATION_PLAN.md`.)
 
 ---
 
@@ -58,11 +56,13 @@ All in `packages/seed-data`, written to Postgres by `apps/backend/prisma/seed.ts
 - `MockGroceryProvider` implemented against those tables.
 
 **DoD met:** 10 seed-data tests pass, including a realistic demo week run through the
-real aggregation → pantry → optimizer pipeline: single store $166.87 → two stores
-$143.27, top savings from chicken thighs, tomatoes, and yogurt. The optimizer and
-costing behaviours this surfaced are items 13 and 14 in `docs/open-questions.md`.
+real aggregation → pantry → optimizer pipeline: one store $150.90 → best two stores
+$126.90, top savings from chicken thighs, yogurt, and red lentils. (The Phase 3 notes
+first quoted $166.87 → $143.27, which came from an exploratory week with an extra
+breakfast, not the week the test runs, and from the optimizer before items 13 and 14
+in `docs/open-questions.md` were resolved.)
 
-## Phase 4 — Planner UI + Plan My Week — Build My Week DONE, Plan My Week NOT STARTED
+## Phase 4 — Planner UI + Plan My Week — DONE
 
 Per `docs/open-questions.md` item 11, this phase forked into two paths:
 
@@ -73,18 +73,32 @@ Per `docs/open-questions.md` item 11, this phase forked into two paths:
   end-to-end against a real backend and real seeded recipes (signup → onboard → browse
   → pick → conflict-blocked → conflict-confirmed → leftover, all over real HTTP).
   Recipe imagery: per-cuisine gradient placeholder, per `docs/ux.md`.
-- **Plan My Week (Pro, AI-orchestrated auto-fill) — not started.** The
-  candidate-and-select pipeline in `docs/architecture.md` "Meal plan generation" is
-  still a stub (`MealPlansService.generate`/`regenerateMeal`). Needs
-  `subscriptionTier === 'pro'` gating, `AIProvider` wiring, and the greedy-selection
-  algorithm.
-- **Score display** is not wired into the UI yet. Phase 3's pricing data now exists;
-  what's missing is the grocery-list/costing service that turns a plan into
-  spend/consumed-value figures for `computeMealPlanScore` (Phases 6–7).
+- **Plan My Week (Pro) — DONE.** `POST /api/meal-plans/generate` and
+  `.../meals/:mealId/regenerate`, Pro-gated in the service (403 for Free). Greedy
+  selection in `packages/domain/src/planner` (weights in `docs/algorithms.md` §6b),
+  leftovers, eat-out days, and a stored MealMesh Score with an AI-phrased explanation.
+  Fills dinners and leftover lunches (`docs/open-questions.md` items 16–19). Week
+  screen: Plan My Week / Build it myself, "Balancing your week…", the retry error, a
+  summary card (`N meals planned · $X estimated · score/100` + Estimated pricing
+  badge), leftover and eat-out cards, New pick on each dinner.
 
-**DoD** ("demo preferences in → coherent 7-day plan out... respecting budget") is only
-fully met for the manual Build My Week path, and without budget/cost figures in the UI
-yet.
+**DoD met:** for the demo household, seven different dinners within 35 minutes, no
+mushrooms, at least 5 healthy, 4+ protein groups, spinach and yogurt used before they
+expire, six leftover lunches; over HTTP it came to $91.91 estimated against the $120 budget,
+scoring 76/100 — enforced by
+tests in `packages/seed-data`, and run end-to-end over HTTP and in the app.
+
+## Phase 4b — Accounts and housemates — DONE
+
+Added before Phase 5 at the product owner's request: sign in with Google and Apple
+(code done; keys pending, `docs/oauth-setup.md`), a welcome screen with email log-in
+(there was none — signing out was a dead end), profile setup, housemates with their
+own logins and invite codes, the week's estimated cost split by share, History, Your
+data (download + delete account). `docs/open-questions.md` items 20–23.
+
+**DoD met:** 37-step HTTP run (sign-in, linking, invites, permissions, planning around
+a housemate's allergy, split, history, export, join, leave, delete) and a two-person
+run in the app; 9 token-check tests, 5 split tests.
 
 ## Phase 5 — Recipes + cooking mode
 

@@ -33,10 +33,22 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!res.ok) {
-    throw new ApiError(res.status, await res.text());
+    // The backend explains itself in a `message` field; show that, not raw JSON.
+    const text = await res.text();
+    let message = text;
+    try {
+      const parsed = JSON.parse(text) as { message?: string | string[] };
+      if (parsed.message) message = Array.isArray(parsed.message) ? parsed.message.join("\n") : parsed.message;
+    } catch {
+      // not JSON — keep the text as is
+    }
+    throw new ApiError(res.status, message);
   }
 
-  return res.json() as Promise<T>;
+  // NestJS sends a handler's `null` (e.g. "no plan yet") as an empty body, which
+  // res.json() would throw on.
+  const text = await res.text();
+  return (text ? JSON.parse(text) : null) as T;
 }
 
 export const apiClient = {
@@ -45,4 +57,7 @@ export const apiClient = {
     request<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
   patch: <T>(path: string, body?: unknown) =>
     request<T>(path, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }),
+  put: <T>(path: string, body?: unknown) =>
+    request<T>(path, { method: "PUT", body: body ? JSON.stringify(body) : undefined }),
+  delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };

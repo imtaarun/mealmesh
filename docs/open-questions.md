@@ -113,24 +113,24 @@ you took and why. Never resolve one of these silently in code.
     than that. Before showing savings figures to anyone outside the team, reconcile
     the ~50 ingredients that table covers against it; the rest (spices, tahini,
     paneer…) stay estimates. Either way the UI badge says "Estimated pricing."
-13. **Which single store is "best" — OPEN.** `docs/algorithms.md` §4 says min_stores
-    picks "the cheapest complete-enough single store"; `pickAnchor` in
-    `packages/domain/src/optimizer` reads that as *fewest missing items first, then
-    cheapest*. With real data this means a store carrying all 28 items of the demo
-    week ($166.87) beats one that has the other 27 for $142.68 but is missing a jar of olives.
-    best_overall then anchors on the expensive store and moves 23 of 28 items to the
-    cheaper one. Arguably the missing item should cost the trip (`TRIP_COST`, $6)
-    rather than disqualify the store. Left unchanged — it's a product call — and the
-    seed data wasn't tuned to hide it.
-14. **Purchase increment vs. pack size — OPEN.** `applyPantryAndRound` rounds every
-    g/ml line up to 50 before costing, and `costLine` buys packs for that rounded
-    `finalQuantity`, as documented (`packsNeeded = ceil(buyQty / packSize)`). With real
-    packs smaller than the increment this over-buys: ~3 g of oregano → 50 g → two 25 g
-    jars ($6.78). Once products exist, pack sizes already round the purchase, so the
-    likely fix is to cost `neededQuantity` and keep the increment for display on
-    lists without a product. `optimizeBasket` already takes `neededQuantity`; the
-    seed-data demo-week test passes the unrounded amount. `costLine` is unchanged
-    pending a decision.
+13. **Which stores the optimizer considers — RESOLVED 2026-10-01.** The demo week
+    showed `best_overall` anchoring on the one store that carried everything ($166.87
+    in that run) and only ever pairing other stores *with it*, so a cheaper pair that
+    left it out was never considered. A first attempt let `min_stores` pick a cheaper,
+    incomplete store and charge one $6 trip for its gaps. Reverted: those gaps were
+    spread across two more stores, so the "single store" answer became a three-store
+    trip. Decision: `min_stores` keeps meaning fewest stores (a complete store wins,
+    then cheapest). `best_overall` now tries every pair of stores within the detour
+    limit and charges `TRIP_COST` for each stop after the first, including an extra
+    stop for an item neither store in the pair carries. With 5 stores that's 10
+    pairs — still greedy, no solver. Demo week now: one store $150.90; best pair
+    $126.90.
+14. **Purchase increment vs. pack size — RESOLVED 2026-10-01.** `applyPantryAndRound`
+    rounded every g/ml line up to 50 and `costLine` bought packs for that rounded
+    `finalQuantity`, so ~3 g of oregano bought two 25 g jars ($6.78). `costLine` now
+    prices `neededQuantity` (spend and consumed value both); pack sizes do the
+    rounding. `finalQuantity` stays as the rounded display quantity for list lines
+    without a product. `docs/algorithms.md` §3 updated.
 15. **`PriceHistory.unitPriceCents` is an Int per base unit — OPEN.** Most unit
     prices are fractions of a cent per gram or millilitre (chicken ≈ 1.7 ¢/g, spices
     ≈ 4 ¢/g, rice ≈ 0.3 ¢/g), so an integer column rounds them to 0–2 cents and loses
@@ -138,6 +138,55 @@ you took and why. Never resolve one of these silently in code.
     actually paid (receipts, P2), and the seeded price timeline lives on
     `ProductPrice.effectiveFrom/effectiveTo`. Fix the unit (e.g. cents per kg/L, or a
     Float) before building receipts.
+
+16. **What Plan My Week fills — DECIDED 2026-10-01.** Dinners for all seven days,
+    and — with leftover tolerance on — the next day's lunch as leftovers (each dinner
+    but the last cooks double). Breakfasts and snacks are left for the user: there
+    are only 3 breakfast recipes, and filling 7 breakfasts from them would mostly
+    repeat eggs. Recipes gained `mealSlots` so a breakfast dish never lands on a
+    dinner. Re-planning a week rewrites lunches and dinners and keeps breakfasts and
+    snacks the user picked. Revisit when the library has enough breakfasts.
+17. **Protein variety needs protein groups — DECIDED 2026-10-01.** The first build
+    treated chicken breast, chicken thigh, and ground chicken as three proteins and
+    put three chicken dinners in the demo week (and scored its variety 100).
+    Ingredients gained `proteinGroup` (chicken, beef, pork, fish, shellfish, legumes,
+    eggs, soy, paneer); a recipe's main protein is its first ingredient with one.
+18. **AI candidates when the pool is thin — NOT BUILT.** Architecture step 2 says to
+    ask the AI for extra candidates when the library is too small. A candidate is only
+    usable with ingredients mapped to `Ingredient` rows (quantities, units, prices),
+    which is the AI-recipe import that `RecipesService.generate` (Phase 5, Pro) will
+    need anyway. Until then the planner draws from the library alone and, if it runs
+    out, repeats a dish. Pro's AI use in Plan My Week today is the explanation, which
+    only phrases computed numbers.
+19. **Diet goals vs. restrictions — DECIDED 2026-10-01.** `healthy` and
+    `high_protein` are goals: a bonus in planning, never a filter (the demo household
+    is "mostly healthy"). Every other diet tag is a restriction: a recipe without it
+    is never planned. A goal outweighs this week's deals: the first build re-picked
+    Bacon Cheddar Burgers for the healthy demo household because three of its
+    ingredients were on sale.
+
+20. **Housemates — DECIDED 2026-10-02.** Each housemate has their own login and
+    joins with a one-time invite code (8 characters, 7 days, single use). The owner
+    manages the household. Members can only set their own name, allergies, and
+    dislikes, and planning respects everyone's allergies and dislikes. Someone who
+    already has an account can join only if they're alone in their household, which
+    is then deleted (the app asks first). The owner can't leave while others remain:
+    they remove housemates first, or delete their account, which hands ownership on.
+21. **What "all your information" means — DECIDED 2026-10-02.** Two pages:
+    *History* (weeks, meals cooked, estimated spend, scores, most-cooked dishes) and
+    *Your data* (everything stored, a full JSON download through the share sheet, and
+    account deletion). The download leaves out password, session, and invite hashes,
+    and housemates' email addresses.
+22. **Google and Apple sign-in — BUILT, keys pending.** Steps in `docs/oauth-setup.md`.
+    Linking rule: a provider account signs in to the account with the same
+    *verified* email. **Open:** no nonce check yet. A stolen ID token could be
+    replayed within its lifetime (about an hour). Add a nonce (app generates it,
+    provider embeds it, backend compares) before launch.
+23. **Cost split — DECIDED 2026-10-02.** Splits the week's *estimated* grocery cost
+    by each member's share weight (default 1, 0 = not paying, integer cents adding up
+    exactly). It's an estimate, so it carries the Estimated pricing badge. Splitting
+    real shopping trips (who paid, who owes whom) is a later feature, once Phase 6
+    records actual purchases.
 
 ## Known gaps in the original spec
 

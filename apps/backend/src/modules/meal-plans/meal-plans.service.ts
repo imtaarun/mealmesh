@@ -1,8 +1,7 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { MealSlot, MealType } from "@prisma/client";
 import { checkRecipeConflicts, type ConflictCheckResult } from "@mealmesh/domain";
 import { PrismaService } from "../../common/prisma.service.js";
-import { AI_PROVIDER, type AIProvider } from "../../providers/ai/ai-provider.interface.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 import type { CreateMealPlanDto } from "./dto/create-meal-plan.dto.js";
 import type { UpdateMealDto } from "./dto/update-meal.dto.js";
@@ -15,15 +14,11 @@ const DAYS_PER_WEEK = 7;
  * "Meal plan generation"):
  * - Build My Week (Free + Pro): createEmptyWeek pre-creates one empty slot per
  *   day/slot, then updateMeal("replace", recipeId) fills each in by hand.
- * - Plan My Week (Pro only, AI-orchestrated auto-fill): generate()/regenerateMeal(),
- *   still TODO — Phase 4 continuation, gated on subscriptionTier === 'pro'.
+ * - Plan My Week (Pro only, auto-fill): PlanMyWeekService.
  */
 @Injectable()
 export class MealPlansService {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(AI_PROVIDER) private readonly aiProvider: AIProvider,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getCurrent(household: RequestHousehold) {
     return this.prisma.mealPlan.findFirst({
@@ -72,14 +67,6 @@ export class MealPlansService {
     });
   }
 
-  async generate(_household: RequestHousehold): Promise<never> {
-    throw new Error("MealPlansService.generate: not yet implemented — Phase 4 continuation, Pro only");
-  }
-
-  async regenerateMeal(_household: RequestHousehold, _mealPlanId: string, _mealId: string): Promise<never> {
-    throw new Error("MealPlansService.regenerateMeal: not yet implemented — Phase 4 continuation, Pro only");
-  }
-
   private async loadOwnedMeal(household: RequestHousehold, mealPlanId: string, mealId: string) {
     const meal = await this.prisma.meal.findUnique({ where: { id: mealId }, include: { mealPlan: true } });
     if (!meal || meal.mealPlanId !== mealPlanId) throw new NotFoundException(`Meal "${mealId}" not found`);
@@ -96,8 +83,9 @@ export class MealPlansService {
     });
     if (!recipe) throw new NotFoundException(`Recipe "${recipeId}" not found`);
 
+    // Household-wide preferences plus every housemate's own allergies and dislikes.
     const preferences = await this.prisma.preference.findMany({
-      where: { householdId, type: { in: ["allergy", "dislike"] } },
+      where: { OR: [{ householdId }, { member: { householdId } }], type: { in: ["allergy", "dislike"] } },
     });
 
     return checkRecipeConflicts({

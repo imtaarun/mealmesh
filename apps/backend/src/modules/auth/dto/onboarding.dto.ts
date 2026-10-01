@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsIn, IsInt, IsOptional, IsString, Min } from "class-validator";
+import { IsArray, IsBoolean, IsIn, IsInt, IsOptional, IsString, Min, MinLength } from "class-validator";
 
 const BUDGET_TIERS = ["budget", "balanced", "premium"] as const;
 
@@ -6,6 +6,16 @@ const BUDGET_TIERS = ["budget", "balanced", "premium"] as const;
 // becomes one or more Preference rows (docs/data-model.md), except the two that live
 // directly on Household.
 export class OnboardingDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  householdName?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  defaultServings?: number;
+
   @IsOptional()
   @IsInt()
   @Min(0)

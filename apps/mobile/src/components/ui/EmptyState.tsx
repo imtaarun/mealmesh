@@ -5,6 +5,9 @@ interface EmptyStateProps {
   message: string;
   actionLabel?: string;
   onAction?: () => void;
+  /** A smaller text link under the main action — e.g. Pro's "Build it myself". */
+  secondaryLabel?: string;
+  onSecondary?: () => void;
 }
 
 /**
@@ -12,7 +15,7 @@ interface EmptyStateProps {
  * states". Callers pass the exact copy from that doc; this component only handles
  * layout.
  */
-export function EmptyState({ message, actionLabel, onAction }: EmptyStateProps) {
+export function EmptyState({ message, actionLabel, onAction, secondaryLabel, onSecondary }: EmptyStateProps) {
   const { colors, spacing, radius, typography } = useTheme();
 
   return (
@@ -45,6 +48,11 @@ export function EmptyState({ message, actionLabel, onAction }: EmptyStateProps) 
           })}
         >
           <Text style={{ ...typography.bodyStrong, color: colors.background }}>{actionLabel}</Text>
+        </Pressable>
+      ) : null}
+      {secondaryLabel && onSecondary ? (
+        <Pressable onPress={onSecondary} hitSlop={8}>
+          <Text style={{ ...typography.caption, color: colors.primary }}>{secondaryLabel}</Text>
         </Pressable>
       ) : null}
     </View>

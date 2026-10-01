@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { aggregateDemand, applyPantryAndRound, optimizeBasket, type ProductOption, type RecipeIngredientDemand } from "@mealmesh/domain";
+import {
+  aggregateDemand,
+  applyPantryAndRound,
+  checkRecipeConflicts,
+  convertToBaseUnit,
+  mainProtein,
+  optimizeBasket,
+  planWeek,
+  type PlannerRecipe,
+  type PlanWeekInput,
+  type ProductOption,
+  type RecipeIngredientDemand,
+} from "@mealmesh/domain";
 import {
   buildCatalog,
   demoHousehold,
@@ -150,5 +162,79 @@ describe("demo week against the seeded catalog", () => {
     expect(best.totalCents).toBeLessThan(single.totalCents);
     expect(cheapest.totalCents).toBeLessThanOrEqual(best.totalCents);
     expect(best.topSavingsDrivers.length).toBeGreaterThan(0);
+  });
+});
+
+// Plan My Week on the real library and the demo household (docs/product-spec.md demo
+// scenario) — the same shaping PlanMyWeekService does, so a recipe or weighting change
+// that makes the week worse fails here.
+describe("Plan My Week for the demo household", () => {
+  const dayMs = 24 * 60 * 60 * 1000;
+  const prefs = (type: string) => demoHousehold.preferences.filter((p) => p.type === type).map((p) => p.value);
+  const unitPriceCents: Record<string, number> = {};
+  for (const p of catalog.products) {
+    const unit = currentPriceCents(catalog, p.id, NOW) / p.packSize;
+    unitPriceCents[p.ingredientId] = Math.min(unitPriceCents[p.ingredientId] ?? Infinity, unit);
+  }
+  const plannerRecipes: PlannerRecipe[] = recipes
+    .map((r) => ({ r, conflicts: checkRecipeConflicts({
+      ingredients: r.ingredients.map((l) => ({ ingredientId: l.ingredientId, name: ingredientsById.get(l.ingredientId)!.name, aliases: ingredientsById.get(l.ingredientId)!.aliases })),
+      allergyValues: prefs("allergy"),
+      dislikeValues: prefs("dislike"),
+    }) }))
+    .filter(({ conflicts }) => !conflicts.blocked)
+    .map(({ r, conflicts }) => ({
+      id: r.id,
+      servings: r.servings,
+      totalMinutes: r.prepMinutes + r.cookMinutes,
+      cuisines: r.cuisines,
+      dietTags: r.dietTags,
+      mealSlots: r.mealSlots,
+      ingredients: r.ingredients.filter((l) => !l.optional).map((l) => {
+        const ingredient = ingredientsById.get(l.ingredientId)!;
+        return { ingredientId: l.ingredientId, quantity: convertToBaseUnit({ value: l.quantity, unit: l.unit }, ingredient).value, proteinGroup: ingredient.proteinGroup ?? null, isStaple: ingredient.isStaple };
+      }),
+      dislikeMatches: conflicts.warnings.length,
+    }));
+  const input: PlanWeekInput = {
+    recipes: plannerRecipes,
+    days: Array.from({ length: 7 }, (_, i) => ({ date: new Date(Date.UTC(2026, 9, 5) + i * dayMs).toISOString().slice(0, 10), busy: false, eatOut: false })),
+    servings: demoHousehold.defaultServings,
+    maxCookMinutes: Number(prefs("max_cook_minutes")[0]),
+    requiredDietTags: [],
+    goalDietTags: prefs("diet"),
+    likedCuisines: prefs("cuisine_like"),
+    leftovers: prefs("leftover_tolerance")[0] === "true",
+    pantry: Object.fromEntries(demoHousehold.pantry.map((p) => [p.ingredientId, p.quantity])),
+    expiringIngredientIds: demoHousehold.pantry.filter((p) => p.expiresInDays !== undefined && p.expiresInDays <= 5).map((p) => p.ingredientId),
+    dealIngredientIds: [...new Set(catalog.deals.map((d) => catalog.products.find((p) => p.id === d.productId)!.ingredientId))],
+    unitPriceCents,
+    avoidRecipeIds: [],
+  };
+  const week = planWeek(input);
+  const dinners = week.filter((m) => m.slot === "dinner").map((m) => plannerRecipes.find((r) => r.id === m.recipeId)!);
+
+  it("cooks seven different dinners, each within the 35-minute limit and suited to dinner", () => {
+    expect(new Set(dinners.map((r) => r.id)).size).toBe(7);
+    for (const r of dinners) {
+      expect(r.totalMinutes, r.id).toBeLessThanOrEqual(35);
+      expect(r.mealSlots, r.id).toContain("dinner");
+    }
+  });
+
+  it("never serves the disliked mushrooms, and stays mostly healthy", () => {
+    expect(dinners.every((r) => !r.ingredients.some((i) => i.ingredientId === "mushroom"))).toBe(true);
+    expect(dinners.filter((r) => r.dietTags.includes("healthy")).length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("varies proteins and cuisines, and uses up the spinach and yogurt about to expire", () => {
+    expect(new Set(dinners.map(mainProtein)).size).toBeGreaterThanOrEqual(4);
+    expect(new Set(dinners.map((r) => r.cuisines[0])).size).toBeGreaterThanOrEqual(2);
+    const used = new Set(dinners.flatMap((r) => r.ingredients.map((i) => i.ingredientId)));
+    expect(used.has("spinach") && used.has("greek-yogurt")).toBe(true);
+  });
+
+  it("turns six dinners into next-day leftover lunches", () => {
+    expect(week.filter((m) => m.type === "leftover")).toHaveLength(6);
   });
 });

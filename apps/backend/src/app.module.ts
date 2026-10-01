@@ -3,6 +3,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./modules/auth/auth.module.js";
 import { HouseholdsModule } from "./modules/households/households.module.js";
+import { MeModule } from "./modules/me/me.module.js";
 import { MealPlansModule } from "./modules/meal-plans/meal-plans.module.js";
 import { RecipesModule } from "./modules/recipes/recipes.module.js";
 import { PantryModule } from "./modules/pantry/pantry.module.js";
@@ -20,6 +21,7 @@ import { AuthGuard } from "./common/auth.guard.js";
     GroceryProviderModule,
     AuthModule,
     HouseholdsModule,
+    MeModule,
     MealPlansModule,
     RecipesModule,
     PantryModule,

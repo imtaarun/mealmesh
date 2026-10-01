@@ -42,6 +42,7 @@ export function validateSeedData(): string[] {
   const validCuisines = new Set(taxonomies.cuisines);
   const validDietTags = new Set(taxonomies.dietTags);
   const validDifficulty = new Set(taxonomies.difficulty);
+  const validMealSlots = new Set(taxonomies.mealSlots);
 
   for (const recipe of recipes) {
     if (!validDifficulty.has(recipe.difficulty)) {
@@ -49,6 +50,10 @@ export function validateSeedData(): string[] {
     }
     for (const cuisine of recipe.cuisines) {
       if (!validCuisines.has(cuisine)) errors.push(`${recipe.id}: unknown cuisine "${cuisine}"`);
+    }
+    if (recipe.mealSlots.length === 0) errors.push(`${recipe.id}: no mealSlots`);
+    for (const slot of recipe.mealSlots) {
+      if (!validMealSlots.has(slot)) errors.push(`${recipe.id}: unknown mealSlot "${slot}"`);
     }
     for (const tag of recipe.dietTags) {
       if (!validDietTags.has(tag)) errors.push(`${recipe.id}: unknown dietTag "${tag}"`);
