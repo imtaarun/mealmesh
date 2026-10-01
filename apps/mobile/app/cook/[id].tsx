@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useKeepAwake } from "expo-keep-awake";
 import { api, type RecipeDetail } from "@/lib/api";
 import { Button, Pill } from "@/components/ui/Form";
+import { Glass } from "@/components/ui/Glass";
 import { useTheme } from "@/theme";
 
 // Timers keep running across steps.
@@ -130,14 +131,14 @@ export default function CookingScreen() {
         ) : null}
       </ScrollView>
 
-      <View style={{ flexDirection: "row", gap: spacing.md, padding: spacing.lg }}>
+      <Glass style={{ flexDirection: "row", gap: spacing.sm, margin: spacing.md, padding: spacing.sm, paddingBottom: 0 }}>
         <View style={{ flex: 1 }}>
           <Button label="Back" variant="neutral" disabled={index === 0} onPress={() => setIndex(index - 1)} />
         </View>
         <View style={{ flex: 1 }}>
           <Button label={last ? "Done" : "Next"} onPress={() => (last ? router.back() : setIndex(index + 1))} />
         </View>
-      </View>
+      </Glass>
     </SafeAreaView>
   );
 }

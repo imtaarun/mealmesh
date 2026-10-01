@@ -38,13 +38,11 @@ export function TextField(props: TextInputProps) {
       placeholderTextColor={colors.textMuted}
       {...props}
       style={{
-        borderWidth: 1,
-        borderColor: colors.border,
         borderRadius: radius.md,
         borderCurve: "continuous",
         padding: spacing.md,
         color: colors.text,
-        backgroundColor: colors.surface,
+        backgroundColor: colors.backgroundMuted,
         marginBottom: spacing.md,
       }}
     />
@@ -55,10 +53,12 @@ type Variant = "primary" | "outline" | "danger" | "neutral";
 
 function useVariant(variant: Variant) {
   const { colors } = useTheme();
-  const tint = variant === "danger" ? colors.criticalError : variant === "neutral" ? colors.text : colors.brandAccent;
-  return variant === "primary"
-    ? { box: { backgroundColor: colors.brandAccent }, text: colors.onBrandAccent }
-    : { box: { borderWidth: 1, borderColor: variant === "neutral" ? colors.border : tint }, text: tint };
+  return {
+    primary: { box: { backgroundColor: colors.brandAccent }, text: colors.onBrandAccent },
+    outline: { box: { backgroundColor: colors.accentTint }, text: colors.brandAccent },
+    neutral: { box: { backgroundColor: colors.backgroundMuted }, text: colors.text },
+    danger: { box: { backgroundColor: colors.backgroundMuted }, text: colors.criticalError },
+  }[variant];
 }
 
 /** Full-width action. */

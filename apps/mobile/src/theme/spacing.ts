@@ -11,12 +11,12 @@ export const spacing = {
   xxl: 48,
 } as const;
 
-// Paired with borderCurve: "continuous" (iOS squircle); values follow the MD3 shape scale.
+// Paired with borderCurve: "continuous" (iOS squircle). Large radii read as modern on both platforms.
 export const radius = {
   sm: 8,
   md: 12,
-  lg: 16,
-  xl: 28,
+  lg: 22,
+  xl: 32,
   pill: 999,
 } as const;
 

@@ -227,7 +227,6 @@ export default function WeekScreen() {
                     ) : null}
                     <Pill
                       label={meal.recipe ? "Change" : "Add"}
-                      variant="primary"
                       accessibilityLabel={`${meal.recipe ? "Change" : "Add"} ${slot}`}
                       onPress={() => router.push({ pathname: "/recipe-picker", params: { mealPlanId: plan.id, mealId: meal.id } })}
                     />
