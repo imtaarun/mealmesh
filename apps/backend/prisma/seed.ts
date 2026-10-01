@@ -3,15 +3,28 @@
 // ingredient), 100 ingredients, 5 stores, 150 products, multiple prices per product,
 // deals, price history, one sample pantry. Canadian pricing and terminology.
 //
-// Ingredients and recipes come from @mealmesh/seed-data and are upserted by their
-// stable slug id, so re-running this script is safe (updates in place, no duplicates).
-// Still missing before Phase 3 is fully done: 15 more recipes to reach the P0 target
-// of 30, and all store/product/price/deal data — @mealmesh/seed-data only covers food
-// content, not pricing (docs/open-questions.md item 1: approximate pricing, not yet
-// implemented as seed data).
+// Everything comes from @mealmesh/seed-data and is upserted by a stable id, so
+// re-running this script is safe (updates in place, no duplicates). Child rows —
+// recipe ingredient lines, product prices, deals, the demo pantry and preferences —
+// are replaced wholesale on each run. Deals run from 2 days before the seed to 5 days
+// after (packages/seed-data/src/catalog.ts); re-run the seed to roll them forward.
+//
+// Prices are approximate, not live retailer data (docs/open-questions.md item 1).
+// PriceHistory is not seeded: it records what a household actually paid (receipts,
+// P2); the price timeline lives on ProductPrice (effectiveFrom/effectiveTo).
 
-import { PrismaClient, type BaseUnit, type Difficulty } from "@prisma/client";
-import { ingredients, recipes, validateSeedData } from "@mealmesh/seed-data";
+import { PrismaClient, type BaseUnit, type BudgetTier, type Difficulty, type PreferenceType, type SubscriptionTier } from "@prisma/client";
+import * as bcrypt from "bcryptjs";
+import {
+  buildCatalog,
+  demoHousehold,
+  ingredients,
+  ingredientsById,
+  recipes,
+  referencePrices,
+  stores,
+  validateSeedData,
+} from "@mealmesh/seed-data";
 
 const prisma = new PrismaClient();
 
@@ -73,7 +86,79 @@ async function main() {
     });
   }
 
-  console.log(`Seeded ${ingredients.length} ingredients and ${recipes.length} recipes.`);
+  const now = new Date();
+  const catalog = buildCatalog(stores, referencePrices, now);
+
+  for (const store of stores) {
+    const data = { name: store.name, chain: store.chain, address: store.address, lat: store.lat, lng: store.lng, isDemo: true };
+    await prisma.store.upsert({ where: { id: store.id }, create: { id: store.id, ...data }, update: data });
+  }
+
+  for (const product of catalog.products) {
+    const data = {
+      name: product.name,
+      brand: product.brand,
+      packSize: product.packSize,
+      packUnit: ingredientsById.get(product.ingredientId)!.baseUnit as BaseUnit,
+      storeId: product.storeId,
+      ingredientId: product.ingredientId,
+    };
+    await prisma.product.upsert({ where: { id: product.id }, create: { id: product.id, ...data }, update: data });
+  }
+
+  const productIds = catalog.products.map((p) => p.id);
+  await prisma.productPrice.deleteMany({ where: { productId: { in: productIds }, source: "mock" } });
+  await prisma.productPrice.createMany({ data: catalog.prices.map((price) => ({ ...price, source: "mock" as const })) });
+  await prisma.deal.deleteMany({ where: { productId: { in: productIds }, mealPlanId: null } });
+  await prisma.deal.createMany({ data: catalog.deals });
+
+  await seedDemoHousehold(now);
+
+  console.log(
+    `Seeded ${ingredients.length} ingredients, ${recipes.length} recipes, ${stores.length} stores, ` +
+      `${catalog.products.length} products, ${catalog.prices.length} prices, ${catalog.deals.length} deals, ` +
+      `and the demo household (${demoHousehold.email}).`,
+  );
+}
+
+/** docs/product-spec.md "Demo scenario": one account with preferences and a sample pantry. */
+async function seedDemoHousehold(now: Date) {
+  const demo = demoHousehold;
+  const householdData = {
+    name: demo.householdName,
+    weeklyBudgetCents: demo.weeklyBudgetCents,
+    budgetTier: demo.budgetTier as BudgetTier,
+    subscriptionTier: demo.subscriptionTier as SubscriptionTier,
+    defaultServings: demo.defaultServings,
+    timezone: demo.timezone,
+  };
+
+  const existing = await prisma.user.findUnique({ where: { email: demo.email } });
+  const householdId = existing
+    ? (await prisma.household.update({ where: { id: existing.householdId }, data: householdData })).id
+    : (await prisma.household.create({ data: householdData })).id;
+  if (!existing) {
+    await prisma.user.create({
+      data: { email: demo.email, passwordHash: await bcrypt.hash(demo.password, 10), householdId },
+    });
+  }
+
+  await prisma.preference.deleteMany({ where: { householdId } });
+  await prisma.preference.createMany({
+    data: demo.preferences.map((p) => ({ type: p.type as PreferenceType, value: p.value, householdId })),
+  });
+
+  await prisma.pantryItem.deleteMany({ where: { householdId } });
+  await prisma.pantryItem.createMany({
+    data: demo.pantry.map((item) => ({
+      householdId,
+      ingredientId: item.ingredientId,
+      quantity: item.quantity,
+      unit: ingredientsById.get(item.ingredientId)!.baseUnit as BaseUnit,
+      location: item.location,
+      expiresAt: item.expiresInDays === undefined ? null : new Date(now.getTime() + item.expiresInDays * 24 * 60 * 60 * 1000),
+    })),
+  });
 }
 
 main()

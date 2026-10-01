@@ -1,0 +1,94 @@
+[
+  {
+    "id": "maple-market",
+    "name": "Maple Market — Queen West",
+    "chain": "Maple Market",
+    "address": "Queen St W, Toronto, ON",
+    "lat": 43.6487,
+    "lng": -79.396,
+    "houseBrand": "Maple Select",
+    "priceFactor": 1.0,
+    "priceVariance": 0.06,
+    "excludedIngredientIds": [],
+    "deals": [
+      { "ingredientId": "chicken-breast", "discountPercent": 30 },
+      { "ingredientId": "bell-pepper", "discountPercent": 25 },
+      { "ingredientId": "cheddar-cheese", "discountPercent": 20 }
+    ]
+  },
+  {
+    "id": "valubasket",
+    "name": "ValuBasket — Dufferin",
+    "chain": "ValuBasket",
+    "address": "Dufferin St, Toronto, ON",
+    "lat": 43.656,
+    "lng": -79.435,
+    "houseBrand": "Valu",
+    "priceFactor": 0.88,
+    "priceVariance": 0.08,
+    "excludedIngredientIds": ["paneer", "tahini", "kalamata-olives", "cardamom-ground", "mustard-seeds", "cumin-seeds", "garam-masala", "mint", "basil", "naan"],
+    "deals": [
+      { "ingredientId": "chicken-thigh", "discountPercent": 25 },
+      { "ingredientId": "canned-diced-tomatoes", "discountPercent": 30 },
+      { "ingredientId": "greek-yogurt", "discountPercent": 20 },
+      { "ingredientId": "pasta", "discountPercent": 30 }
+    ]
+  },
+  {
+    "id": "harbourfront-fresh",
+    "name": "Harbourfront Fresh — Queens Quay",
+    "chain": "Harbourfront Fresh",
+    "address": "Queens Quay W, Toronto, ON",
+    "lat": 43.64,
+    "lng": -79.38,
+    "houseBrand": "Harbourfront Kitchen",
+    "priceFactor": 1.15,
+    "priceVariance": 0.06,
+    "excludedIngredientIds": [],
+    "deals": [
+      { "ingredientId": "salmon-fillet", "discountPercent": 20 },
+      { "ingredientId": "avocado", "discountPercent": 25 }
+    ]
+  },
+  {
+    "id": "spice-route",
+    "name": "Spice Route Grocers — Gerrard St E",
+    "chain": "Spice Route Grocers",
+    "address": "Gerrard St E, Toronto, ON",
+    "lat": 43.672,
+    "lng": -79.323,
+    "houseBrand": null,
+    "priceFactor": 0.78,
+    "priceVariance": 0.1,
+    "onlyIngredientIds": [
+      "onion", "red-onion", "garlic", "ginger", "tomato", "spinach", "potato", "cucumber", "lemon", "lime", "cilantro", "mint", "cauliflower", "green-chili",
+      "chicken-breast", "chicken-thigh", "ground-chicken",
+      "chickpeas-canned", "black-beans-canned", "lentils-red", "paneer", "plain-yogurt", "greek-yogurt",
+      "white-rice", "basmati-rice", "vegetable-oil", "tahini", "canned-diced-tomatoes", "tomato-paste",
+      "cumin-seeds", "cumin-ground", "coriander-ground", "turmeric", "garam-masala", "chili-powder", "paprika", "cinnamon-ground", "cardamom-ground", "mustard-seeds", "bay-leaf",
+      "pita-bread", "naan", "frozen-peas"
+    ],
+    "deals": [
+      { "ingredientId": "basmati-rice", "discountPercent": 25 },
+      { "ingredientId": "plain-yogurt", "discountPercent": 20 },
+      { "ingredientId": "chicken-thigh", "discountPercent": 20 }
+    ]
+  },
+  {
+    "id": "northgate-foods",
+    "name": "Northgate Foods — Danforth",
+    "chain": "Northgate Foods",
+    "address": "Danforth Ave, Toronto, ON",
+    "lat": 43.679,
+    "lng": -79.345,
+    "houseBrand": "Northgate",
+    "priceFactor": 0.95,
+    "priceVariance": 0.1,
+    "excludedIngredientIds": ["salmon-fillet", "shrimp", "paneer", "cardamom-ground", "kalamata-olives"],
+    "deals": [
+      { "ingredientId": "tomato", "discountPercent": 25 },
+      { "ingredientId": "ground-beef", "discountPercent": 20 },
+      { "ingredientId": "eggs", "discountPercent": 15 }
+    ]
+  }
+]
