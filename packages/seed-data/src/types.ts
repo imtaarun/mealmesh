@@ -1,6 +1,4 @@
-// Shapes for the raw JSON files in this package. Deliberately independent of the
-// Prisma-generated types in apps/backend — this package has no dependency on Prisma,
-// so it stays usable from anywhere (seed script, tests, mobile fixtures, tooling).
+// Independent of Prisma, so this package works anywhere.
 
 import type { BaseUnit, Unit } from "@mealmesh/domain";
 

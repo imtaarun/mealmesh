@@ -7,7 +7,6 @@ interface CardProps extends PropsWithChildren {
   style?: ViewProps["style"];
 }
 
-/** Tactile card surface — docs/ux.md "Feel": generous spacing, no dashboard chrome. */
 export function Card({ children, onPress, style }: CardProps) {
   const { colors, spacing, radius } = useTheme();
   const baseStyle = {

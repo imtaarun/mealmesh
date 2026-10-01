@@ -3,8 +3,7 @@ import { clearToken, loadToken, saveToken } from "../lib/auth-storage";
 import { ApiError, setAuthToken } from "../lib/api-client";
 import { api, type AuthResult, type OAuthInput, type SignupInput } from "../lib/api";
 
-// "needs-profile": signed in, but hasn't finished profile setup yet (a brand-new
-// Google/Apple/email account) — the app sends them to /profile-setup first.
+// needs-profile: signed in, profile setup not finished yet.
 type AuthStatus = "loading" | "signed-out" | "needs-profile" | "signed-in";
 
 interface AuthValue {
@@ -68,8 +67,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     },
   };
 
-  // Nothing renders until the saved session is loaded — otherwise a screen opened
-  // directly (History, after a restart) makes its first request with no token.
+  // Render nothing until the saved session is loaded, so no request goes out without it.
   return <AuthContext.Provider value={value}>{status === "loading" ? null : children}</AuthContext.Provider>;
 }
 

@@ -1,9 +1,4 @@
-// Basket optimization — docs/algorithms.md section 4.
-// Three strategies: min_cost (cheapest product per item, any store), min_stores
-// (cheapest single store covering the basket, gaps priced/counted as a required second
-// stop), best_overall (anchor on the best single store; accept a second store only when
-// savings > TRIP_COST and detour <= maxDetourKm; cap 2 stores in the MVP). Greedy is
-// correct enough here — no ILP solver.
+// docs/algorithms.md §4. Greedy is good enough; no solver.
 
 import type { OptimizationResult, OptimizationStrategy, ProductOption, StoreDistance } from "../types.js";
 import { cheapestForQuantity } from "../pricing/index.js";
@@ -56,11 +51,7 @@ interface SingleStoreBasket {
   unavailableIngredientIds: string[]; // not carried by ANY store
 }
 
-/**
- * Cost of buying the whole basket from one store. Items the store doesn't carry are
- * priced at the cheapest option elsewhere and flagged as requiring a second stop —
- * docs/algorithms.md §4 min_stores.
- */
+/** Missing items are priced at the cheapest store elsewhere. */
 function singleStoreBasket(
   storeId: string,
   items: BasketItem[],
@@ -124,8 +115,7 @@ function topDrivers(baseline: PricedItem[], optimized: PricedItem[]): string[] {
     .map(([ingredientId]) => ingredientId);
 }
 
-/** The single store that covers the most of the basket for the least money — the
- * anchor every strategy's savings figure is measured against. */
+/** The single store every strategy's savings are measured against. */
 function pickAnchor(baskets: SingleStoreBasket[]): SingleStoreBasket {
   return baskets.reduce((best, basket) => {
     if (basket.missingIngredientIds.length !== best.missingIngredientIds.length) {
@@ -185,12 +175,8 @@ export function optimizeBasket(input: OptimizeBasketInput): OptimizationResult {
     };
   }
 
-  // best_overall: the min_stores basket, or the best pair of stores within the detour
-  // budget — any pair, not just pairs containing that store (docs/open-questions.md
-  // item 13) — whichever is cheapest once every stop after the first is charged at
-  // TRIP_COST. In a pair each item goes to the cheaper store; one neither carries is
-  // bought wherever it's cheapest, and that extra stop is charged too. Cap 2 stores
-  // in the MVP, apart from such unavoidable extra stops.
+  // best_overall: min_stores alone, or any pair of nearby stores, charging TRIP_COST per
+  // extra stop. Cap 2 stores, apart from unavoidable stops.
   const withTrips = (pricedItems: PricedItem[]) =>
     pricedItems.reduce((sum, p) => sum + p.cents, 0) +
     tripCostCents * (new Set(pricedItems.map((p) => p.storeId)).size - 1);

@@ -7,8 +7,6 @@ import { AppleSignInButton, GoogleSignInButton, googleConfigured, type SocialRes
 import { useAuth } from "@/auth/AuthProvider";
 import { useTheme } from "@/theme";
 
-// The signed-out landing screen: Apple, Google, or email — and an invite code for
-// anyone joining a housemate's household. New accounts go on to profile setup.
 export default function WelcomeScreen() {
   const { colors, spacing, typography } = useTheme();
   const { signup, login, oauth } = useAuth();

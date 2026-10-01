@@ -1,7 +1,4 @@
-// Splitting a cost between housemates — integer cents, and the parts always add up to
-// exactly the total. Each person's share is proportional to their weight (costShare:
-// 1 = a normal share, 2 = double, 0 = not paying). Cents that don't divide evenly go
-// one each to the largest remainders, ties to whoever is listed first.
+// Integer cents that add up exactly; leftover cents go to the largest remainders.
 
 export interface SplitShare {
   id: string;

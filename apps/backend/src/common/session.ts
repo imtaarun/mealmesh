@@ -1,8 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 
-// Session tokens are high-entropy random bytes, not user secrets — a fast
-// cryptographic hash is the right tool here, unlike passwords (bcrypt, in
-// auth.service.ts) which must be deliberately slow to resist brute-forcing.
+// Tokens are random, so a fast hash is enough (passwords use bcrypt).
 
 export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 

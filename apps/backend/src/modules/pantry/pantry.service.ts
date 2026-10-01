@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../common/prisma.service.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
-/** Pantry CRUD + "Use It First" — docs/product-spec.md "Pantry". */
+/** TODO(Phase 6): pantry CRUD and Use It First. */
 @Injectable()
 export class PantryService {
   constructor(private readonly prisma: PrismaService) {}

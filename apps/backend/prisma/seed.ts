@@ -1,17 +1,4 @@
-// Seed script — docs/product-spec.md "Seed data requirements (P0)" and
-// docs/roadmap.md Phase 3: 30 recipes (with full conversion data on every referenced
-// ingredient), 100 ingredients, 5 stores, 150 products, multiple prices per product,
-// deals, price history, one sample pantry. Canadian pricing and terminology.
-//
-// Everything comes from @mealmesh/seed-data and is upserted by a stable id, so
-// re-running this script is safe (updates in place, no duplicates). Child rows —
-// recipe ingredient lines, product prices, deals, the demo pantry and preferences —
-// are replaced wholesale on each run. Deals run from 2 days before the seed to 5 days
-// after (packages/seed-data/src/catalog.ts); re-run the seed to roll them forward.
-//
-// Prices are approximate, not live retailer data (docs/open-questions.md item 1).
-// PriceHistory is not seeded: it records what a household actually paid (receipts,
-// P2); the price timeline lives on ProductPrice (effectiveFrom/effectiveTo).
+// Idempotent: upserts by stable id and replaces child rows. Re-run to roll deals forward.
 
 import { PrismaClient, type BaseUnit, type BudgetTier, type Difficulty, type PreferenceType, type SubscriptionTier } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
@@ -73,8 +60,6 @@ async function main() {
       update: data,
     });
 
-    // Replace ingredient lines wholesale rather than diffing them — simpler, and
-    // correct for a small, source-controlled recipe set re-seeded from scratch.
     await prisma.recipeIngredient.deleteMany({ where: { recipeId: recipe.id } });
     await prisma.recipeIngredient.createMany({
       data: recipe.ingredients.map((line) => ({
@@ -123,7 +108,7 @@ async function main() {
   );
 }
 
-/** docs/product-spec.md "Demo scenario": one account with preferences and a sample pantry. */
+/** The product-spec demo scenario: one account, preferences, and a sample pantry. */
 async function seedDemoHousehold(now: Date) {
   const demo = demoHousehold;
   const householdData = {

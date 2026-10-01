@@ -4,11 +4,7 @@ import { PrismaService } from "./prisma.service.js";
 import { hashSessionToken } from "./session.js";
 import { IS_PUBLIC_KEY } from "./public.decorator.js";
 
-/**
- * Populates req.household from the session token in the Authorization header — see
- * docs/architecture.md "Cross-cutting / Auth". Registered globally in AppModule; use
- * @Public() to exempt a route (signup, login).
- */
+/** Sets req.household from the bearer session token; @Public() routes skip it. */
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(

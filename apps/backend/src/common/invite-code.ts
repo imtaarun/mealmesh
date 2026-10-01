@@ -1,8 +1,6 @@
 import { createHash, randomInt } from "node:crypto";
 
-// Invite codes are typed or pasted by people, so they're short and skip look-alike
-// characters (0/O, 1/I/L). 8 characters from 31 gives ~8.5e11 combinations; codes
-// are single-use and expire after INVITE_TTL_MS, and only the hash is stored.
+// No look-alike characters (0/O, 1/I/L). Single-use and expiring; only the hash is stored.
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 export const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 

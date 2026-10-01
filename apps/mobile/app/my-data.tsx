@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, Share, Text, View } from "react-native";
-import { router } from "expo-router";
-import { Screen } from "@/components/ui/Screen";
+import { Share, Text, View } from "react-native";
+import { Screen, LoadingScreen, BackLink } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Form";
 import { useAuth } from "@/auth/AuthProvider";
@@ -19,8 +18,6 @@ interface DataExport {
   mealPlans: Array<{ meals: unknown[] }>;
 }
 
-// Everything we store about you, in plain words — with a full download and a way to
-// delete your account. Privacy rules (and Apple's App Store rules) expect both.
 export default function MyDataScreen() {
   const { colors, spacing, typography } = useTheme();
   const { deleteAccount } = useAuth();
@@ -31,19 +28,8 @@ export default function MyDataScreen() {
     api.exportMyData().then((d) => setData(d as DataExport));
   }, []);
 
-  const back = (
-    <Pressable onPress={() => router.back()} hitSlop={8} style={{ marginBottom: spacing.md }}>
-      <Text style={{ ...typography.caption, color: colors.primary }}>‹ Profile</Text>
-    </Pressable>
-  );
-
   if (!data) {
-    return (
-      <Screen>
-        {back}
-        <ActivityIndicator color={colors.primary} />
-      </Screen>
-    );
+    return <LoadingScreen back="Profile" />;
   }
 
   const rows = [
@@ -69,7 +55,7 @@ export default function MyDataScreen() {
 
   return (
     <Screen>
-      {back}
+      <BackLink label="Profile" />
       <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.xs }}>Your data</Text>
       <Text style={{ ...typography.body, color: colors.textMuted, marginBottom: spacing.lg }}>
         This is everything MealMesh stores about you. Passwords and sign-in tokens are never shown or shared.

@@ -1,11 +1,4 @@
-// AIProvider — docs/architecture.md "AIProvider". Every call returns strict JSON
-// validated with a zod schema; invalid -> one retry -> fall back to deterministic
-// behaviour, never a guess. AI NEVER returns prices, costs, or totals — if a payload
-// shape below would tempt that, the field does not belong here.
-//
-// Request/response shapes are intentionally loose (Record<string, unknown>) until
-// Phase 1 generates concrete types from the Prisma schema in prisma/schema.prisma —
-// replace these with real types then, do not build parallel DTOs by hand.
+// AI never returns prices, costs, or totals.
 
 export interface CandidateRequest {
   householdId: string;

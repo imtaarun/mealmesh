@@ -14,11 +14,6 @@ class CostShareDto {
 export class HouseholdsController {
   constructor(private readonly householdsService: HouseholdsService) {}
 
-  @Get("current")
-  getCurrent(@CurrentHousehold() household: RequestHousehold) {
-    return this.householdsService.getCurrent(household);
-  }
-
   @Get("current/members")
   listMembers(@CurrentHousehold() household: RequestHousehold) {
     return this.householdsService.listMembers(household);

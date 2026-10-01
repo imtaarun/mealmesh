@@ -3,12 +3,7 @@ import { PrismaService } from "../../common/prisma.service.js";
 import { GROCERY_PROVIDER, type GroceryProvider } from "../../providers/grocery/grocery-provider.interface.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
-/**
- * Grocery list generation (aggregate + pantry subtract, via packages/domain), basket
- * optimization (three strategies, via packages/domain optimizer), stores, and deals
- * filtered to the current plan. See docs/algorithms.md §2-4 and docs/product-spec.md
- * "Grocery list" / "Basket optimization" / "Deal Radar".
- */
+/** Grocery list, basket optimization, and deals (Phases 6–7). */
 @Injectable()
 export class GroceryListService {
   constructor(

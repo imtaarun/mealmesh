@@ -1,7 +1,3 @@
-// Type scale. Uses the system font by default (no licensing risk, fast startup) —
-// swap `fontFamily` for a licensed display face once docs/open-questions.md item 2
-// (imagery/brand direction) is resolved.
-
 export const typography = {
   display: { fontSize: 32, fontWeight: "700" as const, lineHeight: 38 },
   title: { fontSize: 24, fontWeight: "700" as const, lineHeight: 30 },

@@ -4,11 +4,6 @@ import { PrismaService } from "../../common/prisma.service.js";
 import { hashInviteCode } from "../../common/invite-code.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
-/**
- * The signed-in person's own view: their profile, their history with the app,
- * everything we store about them (as a download), and deleting their account
- * (docs/open-questions.md item 21).
- */
 @Injectable()
 export class MeService {
   constructor(private readonly prisma: PrismaService) {}
@@ -26,8 +21,7 @@ export class MeService {
         name: member.name,
         role: member.role,
         costShare: member.costShare,
-        allergies: member.preferences.filter((p) => p.type === PreferenceType.allergy).map((p) => p.value),
-        dislikes: member.preferences.filter((p) => p.type === PreferenceType.dislike).map((p) => p.value),
+        ...ownPreferences(member.preferences),
       },
       household: {
         id: user.household.id,
@@ -96,11 +90,7 @@ export class MeService {
     };
   }
 
-  /**
-   * Everything we store about this person and the household they're in, as plain
-   * JSON. Secrets are left out (password hash, session and invite token hashes), and
-   * so are housemates' emails — those are theirs, not yours.
-   */
+  /** Leaves out secrets and housemates' emails. */
   async exportData(household: RequestHousehold) {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: household.userId },
@@ -138,8 +128,7 @@ export class MeService {
         name: member.name,
         role: member.role,
         costShare: member.costShare,
-        allergies: member.preferences.filter((p) => p.type === PreferenceType.allergy).map((p) => p.value),
-        dislikes: member.preferences.filter((p) => p.type === PreferenceType.dislike).map((p) => p.value),
+        ...ownPreferences(member.preferences),
         ratings: member.ratings.map((r) => ({ recipe: r.recipe.title, rating: r.rating, at: r.createdAt })),
       },
       household: {
@@ -163,11 +152,7 @@ export class MeService {
     };
   }
 
-  /**
-   * Deletes the account. Alone in the household → the household and everything in it
-   * go too. Owner with housemates → ownership passes to a housemate first, and the
-   * shared household (plans, pantry) stays for them.
-   */
+  /** The last person out deletes the household; an owner hands it to a housemate first. */
   async deleteAccount(household: RequestHousehold) {
     await this.prisma.$transaction(async (tx) => {
       const members = await tx.householdMember.findMany({ where: { householdId: household.householdId }, orderBy: { name: "asc" } });
@@ -187,11 +172,7 @@ export class MeService {
     return { deleted: true };
   }
 
-  /**
-   * Joins another household with an invite code, for someone who already has an
-   * account. Only allowed when they're alone in their own household, which is then
-   * deleted — so the app must ask first and send replaceMyHousehold: true.
-   */
+  /** Only when alone; the old household is deleted. */
   async join(household: RequestHousehold, code: string, replaceMyHousehold: boolean) {
     if (!replaceMyHousehold) {
       throw new BadRequestException("Joining replaces your current household and its plans — confirm to continue");
@@ -216,6 +197,11 @@ export class MeService {
     });
     return { joined: true };
   }
+}
+
+function ownPreferences(preferences: Array<{ type: PreferenceType; value: string }>) {
+  const values = (type: PreferenceType) => preferences.filter((p) => p.type === type).map((p) => p.value);
+  return { allergies: values(PreferenceType.allergy), dislikes: values(PreferenceType.dislike) };
 }
 
 function signInMethods(user: { passwordHash: string | null; oauthAccounts: Array<{ provider: string }> }): string[] {

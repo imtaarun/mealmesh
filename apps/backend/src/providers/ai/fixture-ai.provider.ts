@@ -13,11 +13,7 @@ import type {
   SubstitutionRequest,
 } from "./ai-provider.interface.js";
 
-/**
- * Returns canned data so tests and offline dev never hit the network. See
- * docs/architecture.md "AIProvider". Used when AI_PROVIDER=fixture (the default
- * outside production).
- */
+/** Canned responses for tests and offline dev. */
 @Injectable()
 export class FixtureAiProvider implements AIProvider {
   async proposeMealCandidates(_input: CandidateRequest): Promise<RecipeCandidate[]> {
@@ -32,8 +28,7 @@ export class FixtureAiProvider implements AIProvider {
     return [];
   }
 
-  /** Deterministic stand-in for the AI's phrasing — restates the computed numbers it
-   * was given, never adds any. */
+  /** Restates the numbers it's given; never adds any. */
   async explainPlan(input: PlanExplainRequest): Promise<string> {
     const { mealsCooked, sharedIngredients, expiringItemsUsed } = input.planSummary as {
       mealsCooked: number;

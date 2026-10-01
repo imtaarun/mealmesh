@@ -1,7 +1,4 @@
-// Warm, premium, food-focused palette — docs/ux.md "Feel". Avoid enterprise-dashboard
-// blues/grays as the primary palette and avoid futuristic "AI" gradients; this is a
-// kitchen product, not a SaaS console. Mirrored in ../../tailwind.config.js — update
-// both together.
+// Mirrored in tailwind.config.js — update both together.
 
 export const colors = {
   light: {

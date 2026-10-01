@@ -10,14 +10,7 @@ import type {
   Store,
 } from "./grocery-provider.interface.js";
 
-/**
- * Reads the seeded tables (docs/data-model.md: Store, Product, ProductPrice, Deal),
- * populated with approximate pricing — per-ingredient reference prices with per-store
- * variance, not live retailer data (see docs/open-questions.md item 1 and
- * packages/seed-data/src/catalog.ts). isDemo is true, so callers must show the
- * "Estimated pricing" badge — see CLAUDE.md rule 2. Prices are never made up here;
- * they come from the seed data only.
- */
+/** Reads the seeded estimated prices; callers show the Estimated pricing badge. */
 @Injectable()
 export class MockGroceryProvider implements GroceryProvider {
   readonly id = "mock";

@@ -2,9 +2,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Text, View } from "react-native";
 import { useTheme } from "@/theme";
 
-// Local-library recipe imagery — docs/ux.md "Recipe imagery": a designed
-// gradient/illustration placeholder per cuisine, never licensed stock or a hotlinked
-// photo. Deliberately warm, not "AI" — see docs/ux.md "Feel".
 const CUISINE_GRADIENTS: Record<string, [string, string]> = {
   indian: ["#E0A93B", "#C1622A"],
   mediterranean: ["#5C7A5E", "#8FAE8A"],

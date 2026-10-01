@@ -1,17 +1,5 @@
-// Conflict checking for Build My Week — docs/ux.md "Build My Week", refined in
-// docs/open-questions.md item 9. Allergies are a hard veto; dislikes are a
-// dismissible warning. The user resolves both in the moment of picking a dish, not
-// through an automated resolution algorithm (that only applies to the Pro
-// auto-generate path, per item 9).
-//
-// Known simplification: matching is case-insensitive substring matching between a
-// preference value and an ingredient's name/aliases (e.g. allergy "peanut" matches
-// ingredient "Peanut Butter"). It does not understand allergen categories (e.g.
-// allergy "tree_nut" will not match ingredient "Almonds") — that needs a real
-// ingredient -> allergen classification, which docs/open-questions.md notes as an
-// unmodelled gap. This is deliberately conservative in the direction that's safe:
-// it will miss some matches, but it will never invent a false negative from a typo
-// in either direction being silently "smart-matched."
+// Allergies veto, dislikes warn. Substring match on name and aliases only — no allergen
+// categories ("tree_nut" won't match "Almonds").
 
 import type { ConflictCheckInput, ConflictCheckResult, ConflictMatch, RecipeIngredientName } from "../types.js";
 

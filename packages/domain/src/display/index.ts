@@ -1,6 +1,4 @@
-// Showing recipe quantities to a cook — scaled to the meal's servings and written the
-// way a recipe would say them ("1½ cups", "300 g", "a pinch"), never "1.4999 cup".
-// Display only: the grocery list and costs work from base units (units/, aggregation/).
+// Display only; lists and costs use base units.
 
 import type { Unit } from "../types.js";
 

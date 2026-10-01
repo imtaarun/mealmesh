@@ -4,9 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/theme";
 import { useAuth } from "@/auth/AuthProvider";
 
-// Navigation shell — docs/ux.md "Navigation": Home · Week · Shop · Pantry · Discover ·
-// Profile. Gated on auth: signed-out visitors land on /welcome, and new accounts finish
-// profile setup before they see the tabs.
+// Signed-out → /welcome; new accounts finish profile setup first.
 export default function TabsLayout() {
   const { colors } = useTheme();
   const { status } = useAuth();

@@ -5,30 +5,12 @@ import { PrismaService } from "../../common/prisma.service.js";
 import { generateInviteCode, hashInviteCode, INVITE_TTL_MS } from "../../common/invite-code.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
-/**
- * The household and the people in it. Housemates have their own logins and join with
- * an invite code (docs/open-questions.md item 20). The owner invites and removes
- * people and sets cost shares; a removed or departing member keeps their account and
- * gets an empty household of their own — nobody's account is deleted by someone else.
- */
+/** Removed or departing members keep their account, in a household of their own. */
 @Injectable()
 export class HouseholdsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** The signed-in household with its preferences — the app reads subscriptionTier
-   * from here to decide whether to offer Plan My Week. */
-  async getCurrent(household: RequestHousehold) {
-    return this.prisma.household.findUniqueOrThrow({
-      where: { id: household.householdId },
-      include: { preferences: true },
-    });
-  }
-
-  /**
-   * Everyone in the household, plus how the latest week's estimated grocery cost
-   * splits between them (by costShare). The estimate is approximate pricing, so the
-   * app shows the Estimated pricing badge next to it.
-   */
+  /** Members, with the latest week's estimate split by costShare. */
   async listMembers(household: RequestHousehold) {
     const [members, latestPlan] = await Promise.all([
       this.prisma.householdMember.findMany({

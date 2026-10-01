@@ -1,5 +1,4 @@
-// GroceryProvider — docs/architecture.md "GroceryProvider". No retailer is ever named
-// outside a provider implementation; a registry resolves by id.
+// Only provider implementations name a retailer.
 
 export interface ProductQuery {
   ingredientId?: string;

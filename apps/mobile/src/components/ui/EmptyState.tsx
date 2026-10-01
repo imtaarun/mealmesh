@@ -10,11 +10,6 @@ interface EmptyStateProps {
   onSecondary?: () => void;
 }
 
-/**
- * Empty states do work, not just say "Loading…" or "No data" — docs/ux.md "Empty
- * states". Callers pass the exact copy from that doc; this component only handles
- * layout.
- */
 export function EmptyState({ message, actionLabel, onAction, secondaryLabel, onSecondary }: EmptyStateProps) {
   const { colors, spacing, radius, typography } = useTheme();
 

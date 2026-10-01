@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { formatQuantity, scaleQuantity, type Unit } from "@mealmesh/domain";
-import { Screen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, BackLink } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Form";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { CuisinePlaceholder } from "@/components/recipe/CuisinePlaceholder";
 import { api, type RecipeDetail } from "@/lib/api";
+import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
 
-const dollars = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const label = (s: string) => s.replace(/_/g, " ");
 
-// Recipe detail — docs/product-spec.md "Recipe detail + cooking mode". Opened from a
-// planned meal with that meal's servings; the cook can change servings here and every
-// quantity and the cost follow.
 export default function RecipeScreen() {
   const { colors, spacing, typography, radius } = useTheme();
   const params = useLocalSearchParams<{ id: string; servings?: string; leftover?: string }>();
@@ -30,11 +27,7 @@ export default function RecipeScreen() {
   }, [params.id]);
 
   if (!recipe || servings === null) {
-    return (
-      <Screen>
-        <ActivityIndicator color={colors.primary} />
-      </Screen>
-    );
+    return <LoadingScreen />;
   }
 
   const have = new Set(recipe.pantryIngredientIds);
@@ -44,9 +37,7 @@ export default function RecipeScreen() {
 
   return (
     <Screen>
-      <Pressable onPress={() => router.back()} hitSlop={8} style={{ marginBottom: spacing.md }}>
-        <Text style={{ ...typography.caption, color: colors.primary }}>‹ Back</Text>
-      </Pressable>
+      <BackLink />
 
       {recipe.source === "seed" ? (
         <View style={{ marginBottom: spacing.md }}>

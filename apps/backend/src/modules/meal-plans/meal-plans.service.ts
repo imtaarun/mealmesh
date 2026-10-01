@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { MealSlot, MealType } from "@prisma/client";
-import { checkRecipeConflicts, type ConflictCheckResult } from "@mealmesh/domain";
 import { PrismaService } from "../../common/prisma.service.js";
+import { recipeConflicts } from "../../common/recipes.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 import type { CreateMealPlanDto } from "./dto/create-meal-plan.dto.js";
 import type { UpdateMealDto } from "./dto/update-meal.dto.js";
@@ -9,24 +9,18 @@ import type { UpdateMealDto } from "./dto/update-meal.dto.js";
 const SLOTS: MealSlot[] = [MealSlot.breakfast, MealSlot.lunch, MealSlot.dinner, MealSlot.snack];
 const DAYS_PER_WEEK = 7;
 
-/**
- * Orchestrates meal plans. Two paths write to the same Meal rows (docs/architecture.md
- * "Meal plan generation"):
- * - Build My Week (Free + Pro): createEmptyWeek pre-creates one empty slot per
- *   day/slot, then updateMeal("replace", recipeId) fills each in by hand.
- * - Plan My Week (Pro only, auto-fill): PlanMyWeekService.
- */
+/** Build My Week: an empty grid, filled slot by slot. Plan My Week lives in PlanMyWeekService. */
 @Injectable()
 export class MealPlansService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** The latest planned week — or, given a date (YYYY-MM-DD), the week that contains it. */
+  /** The latest week, or the week containing `date` (YYYY-MM-DD). */
   async getCurrent(household: RequestHousehold, date?: string) {
     const day = date ? new Date(date) : null;
     return this.prisma.mealPlan.findFirst({
       where: {
         householdId: household.householdId,
-        ...(day ? { weekStartDate: { lte: day, gt: new Date(day.getTime() - 7 * 24 * 60 * 60 * 1000) } } : {}),
+        ...(day ? { weekStartDate: { lte: day, gt: new Date(day.getTime() - DAYS_PER_WEEK * 24 * 60 * 60 * 1000) } } : {}),
       },
       orderBy: { weekStartDate: "desc" },
       include: {
@@ -39,7 +33,6 @@ export class MealPlansService {
     });
   }
 
-  /** Build My Week entry point — creates the week grid with every slot empty. */
   async createEmptyWeek(household: RequestHousehold, dto: CreateMealPlanDto) {
     const weekStartDate = new Date(dto.weekStartDate);
     const householdRow = await this.prisma.household.findUniqueOrThrow({ where: { id: household.householdId } });
@@ -81,27 +74,15 @@ export class MealPlansService {
     return meal;
   }
 
-  private async checkConflicts(householdId: string, recipeId: string): Promise<ConflictCheckResult> {
+  /** Checked against the household's and every housemate's allergies and dislikes. */
+  private async checkConflicts(householdId: string, recipeId: string) {
     const recipe = await this.prisma.recipe.findUnique({
       where: { id: recipeId },
       include: { ingredients: { include: { ingredient: true } } },
     });
     if (!recipe) throw new NotFoundException(`Recipe "${recipeId}" not found`);
-
-    // Household-wide preferences plus every housemate's own allergies and dislikes.
-    const preferences = await this.prisma.preference.findMany({
-      where: { OR: [{ householdId }, { member: { householdId } }], type: { in: ["allergy", "dislike"] } },
-    });
-
-    return checkRecipeConflicts({
-      ingredients: recipe.ingredients.map((ri) => ({
-        ingredientId: ri.ingredientId,
-        name: ri.ingredient.name,
-        aliases: ri.ingredient.aliases,
-      })),
-      allergyValues: preferences.filter((p) => p.type === "allergy").map((p) => p.value),
-      dislikeValues: preferences.filter((p) => p.type === "dislike").map((p) => p.value),
-    });
+    const preferences = await this.prisma.preference.findMany({ where: { OR: [{ householdId }, { member: { householdId } }] } });
+    return recipeConflicts(recipe, preferences);
   }
 
   async updateMeal(household: RequestHousehold, mealPlanId: string, mealId: string, dto: UpdateMealDto) {
@@ -126,14 +107,10 @@ export class MealPlansService {
       });
     }
 
-    // action === "replace"
     if (!dto.recipeId) throw new BadRequestException("recipeId is required for the replace action");
 
     const conflicts = await this.checkConflicts(household.householdId, dto.recipeId);
-    if (conflicts.blocked) {
-      return { conflict: conflicts, meal: null };
-    }
-    if (conflicts.warnings.length > 0 && !dto.acknowledgeWarnings) {
+    if (conflicts.blocked || (conflicts.warnings.length > 0 && !dto.acknowledgeWarnings)) {
       return { conflict: conflicts, meal: null };
     }
 

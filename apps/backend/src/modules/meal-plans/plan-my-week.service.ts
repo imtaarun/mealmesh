@@ -4,9 +4,7 @@ import {
   aggregateDemand,
   cheapestUnitPriceCents,
   applyPantryAndRound,
-  checkRecipeConflicts,
   computeMealPlanScore,
-  convertToBaseUnit,
   costLine,
   mainProtein,
   pickDinner,
@@ -17,28 +15,24 @@ import {
   type PlanWeekInput,
   type ProductOption,
   type RecipeIngredientDemand,
-  type Unit,
 } from "@mealmesh/domain";
 import { PrismaService } from "../../common/prisma.service.js";
 import { AI_PROVIDER, type AIProvider } from "../../providers/ai/ai-provider.interface.js";
 import { GroceryPricing } from "../../providers/grocery/grocery-pricing.js";
-import { toConversion } from "../../common/ingredient-conversion.js";
+import { recipeConflicts, toConversion, toPlannerRecipe } from "../../common/recipes.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const SLOTS: MealSlot[] = [MealSlot.breakfast, MealSlot.lunch, MealSlot.dinner, MealSlot.snack];
 const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-/** Pantry items expiring within this many days count as "use it first". */
 const EXPIRING_WITHIN_DAYS = 5;
-/** Diets that describe a goal, not a restriction — a bonus in planning, never a filter. */
+/** Goals, not restrictions: a planning bonus, never a filter. */
 const GOAL_DIETS = ["healthy", "high_protein"];
 
 const PLAN_INCLUDE = {
   meals: { orderBy: [{ date: "asc" }, { slot: "asc" }], include: { recipe: true } },
   score: true,
 } satisfies Prisma.MealPlanInclude;
-
-type RecipeWithIngredients = Prisma.RecipeGetPayload<{ include: { ingredients: { include: { ingredient: true } } } }>;
 
 interface PlannerContext {
   input: PlanWeekInput;
@@ -49,13 +43,7 @@ interface PlannerContext {
   budgetCents: number;
 }
 
-/**
- * Plan My Week — Pro only (docs/open-questions.md item 11), checked here in the
- * service, not just in the app. Steps follow docs/architecture.md "Meal plan
- * generation": gather context → filter the library in code → select the week
- * deterministically (packages/domain planner) → leftovers → score in code, and only
- * then ask the AIProvider to phrase the already-computed numbers.
- */
+/** Pro only, enforced here. Selection and scoring are deterministic; the AI only phrases the numbers. */
 @Injectable()
 export class PlanMyWeekService {
   constructor(
@@ -75,8 +63,7 @@ export class PlanMyWeekService {
         (await tx.mealPlan.findFirst({ where: { householdId: household.householdId, weekStartDate: weekStart } })) ??
         (await tx.mealPlan.create({ data: { householdId: household.householdId, weekStartDate: weekStart, status: "active" } }));
 
-      // Every slot exists (same grid as Build My Week). Lunches and dinners are
-      // cleared and rewritten; breakfasts and snacks the user picked are kept.
+      // Lunches and dinners are rewritten; picked breakfasts and snacks are kept.
       for (const day of context.input.days) {
         for (const slot of SLOTS) {
           const where = { mealPlanId_date_slot: { mealPlanId: plan.id, date: new Date(day.date), slot } };
@@ -86,7 +73,6 @@ export class PlanMyWeekService {
         }
       }
 
-      // Dinners first, so leftover lunches can point at the dinner they come from.
       const dinnerIdByDate = new Map<string, string>();
       for (const meal of planned.filter((m) => m.slot === "dinner")) {
         const row = await tx.meal.update({
@@ -109,7 +95,7 @@ export class PlanMyWeekService {
     return this.prisma.mealPlan.findUniqueOrThrow({ where: { id: plan.id }, include: PLAN_INCLUDE });
   }
 
-  /** Re-runs selection for one dinner against the rest of the week (architecture step 3). */
+  /** Re-picks one dinner against the rest of the week. */
   async regenerateDinner(household: RequestHousehold, mealPlanId: string, mealId: string) {
     await this.requirePro(household.householdId);
     const plan = await this.prisma.mealPlan.findUnique({ where: { id: mealPlanId }, include: { meals: true } });
@@ -154,7 +140,6 @@ export class PlanMyWeekService {
     const now = new Date();
     const [household, preferences, pantryItems, recipes, lastWeek] = await Promise.all([
       this.prisma.household.findUniqueOrThrow({ where: { id: householdId } }),
-      // Household-wide preferences plus every housemate's own allergies and dislikes.
       this.prisma.preference.findMany({ where: { OR: [{ householdId }, { member: { householdId } }] } }),
       this.prisma.pantryItem.findMany({ where: { householdId } }),
       this.prisma.recipe.findMany({ where: { source: "seed" }, include: { ingredients: { include: { ingredient: true } } } }),
@@ -178,9 +163,9 @@ export class PlanMyWeekService {
     }
 
     const plannerRecipes = recipes
-      .map((recipe) => ({ recipe, conflicts: this.conflicts(recipe, values("allergy"), values("dislike")) }))
+      .map((recipe) => ({ recipe, conflicts: recipeConflicts(recipe, preferences) }))
       .filter(({ conflicts }) => !conflicts.blocked)
-      .map(({ recipe, conflicts }) => toPlannerRecipe(recipe, conversions, conflicts.warnings.length));
+      .map(({ recipe, conflicts }) => toPlannerRecipe(recipe, conflicts.warnings.length));
 
     const pantry: Record<string, number> = {};
     for (const item of pantryItems) pantry[item.ingredientId] = (pantry[item.ingredientId] ?? 0) + item.quantity;
@@ -221,19 +206,7 @@ export class PlanMyWeekService {
     };
   }
 
-  private conflicts(recipe: RecipeWithIngredients, allergyValues: string[], dislikeValues: string[]) {
-    return checkRecipeConflicts({
-      ingredients: recipe.ingredients.map((ri) => ({ ingredientId: ri.ingredientId, name: ri.ingredient.name, aliases: ri.ingredient.aliases })),
-      allergyValues,
-      dislikeValues,
-    });
-  }
-
-  /**
-   * MealMesh Score (docs/algorithms.md §6) for the plan as it now stands. Spend is the
-   * cheapest product anywhere for each line after pantry subtraction — the min-cost
-   * estimate, before the shopper picks stores. The AI only phrases these numbers.
-   */
+  /** Spend = cheapest product anywhere per line, after pantry subtraction. */
   private async scorePlan(mealPlanId: string, context: PlannerContext) {
     const meals = await this.prisma.meal.findMany({ where: { mealPlanId, type: MealType.cook, recipeId: { not: null } } });
     const cooked = meals.map((m) => ({ meal: m, recipe: context.recipesById.get(m.recipeId!) })).filter((c) => c.recipe);
@@ -242,7 +215,6 @@ export class PlanMyWeekService {
     const usage: Record<string, number> = {};
     for (const { meal, recipe } of cooked) {
       for (const line of recipe!.ingredients) {
-        // PlannerRecipe quantities are already in base units for recipe.servings.
         demands.push({ recipeId: recipe!.id, ingredientId: line.ingredientId, quantity: line.quantity, unit: context.conversions[line.ingredientId]!.baseUnit, recipeServings: recipe!.servings, mealServings: meal.servings });
         usage[line.ingredientId] = (usage[line.ingredientId] ?? 0) + 1;
       }
@@ -296,25 +268,4 @@ export class PlanMyWeekService {
       this.prisma.mealPlan.update({ where: { id: mealPlanId }, data: { estimatedCostCents: spendCents } }),
     ]);
   }
-}
-
-/** Recipe → planner shape: optional lines dropped, quantities converted to base units. */
-function toPlannerRecipe(recipe: RecipeWithIngredients, conversions: Record<string, IngredientConversion>, dislikeMatches: number): PlannerRecipe {
-  return {
-    id: recipe.id,
-    servings: recipe.servings,
-    totalMinutes: recipe.prepMinutes + recipe.cookMinutes,
-    cuisines: recipe.cuisines,
-    dietTags: recipe.dietTags,
-    mealSlots: recipe.mealSlots,
-    ingredients: recipe.ingredients
-      .filter((line) => !line.optional)
-      .map((line) => ({
-        ingredientId: line.ingredientId,
-        quantity: convertToBaseUnit({ value: line.quantity, unit: line.unit as Unit }, conversions[line.ingredientId]!).value,
-        proteinGroup: line.ingredient.proteinGroup,
-        isStaple: line.ingredient.isStaple,
-      })),
-    dislikeMatches,
-  };
 }

@@ -1,5 +1,4 @@
-// Generous spacing per docs/ux.md — this is a tactile, breathable UI, not a dense
-// dashboard. 4px base scale.
+// 4px base scale.
 
 export const spacing = {
   xs: 4,
