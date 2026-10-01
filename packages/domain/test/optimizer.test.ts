@@ -103,3 +103,42 @@ describe("optimizeBasket — min_cost and min_stores", () => {
     expect(DEFAULT_TRIP_COST_CENTS).toBe(600);
   });
 });
+
+// docs/open-questions.md item 13: best_overall considers every pair of reachable stores,
+// not only pairs that include the min_stores store.
+describe("optimizeBasket — best_overall considers every pair of stores", () => {
+  const threeItems: BasketItem[] = [...items, { ingredientId: "olives", neededQuantity: 100 }];
+  const storeDistances: StoreDistance[] = [
+    { storeId: "full", distanceKm: 1 },
+    { storeId: "cheapA", distanceKm: 2 },
+    { storeId: "cheapB", distanceKm: 2 },
+  ];
+  const candidatesByIngredient: Record<string, ProductOption[]> = {
+    chicken: [product("f-chicken", "full", "chicken", 2000), product("a-chicken", "cheapA", "chicken", 900)],
+    rice: [product("f-rice", "full", "rice", 1000), product("a-rice", "cheapA", "rice", 900), product("b-rice", "cheapB", "rice", 300)],
+    olives: [product("f-olives", "full", "olives", 600), product("b-olives", "cheapB", "olives", 400)],
+  };
+
+  it("min_stores still means one store: the only complete one", () => {
+    const result = optimizeBasket({ strategy: "min_stores", items: threeItems, candidatesByIngredient, storeDistances });
+    expect(result.totalCents).toBe(3600);
+    expect(result.storeBreakdown.map((b) => b.storeId)).toEqual(["full"]);
+  });
+
+  it("best_overall finds a pair that leaves out the complete store", () => {
+    // cheapA + cheapB: chicken 900 + rice 300 + olives 400 = 1600 (+600 trip) beats
+    // full alone (3600) and any pair with full (best: full + cheapA = 2400 + 600).
+    const result = optimizeBasket({ strategy: "best_overall", items: threeItems, candidatesByIngredient, storeDistances });
+    expect(result.totalCents).toBe(1600);
+    expect(result.storeBreakdown.map((b) => b.storeId).sort()).toEqual(["cheapA", "cheapB"]);
+    expect(result.savingsCents).toBe(2000);
+  });
+
+  it("only pairs stores within the detour limit", () => {
+    const far = storeDistances.map((s) => (s.storeId === "cheapB" ? { ...s, distanceKm: 50 } : s));
+    const result = optimizeBasket({ strategy: "best_overall", items: threeItems, candidatesByIngredient, storeDistances: far });
+    // Without cheapB the best pair is full + cheapA: chicken 900 + rice 900 + olives 600.
+    expect(result.totalCents).toBe(2400);
+    expect(result.storeBreakdown.map((b) => b.storeId).sort()).toEqual(["cheapA", "full"]);
+  });
+});

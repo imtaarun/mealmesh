@@ -58,9 +58,15 @@ Cost of an ingredient quantity = cheapest available product that satisfies it:
 
 ```
 unitPrice   = product.priceCents / product.packSizeInBaseUnit
-packsNeeded = ceil(buyQty / product.packSizeInBaseUnit)
+packsNeeded = ceil(needed / product.packSizeInBaseUnit)
 lineCost    = packsNeeded * product.priceCents
 ```
+
+Cost from `needed`, not the increment-rounded `buyQty`: once a real product exists,
+its pack size already rounds the purchase, and rounding twice over-buys anything sold
+in packs smaller than the increment (3 g of oregano → 50 g → two 25 g jars). `buyQty`
+stays for display on list lines with no product match (`docs/open-questions.md`
+item 14).
 
 Two numbers matter and must not be confused:
 - **spend** = what you pay = `packsNeeded * price`
@@ -83,11 +89,13 @@ minStores: for each single store, cost the whole basket
            (items it doesn't carry go to a "missing" bucket, priced at the
            cheapest elsewhere and counted as a required second stop).
            Pick the cheapest complete-enough single store.
-bestOverall: start from the best single store (the anchor). For every other
-           store, compute the savings from moving items whose price gap
-           exceeds a threshold. Accept a second store only if
-           savings > TRIP_COST (default $6, tunable) and detour ≤ maxDetourKm.
-           Cap at 2 stores in the MVP.
+bestOverall: compare the minStores basket against every pair of stores
+           within maxDetourKm — not only pairs containing the minStores
+           store. In a pair each item goes to the cheaper store; one neither
+           carries is bought wherever it's cheapest. Charge TRIP_COST (default
+           $6, tunable) for every stop after the first, however it arises, and
+           take the cheapest. Cap at 2 stores in the MVP, apart from such
+           unavoidable extra stops.
 ```
 
 Report per strategy: total, per-store breakdown, savings vs. the naive single-store

@@ -58,9 +58,11 @@ All in `packages/seed-data`, written to Postgres by `apps/backend/prisma/seed.ts
 - `MockGroceryProvider` implemented against those tables.
 
 **DoD met:** 10 seed-data tests pass, including a realistic demo week run through the
-real aggregation → pantry → optimizer pipeline: single store $166.87 → two stores
-$143.27, top savings from chicken thighs, tomatoes, and yogurt. The optimizer and
-costing behaviours this surfaced are items 13 and 14 in `docs/open-questions.md`.
+real aggregation → pantry → optimizer pipeline: one store $150.90 → best two stores
+$126.90, top savings from chicken thighs, yogurt, and red lentils. (The Phase 3 notes
+first quoted $166.87 → $143.27, which came from an exploratory week with an extra
+breakfast, not the week the test runs, and from the optimizer before items 13 and 14
+in `docs/open-questions.md` were resolved.)
 
 ## Phase 4 — Planner UI + Plan My Week — Build My Week DONE, Plan My Week NOT STARTED
 

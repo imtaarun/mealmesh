@@ -6,14 +6,20 @@
 import type { CostedLine, GroceryLineItem, ProductOption } from "../types.js";
 import { cheapestForQuantity } from "../pricing/index.js";
 
-/** Cost of a grocery line = the cheapest available product (same ingredient, same pack unit) that satisfies it. */
+/**
+ * Cost of a grocery line = the cheapest available product (same ingredient, same pack
+ * unit) that covers what the meals need. Priced from neededQuantity, not the rounded
+ * finalQuantity: pack sizes already round a real purchase, and rounding twice
+ * over-buys anything sold in packs smaller than the increment (docs/open-questions.md
+ * item 14 — 3 g of oregano is one 25 g jar, not two).
+ */
 export function costLine(item: GroceryLineItem, candidates: ProductOption[]): CostedLine {
   const usable = candidates.filter((c) => c.ingredientId === item.ingredientId && c.packUnit === item.unit);
   if (usable.length === 0) {
     throw new Error(`costLine: no candidate products for ingredient "${item.ingredientId}" in unit "${item.unit}"`);
   }
 
-  const priced = cheapestForQuantity(usable, item.finalQuantity)!;
+  const priced = cheapestForQuantity(usable, item.neededQuantity)!;
   const unitPrice = priced.candidate.priceCents / priced.candidate.packSize;
 
   return {
@@ -21,6 +27,6 @@ export function costLine(item: GroceryLineItem, candidates: ProductOption[]): Co
     productId: priced.candidate.productId,
     packsNeeded: priced.packsNeeded,
     spendCents: priced.cents,
-    consumedValueCents: Math.round(item.finalQuantity * unitPrice),
+    consumedValueCents: Math.round(item.neededQuantity * unitPrice),
   };
 }

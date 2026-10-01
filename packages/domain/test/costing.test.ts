@@ -46,4 +46,27 @@ describe("costLine", () => {
     expect(result.packsNeeded).toBe(2);
     expect(result.spendCents).toBe(600);
   });
+
+  // docs/open-questions.md item 14: the 50 g purchase increment rounds 3 g up to 50 g,
+  // but costing works from the real need — pack sizes do the rounding.
+  it("needs 3g oregano, sold in 25g jars -> one jar, even though the list rounds to 50g", () => {
+    const item: GroceryLineItem = {
+      ingredientId: "oregano",
+      neededQuantity: 3,
+      pantryCovered: 0,
+      finalQuantity: 50,
+      unit: "g",
+      needsReview: false,
+      isNominal: false,
+    };
+    const candidates: ProductOption[] = [
+      { productId: "p1", storeId: "s1", ingredientId: "oregano", priceCents: 349, packSize: 25, packUnit: "g" },
+    ];
+
+    const result = costLine(item, candidates);
+
+    expect(result.packsNeeded).toBe(1);
+    expect(result.spendCents).toBe(349);
+    expect(result.consumedValueCents).toBe(42); // 3g * (349c / 25g)
+  });
 });
