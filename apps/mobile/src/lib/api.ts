@@ -105,6 +105,23 @@ export interface Recipe {
   source: "seed" | "ai" | "user";
 }
 
+export interface RecipeDetail extends Recipe {
+  ingredients: Array<{
+    id: string;
+    ingredientId: string;
+    quantity: number;
+    unit: string;
+    note: string | null;
+    optional: boolean;
+    ingredient: { id: string; name: string };
+  }>;
+  /** Consumed value of one serving at the cheapest current prices; null if something has no price. */
+  costPerServingCents: number | null;
+  /** True when prices are estimates — show EstimatedPricingBadge (CLAUDE.md rule 2). */
+  estimatedPricing: boolean;
+  pantryIngredientIds: string[];
+}
+
 export type MealSlot = "breakfast" | "lunch" | "dinner" | "snack";
 export type MealType = "cook" | "leftover" | "eat_out" | "skip";
 
@@ -182,7 +199,10 @@ export const api = {
 
   getHousehold: () => apiClient.get<Household>("/api/households/current"),
 
-  getCurrentPlan: () => apiClient.get<MealPlan | null>("/api/meal-plans/current"),
+  getRecipe: (id: string) => apiClient.get<RecipeDetail>(`/api/recipes/${id}`),
+
+  /** The latest planned week, or with a date (YYYY-MM-DD) the week that contains it. */
+  getCurrentPlan: (date?: string) => apiClient.get<MealPlan | null>(`/api/meal-plans/current${date ? `?date=${date}` : ""}`),
   createEmptyWeek: (weekStartDate: string) => apiClient.post<MealPlan>("/api/meal-plans", { weekStartDate }),
   /** Plan My Week — Pro only; the backend answers 403 for Free households. */
   planMyWeek: (weekStartDate: string) => apiClient.post<MealPlan>("/api/meal-plans/generate", { weekStartDate }),

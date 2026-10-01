@@ -4,7 +4,7 @@ One phase ≈ one Claude Code session. **Each phase ends with the app running an
 own tests passing.** Do not start a phase before the previous one's DoD is met. Update
 the status line below as you go.
 
-**Current phase: 5** (Phases 0-4 done. See `IMPLEMENTATION_PLAN.md`.)
+**Current phase: 6** (Phases 0-5 done. See `IMPLEMENTATION_PLAN.md`.)
 
 ---
 
@@ -100,11 +100,27 @@ data (download + delete account). `docs/open-questions.md` items 20–23.
 a housemate's allergy, split, history, export, join, leave, delete) and a two-person
 run in the app; 9 token-check tests, 5 split tests.
 
-## Phase 5 — Recipes + cooking mode
+## Phase 5 — Recipes + cooking mode — DONE
 
 Recipe detail page, cooking mode with steps and timers.
 
-**DoD:** open any planned meal and cook it end to end on a phone.
+- **Recipe page**: cuisine image, total/prep/cook time, difficulty, diet tags; a
+  servings stepper that scales every quantity (`formatQuantity` in
+  `packages/domain/src/display`: "1½ cups", "285 g", "a pinch") and the cost; cost per
+  serving and in total, with the Estimated pricing badge; "✓ In your pantry" on what
+  the household has; steps with their timers.
+- **Cooking mode**: full screen, `STEP 3 OF 7`, large type, Back/Next at the bottom,
+  a countdown on timed steps that keeps running between steps (shown as a chip) and
+  vibrates at zero, screen kept awake, ✕ back to where you came from.
+- **Ways in**: every planned meal on Week ("View recipe ›"; leftovers say "just
+  reheat"), and a **Tonight** card on Home with Start cooking.
+- Ingredient substitutions stay with the P1 list (product-spec "After MVP"; they need
+  the AI).
+
+**DoD met:** in a phone-sized browser: plan the week → Home shows tonight's dinner →
+recipe → 4 → 6 servings (300 g → 450 g lentils, $2.52 → $3.78) → cooking mode →
+timer counts down and keeps running on the next step → ✕ back. Not yet on a real
+phone (vibration and keep-awake only work there).
 
 ## Phase 6 — Grocery list + pantry
 

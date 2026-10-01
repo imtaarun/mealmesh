@@ -134,12 +134,12 @@ POST /api/households/current/invites          owner: new invite code
 PATCH/api/households/current/members/:id      owner: cost share
 DELETE /api/households/current/members/:id    owner: remove a housemate
 POST /api/households/current/leave            member: leave
-GET  /api/meal-plans/current
+GET  /api/meal-plans/current?date=             latest week, or the week containing date (Home's Tonight)
 POST /api/meal-plans                          creates an empty week (Build My Week entry point)
 POST /api/meal-plans/generate                 Pro only — auto-fills a week; 402/403 for Free
 POST /api/meal-plans/:id/meals/:mealId/regenerate   Pro only — AI re-pick; Free uses the PATCH below instead
 PATCH/api/meal-plans/:id/meals/:mealId        replace, skip, leftover, servings — how Build My Week writes picks
-GET  /api/recipes/:id
+GET  /api/recipes/:id                         recipe + cost per serving + what's in your pantry
 POST /api/recipes/generate
 GET  /api/pantry
 POST /api/pantry/items

@@ -206,9 +206,22 @@ export default function WeekScreen() {
                     {meal.type === "eat_out" ? (
                       <Text style={{ ...typography.body, color: colors.textMuted }}>Eating out</Text>
                     ) : meal.recipe ? (
-                      <Text style={{ ...typography.bodyStrong, color: colors.text }} numberOfLines={1}>
-                        {meal.type === "leftover" ? `Leftovers · ${meal.recipe.title}` : meal.recipe.title}
-                      </Text>
+                      <Pressable
+                        onPress={() =>
+                          router.push({
+                            pathname: "/recipe/[id]",
+                            params: { id: meal.recipe!.id, servings: String(meal.servings), ...(meal.type === "leftover" ? { leftover: "1" } : {}) },
+                          })
+                        }
+                        hitSlop={6}
+                      >
+                        <Text style={{ ...typography.bodyStrong, color: colors.text }} numberOfLines={1}>
+                          {meal.type === "leftover" ? `Leftovers · ${meal.recipe.title}` : meal.recipe.title}
+                        </Text>
+                        <Text style={{ ...typography.caption, color: colors.primary }}>
+                          {meal.type === "leftover" ? "View recipe ›" : `${meal.recipe.prepMinutes + meal.recipe.cookMinutes} min · View recipe ›`}
+                        </Text>
+                      </Pressable>
                     ) : (
                       <Text style={{ ...typography.body, color: colors.textMuted }}>Nothing picked yet</Text>
                     )}

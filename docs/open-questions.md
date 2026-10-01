@@ -188,6 +188,12 @@ you took and why. Never resolve one of these silently in code.
     real shopping trips (who paid, who owes whom) is a later feature, once Phase 6
     records actual purchases.
 
+24. **Quantities inside step text don't scale — OPEN.** The ingredient list scales to
+    the chosen servings, but step text is written for the recipe's own servings
+    ("add 2 tbsp butter"). Fixing it means marking quantities up in the instructions;
+    until then, cooks go by the ingredient list. Worth doing before AI recipes arrive,
+    since they could be generated with markup from the start.
+
 ## Known gaps in the original spec
 
 - No unit-conversion strategy, which is the hardest part of aggregation

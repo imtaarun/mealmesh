@@ -70,3 +70,16 @@ describe("costLine", () => {
     expect(result.consumedValueCents).toBe(42); // 3g * (349c / 25g)
   });
 });
+
+describe("cheapestUnitPriceCents", () => {
+  it("takes the lowest price per gram across stores and pack sizes", async () => {
+    const { cheapestUnitPriceCents } = await import("../src/pricing/index.js");
+    expect(
+      cheapestUnitPriceCents([
+        { productId: "a", storeId: "s1", ingredientId: "rice", priceCents: 999, packSize: 2000, packUnit: "g" },
+        { productId: "b", storeId: "s2", ingredientId: "rice", priceCents: 300, packSize: 900, packUnit: "g" },
+        { productId: "c", storeId: "s1", ingredientId: "milk", priceCents: 529, packSize: 2000, packUnit: "ml" },
+      ]),
+    ).toEqual({ rice: 300 / 900, milk: 529 / 2000 });
+  });
+});

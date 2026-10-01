@@ -16,3 +16,12 @@ export function cheapestForQuantity(candidates: ProductOption[], quantity: numbe
   }
   return best;
 }
+
+/** Cheapest price per base unit (g, ml, or piece) for each ingredient, across every product that sells it. */
+export function cheapestUnitPriceCents(candidates: ProductOption[]): Record<string, number> {
+  const unitPrices: Record<string, number> = {};
+  for (const c of candidates) {
+    unitPrices[c.ingredientId] = Math.min(unitPrices[c.ingredientId] ?? Infinity, c.priceCents / c.packSize);
+  }
+  return unitPrices;
+}

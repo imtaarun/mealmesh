@@ -62,7 +62,7 @@ package directly with `pnpm --filter <app> build`, build `@mealmesh/domain` firs
 
 ## Current state
 
-Phases 0-4 are done, plus accounts and housemates (4b): both planning paths work — **Build My Week** (Free and Pro,
+Phases 0-5 are done, plus accounts and housemates (4b): both planning paths work — **Build My Week** (Free and Pro,
 by hand) and **Plan My Week** (Pro, one tap; `docs/open-questions.md` item 11).
 Nothing described below is scaffolding —
 every item was typechecked, built, and exercised end-to-end over real HTTP against a
@@ -99,7 +99,10 @@ real local Postgres database, not just trusted to compile. Full detail in
   code; split the week's estimate by share; History; Your data (download, delete
   account).
 
-**Not built yet**: recipe detail and cooking mode (Phase 5), the grocery list, pantry,
+- **Recipes and cooking** (Phase 5): recipe page with servings scaling, cost per
+  serving, and pantry marks; full-screen cooking mode with timers; Tonight on Home.
+
+**Not built yet**: the grocery list, pantry,
 and optimization screens (Phases 6–7 — the pantry API still returns "not yet
 implemented"), and `pnpm lint` (no `eslint.config.js` exists yet despite every package
 having a `lint` script — a known gap, not yet fixed).
