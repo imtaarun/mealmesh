@@ -110,13 +110,11 @@ Recipe placeholders (until there are photos) are an `accentTint` →
   does). Android's tab bar uses Material elevation 3.
 - **Liquid Glass (iOS):** `Glass` is used only on the control layer, never on
   content, and never stacked on other glass (Apple's rule). Today that means the
-  floating tab bar capsule and cooking mode's Back/Next bar. It's an ultra-thin blur
-  (`expo-blur`), a `glassFill` tint, a `glassEdge` hairline rim, and a soft shadow,
-  so content refracts through it as it scrolls. Android gets a Material tonal
-  surface (`surfaceElevated`, elevation 3) instead.
-- **Native Liquid Glass:** Apple's real material (`expo-glass-effect`, iOS 26) needs
-  Expo SDK 54+. This app is on SDK 52. After the upgrade, `Glass` swaps its blur for
-  `GlassView`, a one-file change. No screen changes.
+  floating tab bar capsule and cooking mode's Back/Next bar. On iOS 26+ it's Apple's
+  native material (`GlassView` from `expo-glass-effect`). On older iOS (and web) it's
+  emulated: an ultra-thin blur (`expo-blur`), a `glassFill` tint, a `glassEdge`
+  hairline rim, and a soft shadow. Android gets a Material tonal surface
+  (`surfaceElevated`, elevation 3) instead.
 
 ## 5. Motion
 
