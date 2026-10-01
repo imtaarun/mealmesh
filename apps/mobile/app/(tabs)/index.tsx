@@ -39,7 +39,7 @@ export default function HomeScreen() {
       <Text style={{ ...typography.display, color: colors.text, marginBottom: spacing.lg }}>{greeting(new Date().getHours())}</Text>
 
       {plan === undefined ? (
-        <ActivityIndicator color={colors.primary} />
+        <ActivityIndicator color={colors.brandAccent} />
       ) : tonight?.recipe && tonight.type !== "eat_out" ? (
         <>
           <Text style={{ ...typography.label, color: colors.textMuted, marginBottom: spacing.sm }}>TONIGHT</Text>

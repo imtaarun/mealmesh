@@ -40,6 +40,7 @@ export function CuisinePlaceholder({ cuisine, height = 140 }: CuisinePlaceholder
       style={{
         height,
         borderRadius: radius.lg,
+        borderCurve: "continuous",
         alignItems: "center",
         justifyContent: "center",
       }}

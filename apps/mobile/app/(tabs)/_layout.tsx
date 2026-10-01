@@ -1,12 +1,13 @@
 import { Redirect, Tabs } from "expo-router";
-import { View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
+import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/theme";
 import { useAuth } from "@/auth/AuthProvider";
 
 // Signed-out → /welcome; new accounts finish profile setup first.
 export default function TabsLayout() {
-  const { colors } = useTheme();
+  const { colors, hairline } = useTheme();
   const { status } = useAuth();
 
   if (status === "loading") {
@@ -23,9 +24,14 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
+        tabBarActiveTintColor: colors.brandAccent,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        tabBarStyle: Platform.select({
+          // iOS: frosted glass over scrolling content.
+          ios: { position: "absolute", backgroundColor: "transparent", borderTopWidth: hairline, borderTopColor: colors.border },
+          default: { backgroundColor: colors.surfaceElevated, borderTopWidth: 0, elevation: 3, height: 80, paddingTop: 8, paddingBottom: 12 },
+        }),
+        tabBarBackground: Platform.OS === "ios" ? () => <BlurView tint="systemUltraThinMaterial" intensity={100} style={StyleSheet.absoluteFill} /> : undefined,
       }}
     >
       <Tabs.Screen

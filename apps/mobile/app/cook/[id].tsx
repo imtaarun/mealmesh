@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, Vibration, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, Vibration, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useKeepAwake } from "expo-keep-awake";
 import { api, type RecipeDetail } from "@/lib/api";
+import { Button, Pill } from "@/components/ui/Form";
 import { useTheme } from "@/theme";
 
 // Timers keep running across steps.
@@ -20,7 +21,7 @@ const clock = (ms: number) => {
 
 export default function CookingScreen() {
   useKeepAwake();
-  const { colors, spacing, typography, radius } = useTheme();
+  const { colors, spacing, typography } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
   const [index, setIndex] = useState(0);
@@ -52,7 +53,7 @@ export default function CookingScreen() {
   if (!recipe) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, justifyContent: "center" }}>
-        <ActivityIndicator color={colors.primary} />
+        <ActivityIndicator color={colors.brandAccent} />
       </SafeAreaView>
     );
   }
@@ -83,25 +84,6 @@ export default function CookingScreen() {
     setBuzzed(b);
   };
 
-  const navButton = (labelText: string, onPress: () => void, primary: boolean, disabled = false) => (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      style={({ pressed }) => ({
-        flex: 1,
-        paddingVertical: spacing.lg,
-        alignItems: "center",
-        borderRadius: radius.pill,
-        backgroundColor: primary ? (pressed ? colors.primaryPressed : colors.primary) : colors.surface,
-        borderWidth: primary ? 0 : 1,
-        borderColor: colors.border,
-        opacity: disabled ? 0.4 : 1,
-      })}
-    >
-      <Text style={{ ...typography.heading, color: primary ? colors.background : colors.text }}>{labelText}</Text>
-    </Pressable>
-  );
-
   const otherTimers = running.filter(([i]) => Number(i) !== index);
 
   return (
@@ -110,19 +92,18 @@ export default function CookingScreen() {
         <Text style={{ ...typography.label, color: colors.textMuted }}>
           STEP {index + 1} OF {steps.length}
         </Text>
-        <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Leave cooking mode">
-          <Text style={{ ...typography.heading, color: colors.textMuted }}>✕</Text>
-        </Pressable>
+        <Pill label="✕" variant="neutral" accessibilityLabel="Leave cooking mode" onPress={() => router.back()} />
       </View>
 
       {otherTimers.length > 0 ? (
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, paddingHorizontal: spacing.lg }}>
           {otherTimers.map(([i]) => (
-            <Pressable key={i} onPress={() => setIndex(Number(i))} style={{ backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingVertical: spacing.xs, paddingHorizontal: spacing.md }}>
-              <Text style={{ ...typography.caption, color: remaining(Number(i)) <= 0 ? colors.danger : colors.text }}>
-                ⏱ Step {Number(i) + 1} · {remaining(Number(i)) <= 0 ? "time's up" : clock(remaining(Number(i)))}
-              </Text>
-            </Pressable>
+            <Pill
+              key={i}
+              variant={remaining(Number(i)) <= 0 ? "danger" : "neutral"}
+              label={`⏱ Step ${Number(i) + 1} · ${remaining(Number(i)) <= 0 ? "time's up" : clock(remaining(Number(i)))}`}
+              onPress={() => setIndex(Number(i))}
+            />
           ))}
         </View>
       ) : null}
@@ -132,23 +113,17 @@ export default function CookingScreen() {
 
         {step.timerSeconds ? (
           <View style={{ marginTop: spacing.xl, alignItems: "center", gap: spacing.md }}>
-            <Text style={{ fontSize: 56, fontWeight: "700", color: done ? colors.danger : colors.text, fontVariant: ["tabular-nums"] }}>
+            <Text style={{ fontSize: 56, fontWeight: "700", color: done ? colors.criticalError : colors.text, fontVariant: ["tabular-nums"] }}>
               {done ? "Time's up" : clock(left)}
             </Text>
             <View style={{ flexDirection: "row", gap: spacing.sm }}>
               {timer?.endsAt != null && !done ? (
-                <Pressable onPress={pause} style={{ paddingVertical: spacing.sm, paddingHorizontal: spacing.lg, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.primary }}>
-                  <Text style={{ ...typography.bodyStrong, color: colors.primary }}>Pause</Text>
-                </Pressable>
+                <Pill label="Pause" onPress={pause} />
               ) : !done ? (
-                <Pressable onPress={start} style={{ paddingVertical: spacing.sm, paddingHorizontal: spacing.lg, borderRadius: radius.pill, backgroundColor: colors.primary }}>
-                  <Text style={{ ...typography.bodyStrong, color: colors.background }}>{timer ? "Resume" : "Start timer"}</Text>
-                </Pressable>
+                <Pill label={timer ? "Resume" : "Start timer"} variant="primary" onPress={start} />
               ) : null}
               {timer ? (
-                <Pressable onPress={reset} style={{ paddingVertical: spacing.sm, paddingHorizontal: spacing.lg, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border }}>
-                  <Text style={{ ...typography.bodyStrong, color: colors.textMuted }}>Reset</Text>
-                </Pressable>
+                <Pill label="Reset" variant="neutral" onPress={reset} />
               ) : null}
             </View>
           </View>
@@ -156,8 +131,12 @@ export default function CookingScreen() {
       </ScrollView>
 
       <View style={{ flexDirection: "row", gap: spacing.md, padding: spacing.lg }}>
-        {navButton("Back", () => setIndex(index - 1), false, index === 0)}
-        {navButton(last ? "Done" : "Next", () => (last ? router.back() : setIndex(index + 1)), true)}
+        <View style={{ flex: 1 }}>
+          <Button label="Back" variant="neutral" disabled={index === 0} onPress={() => setIndex(index - 1)} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Button label={last ? "Done" : "Next"} onPress={() => (last ? router.back() : setIndex(index + 1))} />
+        </View>
       </View>
     </SafeAreaView>
   );

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { formatQuantity, scaleQuantity, type Unit } from "@mealmesh/domain";
 import { Screen, LoadingScreen, BackLink } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Form";
+import { Button, Pill } from "@/components/ui/Form";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { CuisinePlaceholder } from "@/components/recipe/CuisinePlaceholder";
 import { api, type RecipeDetail } from "@/lib/api";
@@ -14,7 +14,7 @@ import { useTheme } from "@/theme";
 const label = (s: string) => s.replace(/_/g, " ");
 
 export default function RecipeScreen() {
-  const { colors, spacing, typography, radius } = useTheme();
+  const { colors, spacing, typography } = useTheme();
   const params = useLocalSearchParams<{ id: string; servings?: string; leftover?: string }>();
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
   const [servings, setServings] = useState<number | null>(params.servings ? Number(params.servings) : null);
@@ -32,7 +32,6 @@ export default function RecipeScreen() {
 
   const have = new Set(recipe.pantryIngredientIds);
   const totalMinutes = recipe.prepMinutes + recipe.cookMinutes;
-  const pill = { paddingVertical: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border };
   const cook = () => router.push({ pathname: "/cook/[id]", params: { id: recipe.id, servings: String(servings) } });
 
   return (
@@ -54,7 +53,7 @@ export default function RecipeScreen() {
       ) : null}
 
       {params.leftover === "1" ? (
-        <Card style={{ marginBottom: spacing.md, backgroundColor: colors.surfaceMuted }}>
+        <Card style={{ marginBottom: spacing.md, backgroundColor: colors.backgroundMuted }}>
           <Text style={{ ...typography.body, color: colors.text }}>These are leftovers from last night — just reheat and eat.</Text>
         </Card>
       ) : null}
@@ -63,13 +62,9 @@ export default function RecipeScreen() {
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text style={{ ...typography.bodyStrong, color: colors.text }}>Servings</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.sm }}>
-            <Pressable style={pill} onPress={() => setServings(Math.max(1, servings - 1))} hitSlop={6}>
-              <Text style={{ ...typography.bodyStrong, color: colors.text }}>−</Text>
-            </Pressable>
+            <Pill label="−" variant="neutral" accessibilityLabel="Fewer servings" onPress={() => setServings(Math.max(1, servings - 1))} />
             <Text style={{ ...typography.heading, color: colors.text, minWidth: 24, textAlign: "center" }}>{servings}</Text>
-            <Pressable style={pill} onPress={() => setServings(Math.min(20, servings + 1))} hitSlop={6}>
-              <Text style={{ ...typography.bodyStrong, color: colors.text }}>+</Text>
-            </Pressable>
+            <Pill label="+" variant="neutral" accessibilityLabel="More servings" onPress={() => setServings(Math.min(20, servings + 1))} />
           </View>
         </View>
         {recipe.costPerServingCents !== null ? (
@@ -99,7 +94,7 @@ export default function RecipeScreen() {
                 {line.note ? <Text style={{ color: colors.textMuted }}>, {line.note}</Text> : null}
                 {line.optional ? <Text style={{ color: colors.textMuted }}> (optional)</Text> : null}
               </Text>
-              {have.has(line.ingredientId) ? <Text style={{ ...typography.caption, color: colors.accent }}>✓ In your pantry</Text> : null}
+              {have.has(line.ingredientId) ? <Text style={{ ...typography.caption, color: colors.success }}>✓ In your pantry</Text> : null}
             </View>
           </View>
         ))}
@@ -108,7 +103,7 @@ export default function RecipeScreen() {
       <Text style={{ ...typography.heading, color: colors.text, marginBottom: spacing.sm }}>Steps</Text>
       {recipe.instructions.map((step) => (
         <View key={step.step} style={{ flexDirection: "row", gap: spacing.md, marginBottom: spacing.md }}>
-          <Text style={{ ...typography.heading, color: colors.primary, width: 24 }}>{step.step}</Text>
+          <Text style={{ ...typography.heading, color: colors.brandAccent, width: 24 }}>{step.step}</Text>
           <View style={{ flex: 1 }}>
             <Text style={{ ...typography.body, color: colors.text }}>{step.text}</Text>
             {step.timerSeconds ? (

@@ -1,7 +1,9 @@
-import type { PropsWithChildren } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, View, type ViewProps } from "react-native";
+import { useContext, type PropsWithChildren } from "react";
+import { ActivityIndicator, ScrollView, View, type ViewProps } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
+import { TextLink } from "@/components/ui/Form";
 import { useTheme } from "@/theme";
 
 interface ScreenProps extends PropsWithChildren {
@@ -9,16 +11,17 @@ interface ScreenProps extends PropsWithChildren {
   style?: ViewProps["style"];
 }
 
-/** Base screen wrapper: safe-area, theme background, consistent horizontal padding. */
 export function Screen({ children, scroll = true, style }: ScreenProps) {
   const { colors, spacing } = useTheme();
+  // The tab bar floats over content (it's translucent on iOS), so leave room for it.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={tabBarHeight ? ["top", "left", "right"] : undefined} style={{ flex: 1, backgroundColor: colors.background }}>
       {scroll ? (
         <ScrollView
           style={style}
-          contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xxl }}
+          contentContainerStyle={{ padding: spacing.lg, paddingBottom: spacing.xxl + tabBarHeight }}
         >
           {children}
         </ScrollView>
@@ -30,12 +33,7 @@ export function Screen({ children, scroll = true, style }: ScreenProps) {
 }
 
 export function BackLink({ label = "Back" }: { label?: string }) {
-  const { colors, spacing, typography } = useTheme();
-  return (
-    <Pressable onPress={() => router.back()} hitSlop={8} style={{ marginBottom: spacing.md }}>
-      <Text style={{ ...typography.caption, color: colors.primary }}>‹ {label}</Text>
-    </Pressable>
-  );
+  return <TextLink label={`‹ ${label}`} onPress={() => router.back()} />;
 }
 
 export function LoadingScreen({ back }: { back?: string }) {
@@ -43,7 +41,7 @@ export function LoadingScreen({ back }: { back?: string }) {
   return (
     <Screen>
       {back ? <BackLink label={back} /> : null}
-      <ActivityIndicator color={colors.primary} />
+      <ActivityIndicator color={colors.brandAccent} />
     </Screen>
   );
 }

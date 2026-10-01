@@ -1,17 +1,17 @@
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import { Button, TextLink } from "@/components/ui/Form";
 import { useTheme } from "@/theme";
 
 interface EmptyStateProps {
   message: string;
   actionLabel?: string;
   onAction?: () => void;
-  /** A smaller text link under the main action — e.g. Pro's "Build it myself". */
   secondaryLabel?: string;
   onSecondary?: () => void;
 }
 
 export function EmptyState({ message, actionLabel, onAction, secondaryLabel, onSecondary }: EmptyStateProps) {
-  const { colors, spacing, radius, typography } = useTheme();
+  const { colors, spacing, typography } = useTheme();
 
   return (
     <View
@@ -32,24 +32,8 @@ export function EmptyState({ message, actionLabel, onAction, secondaryLabel, onS
       >
         {message}
       </Text>
-      {actionLabel && onAction ? (
-        <Pressable
-          onPress={onAction}
-          style={({ pressed }) => ({
-            backgroundColor: pressed ? colors.primaryPressed : colors.primary,
-            paddingVertical: spacing.sm,
-            paddingHorizontal: spacing.lg,
-            borderRadius: radius.pill,
-          })}
-        >
-          <Text style={{ ...typography.bodyStrong, color: colors.background }}>{actionLabel}</Text>
-        </Pressable>
-      ) : null}
-      {secondaryLabel && onSecondary ? (
-        <Pressable onPress={onSecondary} hitSlop={8}>
-          <Text style={{ ...typography.caption, color: colors.primary }}>{secondaryLabel}</Text>
-        </Pressable>
-      ) : null}
+      {actionLabel && onAction ? <Button label={actionLabel} onPress={onAction} /> : null}
+      {secondaryLabel && onSecondary ? <TextLink label={secondaryLabel} onPress={onSecondary} align="center" /> : null}
     </View>
   );
 }

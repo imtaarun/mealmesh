@@ -164,7 +164,7 @@ export default function ProfileSetupScreen() {
         </>
       ) : null}
 
-      {error ? <Text style={{ ...typography.caption, color: colors.danger, marginBottom: spacing.sm }}>{error}</Text> : null}
+      {error ? <Text style={{ ...typography.caption, color: colors.criticalError, marginBottom: spacing.sm }}>{error}</Text> : null}
       <Button label={saving ? "Saving…" : editing ? "Save" : "Get started"} disabled={saving} onPress={save} />
     </Screen>
   );

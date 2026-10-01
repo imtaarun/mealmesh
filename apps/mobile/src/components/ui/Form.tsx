@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Pressable, Text, TextInput, View, type TextInputProps } from "react-native";
 import { Chip } from "@/components/ui/Chip";
+import { PressableScale } from "@/components/ui/PressableScale";
 import { useTheme } from "@/theme";
 
 // Small building blocks shared by the welcome, profile setup, and profile screens.
@@ -40,6 +41,7 @@ export function TextField(props: TextInputProps) {
         borderWidth: 1,
         borderColor: colors.border,
         borderRadius: radius.md,
+        borderCurve: "continuous",
         padding: spacing.md,
         color: colors.text,
         backgroundColor: colors.surface,
@@ -49,27 +51,68 @@ export function TextField(props: TextInputProps) {
   );
 }
 
-/** Full-width pill button. "outline" is the quieter, secondary look. */
-export function Button({ label, onPress, disabled, variant = "primary" }: { label: string; onPress: () => void; disabled?: boolean; variant?: "primary" | "outline" | "danger" }) {
-  const { colors, spacing, radius, typography } = useTheme();
-  const filled = variant === "primary";
-  const tint = variant === "danger" ? colors.danger : colors.primary;
+type Variant = "primary" | "outline" | "danger" | "neutral";
+
+function useVariant(variant: Variant) {
+  const { colors } = useTheme();
+  const tint = variant === "danger" ? colors.criticalError : variant === "neutral" ? colors.text : colors.brandAccent;
+  return variant === "primary"
+    ? { box: { backgroundColor: colors.brandAccent }, text: colors.onBrandAccent }
+    : { box: { borderWidth: 1, borderColor: variant === "neutral" ? colors.border : tint }, text: tint };
+}
+
+/** Full-width action. */
+export function Button({ label, onPress, disabled, variant = "primary" }: { label: string; onPress: () => void; disabled?: boolean; variant?: Variant }) {
+  const { spacing, radius, typography, minTouch } = useTheme();
+  const look = useVariant(variant);
   return (
-    <Pressable
+    <PressableScale
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => ({
-        backgroundColor: filled ? (pressed || disabled ? colors.primaryPressed : colors.primary) : "transparent",
-        borderWidth: filled ? 0 : 1,
-        borderColor: tint,
-        borderRadius: radius.pill,
-        paddingVertical: spacing.md,
-        alignItems: "center",
-        opacity: disabled && !filled ? 0.6 : 1,
-        marginBottom: spacing.sm,
-      })}
+      accessibilityState={{ disabled: !!disabled }}
+      style={[
+        look.box,
+        {
+          minHeight: minTouch + spacing.sm,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: spacing.lg,
+          borderRadius: radius.pill,
+          opacity: disabled ? 0.6 : 1,
+          marginBottom: spacing.sm,
+        },
+      ]}
     >
-      <Text style={{ ...typography.bodyStrong, color: filled ? colors.background : tint }}>{label}</Text>
+      <Text style={{ ...typography.bodyStrong, color: look.text }}>{label}</Text>
+    </PressableScale>
+  );
+}
+
+/** Compact action, still at least minTouch in both directions. */
+export function Pill({ label, onPress, disabled, variant = "outline", accessibilityLabel }: { label: string; onPress: () => void; disabled?: boolean; variant?: Variant; accessibilityLabel?: string }) {
+  const { spacing, radius, typography, minTouch } = useTheme();
+  const look = useVariant(variant);
+  return (
+    <PressableScale
+      onPress={onPress}
+      disabled={disabled}
+      accessibilityLabel={accessibilityLabel ?? label}
+      style={[
+        look.box,
+        { minHeight: minTouch, minWidth: minTouch, justifyContent: "center", alignItems: "center", paddingHorizontal: spacing.md, borderRadius: radius.pill, opacity: disabled ? 0.5 : 1 },
+      ]}
+    >
+      <Text style={{ ...typography.caption, color: look.text }}>{label}</Text>
+    </PressableScale>
+  );
+}
+
+/** Inline text action with a full-size touch target. */
+export function TextLink({ label, onPress, align = "auto" }: { label: string; onPress: () => void; align?: "auto" | "center" }) {
+  const { colors, typography, minTouch } = useTheme();
+  return (
+    <Pressable accessibilityRole="link" onPress={onPress} style={{ minHeight: minTouch, minWidth: minTouch, justifyContent: "center", alignSelf: align === "center" ? "center" : "flex-start" }}>
+      <Text style={{ ...typography.caption, color: colors.brandAccent, textAlign: align === "center" ? "center" : "left" }}>{label}</Text>
     </Pressable>
   );
 }
