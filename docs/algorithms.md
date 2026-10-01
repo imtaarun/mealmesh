@@ -150,6 +150,39 @@ they must never drift apart.
   week).
 - **Variety** — average of `distinctProteins`, `distinctCuisines`, and
   `distinctCookingMethods`, each scored against a target of 3 (100 at 3 or more).
+  Recipes don't record a cooking method yet, so callers omit it and the average is
+  over proteins and cuisines only, rather than counting missing data as zero.
+
+## 6b. Plan My Week selection (`packages/domain/src/planner`)
+
+Greedy, one dinner per day in date order (docs/architecture.md "Meal plan generation"
+step 3). First the hard filters: the recipe suits dinner (`mealSlots`), carries every
+**restriction** diet (vegetarian, gluten_free, …), fits `max_cook_minutes` (prep +
+cook), wasn't cooked last week, and has no allergy match (the caller filters those
+with the conflict checker). Then each candidate is scored against the dinners already
+chosen:
+
+| Term | Points |
+|---|---|
+| Fresh (non-staple) ingredients shared with chosen dinners | +30 × share |
+| Ingredients already in the pantry | +15 × share |
+| Each expiring pantry item it uses (not already used) | +10 |
+| Each ingredient on a deal (max 3) | +4 |
+| Any cuisine the household likes | +8 |
+| Each **goal** diet met (`healthy`, `high_protein`) | +15 |
+| Each earlier dinner with the same protein group | −12 |
+| Same first cuisine as yesterday | −6 |
+| Busy day: each minute over 20 | −0.8 |
+| Cost per serving (consumed value) | −2 per dollar |
+| Each dislike match | −40 |
+
+Highest wins; ties go to higher pantry coverage, then recipe id, so the same inputs
+always give the same week. A dish repeats only once every eligible recipe is used.
+With leftover tolerance on, every dinner but the last cooks double and the next day's
+lunch is its leftovers. Eat-out days get an `eat_out` dinner and no leftover lunch
+after. Weights were tuned on the demo household (goal diets outrank deals; a repeated
+protein outweighs the reuse credit of sharing it) — change them here and in the code
+together.
 
 ## 7. "What changed?" (P1)
 

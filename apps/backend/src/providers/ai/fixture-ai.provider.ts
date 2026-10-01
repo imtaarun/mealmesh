@@ -32,8 +32,19 @@ export class FixtureAiProvider implements AIProvider {
     return [];
   }
 
-  async explainPlan(_input: PlanExplainRequest): Promise<string> {
-    return "This is a fixture explanation — replace with ClaudeAIProvider for real output.";
+  /** Deterministic stand-in for the AI's phrasing — restates the computed numbers it
+   * was given, never adds any. */
+  async explainPlan(input: PlanExplainRequest): Promise<string> {
+    const { mealsCooked, sharedIngredients, expiringItemsUsed } = input.planSummary as {
+      mealsCooked: number;
+      sharedIngredients: number;
+      expiringItemsUsed: string[];
+    };
+    const items = expiringItemsUsed.length > 1
+      ? `${expiringItemsUsed.slice(0, -1).join(", ")} and ${expiringItemsUsed[expiringItemsUsed.length - 1]}`
+      : expiringItemsUsed[0];
+    const expiring = items ? `, and they use up the ${items} before ${expiringItemsUsed.length > 1 ? "they expire" : "it expires"}` : "";
+    return `${mealsCooked} meals share ${sharedIngredients} ingredients${expiring}.`;
   }
 
   async parseReceipt(_input: ReceiptRequest): Promise<ParsedReceipt> {

@@ -4,9 +4,7 @@ One phase ≈ one Claude Code session. **Each phase ends with the app running an
 own tests passing.** Do not start a phase before the previous one's DoD is met. Update
 the status line below as you go.
 
-**Current phase: 4, partially done** (Phases 0-3 done; Phase 4's Build My Week/Free
-path is done and verified end-to-end, Plan My Week/Pro path is not built. See
-`IMPLEMENTATION_PLAN.md`.)
+**Current phase: 5** (Phases 0-4 done. See `IMPLEMENTATION_PLAN.md`.)
 
 ---
 
@@ -64,7 +62,7 @@ first quoted $166.87 → $143.27, which came from an exploratory week with an ex
 breakfast, not the week the test runs, and from the optimizer before items 13 and 14
 in `docs/open-questions.md` were resolved.)
 
-## Phase 4 — Planner UI + Plan My Week — Build My Week DONE, Plan My Week NOT STARTED
+## Phase 4 — Planner UI + Plan My Week — DONE
 
 Per `docs/open-questions.md` item 11, this phase forked into two paths:
 
@@ -75,18 +73,20 @@ Per `docs/open-questions.md` item 11, this phase forked into two paths:
   end-to-end against a real backend and real seeded recipes (signup → onboard → browse
   → pick → conflict-blocked → conflict-confirmed → leftover, all over real HTTP).
   Recipe imagery: per-cuisine gradient placeholder, per `docs/ux.md`.
-- **Plan My Week (Pro, AI-orchestrated auto-fill) — not started.** The
-  candidate-and-select pipeline in `docs/architecture.md` "Meal plan generation" is
-  still a stub (`MealPlansService.generate`/`regenerateMeal`). Needs
-  `subscriptionTier === 'pro'` gating, `AIProvider` wiring, and the greedy-selection
-  algorithm.
-- **Score display** is not wired into the UI yet. Phase 3's pricing data now exists;
-  what's missing is the grocery-list/costing service that turns a plan into
-  spend/consumed-value figures for `computeMealPlanScore` (Phases 6–7).
+- **Plan My Week (Pro) — DONE.** `POST /api/meal-plans/generate` and
+  `.../meals/:mealId/regenerate`, Pro-gated in the service (403 for Free). Greedy
+  selection in `packages/domain/src/planner` (weights in `docs/algorithms.md` §6b),
+  leftovers, eat-out days, and a stored MealMesh Score with an AI-phrased explanation.
+  Fills dinners and leftover lunches (`docs/open-questions.md` items 16–19). Week
+  screen: Plan My Week / Build it myself, "Balancing your week…", the retry error, a
+  summary card (`N meals planned · $X estimated · score/100` + Estimated pricing
+  badge), leftover and eat-out cards, New pick on each dinner.
 
-**DoD** ("demo preferences in → coherent 7-day plan out... respecting budget") is only
-fully met for the manual Build My Week path, and without budget/cost figures in the UI
-yet.
+**DoD met:** for the demo household, seven different dinners within 35 minutes, no
+mushrooms, at least 5 healthy, 4+ protein groups, spinach and yogurt used before they
+expire, six leftover lunches; over HTTP it came to $91.91 estimated against the $120 budget,
+scoring 76/100 — enforced by
+tests in `packages/seed-data`, and run end-to-end over HTTP and in the app.
 
 ## Phase 5 — Recipes + cooking mode
 

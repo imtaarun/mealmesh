@@ -196,6 +196,9 @@ model Ingredient {
   density       Float?
   shelfLifeDays Int?
   isStaple      Boolean  @default(false)
+  // e.g. "chicken" for breast, thigh, and ground chicken alike — what Plan My Week
+  // varies across the week (docs/open-questions.md item 17). Null for non-proteins.
+  proteinGroup  String?
 
   recipeIngredients RecipeIngredient[]
   pantryItems       PantryItem[]
@@ -214,6 +217,9 @@ model Recipe {
   difficulty   Difficulty
   cuisines     String[]
   dietTags     String[]
+  // Which slots the dish suits — Plan My Week only fills a slot from recipes tagged
+  // for it, so pancakes never land on a dinner (docs/open-questions.md item 16).
+  mealSlots    MealSlot[]   @default([lunch, dinner])
   instructions Json // ordered steps: { step, text, timerSeconds? }[]
   source       RecipeSource @default(seed)
   nutrition    Json?

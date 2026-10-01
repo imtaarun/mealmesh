@@ -72,4 +72,10 @@ describe("computeMealPlanScore", () => {
       expect(value).toBeLessThanOrEqual(100);
     }
   });
+
+  it("leaves cooking methods out of variety when they aren't supplied, instead of scoring them 0", () => {
+    const { distinctCookingMethods: _omit, ...withoutMethods } = baseInput({ distinctProteins: 3, distinctCuisines: 3 });
+    expect(computeMealPlanScore(withoutMethods).variety).toBe(100);
+    expect(computeMealPlanScore(baseInput({ distinctProteins: 3, distinctCuisines: 3, distinctCookingMethods: 0 })).variety).toBe(67);
+  });
 });

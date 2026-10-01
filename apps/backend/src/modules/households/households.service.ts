@@ -7,7 +7,12 @@ import type { RequestHousehold } from "../../common/household-context.js";
 export class HouseholdsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getCurrent(_household: RequestHousehold): Promise<never> {
-    throw new Error("HouseholdsService.getCurrent: not yet implemented — Phase 1");
+  /** The signed-in household with its preferences — the app reads subscriptionTier
+   * from here to decide whether to offer Plan My Week. */
+  async getCurrent(household: RequestHousehold) {
+    return this.prisma.household.findUniqueOrThrow({
+      where: { id: household.householdId },
+      include: { preferences: true },
+    });
   }
 }

@@ -8,6 +8,7 @@
     "difficulty": "medium",
     "cuisines": ["indian"],
     "dietTags": ["gluten_free", "high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chicken-thigh", "quantity": 600, "unit": "g" },
       { "ingredientId": "butter", "quantity": 3, "unit": "tbsp" },
@@ -44,6 +45,7 @@
     "difficulty": "easy",
     "cuisines": ["indian"],
     "dietTags": ["vegan", "vegetarian", "gluten_free", "dairy_free", "high_protein", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chickpeas-canned", "quantity": 2, "unit": "can" },
       { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
@@ -77,6 +79,7 @@
     "difficulty": "medium",
     "cuisines": ["indian"],
     "dietTags": ["vegetarian", "high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "paneer", "quantity": 250, "unit": "g" },
       { "ingredientId": "frozen-spinach", "quantity": 400, "unit": "g" },
@@ -108,6 +111,7 @@
     "difficulty": "easy",
     "cuisines": ["indian"],
     "dietTags": ["vegan", "vegetarian", "gluten_free", "dairy_free", "high_protein", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "lentils-red", "quantity": 300, "unit": "g" },
       { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
@@ -140,6 +144,7 @@
     "difficulty": "medium",
     "cuisines": ["indian"],
     "dietTags": ["vegetarian", "gluten_free", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "basmati-rice", "quantity": 350, "unit": "g" },
       { "ingredientId": "carrot", "quantity": 2, "unit": "piece" },
@@ -174,6 +179,7 @@
     "difficulty": "easy",
     "cuisines": ["mediterranean"],
     "dietTags": ["gluten_free", "high_protein", "healthy", "low_carb"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chicken-breast", "quantity": 500, "unit": "g" },
       { "ingredientId": "cucumber", "quantity": 1, "unit": "piece" },
@@ -203,6 +209,7 @@
     "difficulty": "easy",
     "cuisines": ["mediterranean"],
     "dietTags": ["vegan", "vegetarian", "dairy_free", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chickpeas-canned", "quantity": 2, "unit": "can" },
       { "ingredientId": "spinach", "quantity": 200, "unit": "g" },
@@ -233,6 +240,7 @@
     "difficulty": "easy",
     "cuisines": ["mediterranean"],
     "dietTags": ["pescatarian", "high_protein", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "salmon-fillet", "quantity": 4, "unit": "piece" },
       { "ingredientId": "couscous", "quantity": 250, "unit": "g" },
@@ -261,6 +269,7 @@
     "difficulty": "medium",
     "cuisines": ["mediterranean", "middle_eastern"],
     "dietTags": ["vegan", "vegetarian", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chickpeas-canned", "quantity": 2, "unit": "can" },
       { "ingredientId": "garlic", "quantity": 2, "unit": "clove" },
@@ -290,6 +299,7 @@
     "difficulty": "easy",
     "cuisines": ["mediterranean", "middle_eastern"],
     "dietTags": ["vegetarian", "high_protein", "healthy"],
+    "mealSlots": ["breakfast", "lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "eggs", "quantity": 6, "unit": "piece" },
       { "ingredientId": "canned-diced-tomatoes", "quantity": 2, "unit": "can" },
@@ -320,6 +330,7 @@
     "difficulty": "easy",
     "cuisines": ["north_american", "italian"],
     "dietTags": ["high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "pasta", "quantity": 350, "unit": "g" },
       { "ingredientId": "chicken-breast", "quantity": 500, "unit": "g" },
@@ -348,6 +359,7 @@
     "difficulty": "easy",
     "cuisines": ["north_american", "mexican"],
     "dietTags": ["high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "ground-beef", "quantity": 500, "unit": "g" },
       { "ingredientId": "tortilla", "quantity": 8, "unit": "piece" },
@@ -379,6 +391,7 @@
     "difficulty": "easy",
     "cuisines": ["north_american"],
     "dietTags": ["high_protein", "gluten_free"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "ground-beef", "quantity": 500, "unit": "g" },
       { "ingredientId": "black-beans-canned", "quantity": 1, "unit": "can" },
@@ -409,6 +422,7 @@
     "difficulty": "easy",
     "cuisines": ["north_american"],
     "dietTags": ["gluten_free", "dairy_free", "healthy", "high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chicken-thigh", "quantity": 600, "unit": "g" },
       { "ingredientId": "potato", "quantity": 4, "unit": "piece" },
@@ -437,6 +451,7 @@
     "difficulty": "easy",
     "cuisines": ["north_american"],
     "dietTags": ["high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "ground-beef", "quantity": 600, "unit": "g" },
       { "ingredientId": "burger-bun", "quantity": 4, "unit": "piece" },
@@ -465,6 +480,7 @@
     "difficulty": "easy",
     "cuisines": ["indian"],
     "dietTags": ["vegan", "vegetarian", "gluten_free", "dairy_free", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "potato", "quantity": 3, "unit": "piece", "note": "cut into 2 cm cubes" },
       { "ingredientId": "cauliflower", "quantity": 1, "unit": "piece", "note": "cut into florets" },
@@ -498,6 +514,7 @@
     "difficulty": "easy",
     "cuisines": ["indian"],
     "dietTags": ["vegetarian", "gluten_free", "high_protein", "low_carb"],
+    "mealSlots": ["breakfast", "lunch"],
     "ingredients": [
       { "ingredientId": "eggs", "quantity": 6, "unit": "piece" },
       { "ingredientId": "onion", "quantity": 1, "unit": "piece", "note": "finely chopped" },
@@ -527,6 +544,7 @@
     "difficulty": "easy",
     "cuisines": ["indian"],
     "dietTags": ["gluten_free", "dairy_free", "high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "ground-chicken", "quantity": 500, "unit": "g" },
       { "ingredientId": "frozen-peas", "quantity": 1, "unit": "cup" },
@@ -563,6 +581,7 @@
     "difficulty": "easy",
     "cuisines": ["mediterranean", "middle_eastern"],
     "dietTags": ["vegan", "vegetarian", "dairy_free", "healthy"],
+    "mealSlots": ["lunch"],
     "ingredients": [
       { "ingredientId": "chickpeas-canned", "quantity": 1, "unit": "can", "note": "drained, liquid reserved" },
       { "ingredientId": "tahini", "quantity": 3, "unit": "tbsp" },
@@ -593,6 +612,7 @@
     "difficulty": "medium",
     "cuisines": ["mediterranean"],
     "dietTags": ["high_protein", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chicken-breast", "quantity": 600, "unit": "g", "note": "cut into 3 cm pieces" },
       { "ingredientId": "lemon", "quantity": 1, "unit": "piece" },
@@ -624,6 +644,7 @@
     "difficulty": "easy",
     "cuisines": ["mediterranean", "italian"],
     "dietTags": ["vegetarian"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "pasta", "quantity": 400, "unit": "g" },
       { "ingredientId": "feta-cheese", "quantity": 200, "unit": "g", "note": "block" },
@@ -653,6 +674,7 @@
     "difficulty": "medium",
     "cuisines": ["middle_eastern", "mediterranean"],
     "dietTags": ["gluten_free", "high_protein", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chicken-thigh", "quantity": 600, "unit": "g" },
       { "ingredientId": "plain-yogurt", "quantity": 0.5, "unit": "cup" },
@@ -687,6 +709,7 @@
     "difficulty": "easy",
     "cuisines": ["mexican", "north_american"],
     "dietTags": ["vegetarian", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "sweet-potato", "quantity": 2, "unit": "piece", "note": "cut into 1.5 cm cubes" },
       { "ingredientId": "black-beans-canned", "quantity": 1, "unit": "can", "note": "drained and rinsed" },
@@ -718,6 +741,7 @@
     "difficulty": "easy",
     "cuisines": ["north_american"],
     "dietTags": ["vegetarian"],
+    "mealSlots": ["breakfast"],
     "ingredients": [
       { "ingredientId": "all-purpose-flour", "quantity": 2, "unit": "cup" },
       { "ingredientId": "baking-powder", "quantity": 1, "unit": "tbsp" },
@@ -746,6 +770,7 @@
     "difficulty": "easy",
     "cuisines": ["north_american", "french"],
     "dietTags": ["vegetarian", "gluten_free", "high_protein", "low_carb"],
+    "mealSlots": ["breakfast", "lunch"],
     "ingredients": [
       { "ingredientId": "eggs", "quantity": 6, "unit": "piece" },
       { "ingredientId": "milk", "quantity": 2, "unit": "tbsp" },
@@ -774,6 +799,7 @@
     "difficulty": "easy",
     "cuisines": ["chinese", "north_american"],
     "dietTags": ["dairy_free", "high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chicken-breast", "quantity": 500, "unit": "g", "note": "thinly sliced" },
       { "ingredientId": "broccoli", "quantity": 1, "unit": "piece", "note": "cut into florets" },
@@ -807,6 +833,7 @@
     "difficulty": "easy",
     "cuisines": ["chinese"],
     "dietTags": ["vegan", "vegetarian", "dairy_free", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "tofu", "quantity": 1, "unit": "piece", "note": "extra-firm, pressed and cubed" },
       { "ingredientId": "broccoli", "quantity": 1, "unit": "piece", "note": "cut into florets" },
@@ -840,6 +867,7 @@
     "difficulty": "easy",
     "cuisines": ["chinese", "thai"],
     "dietTags": ["vegan", "vegetarian", "dairy_free"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "pasta", "quantity": 350, "unit": "g", "note": "spaghetti or linguine" },
       { "ingredientId": "peanut-butter", "quantity": 0.33, "unit": "cup" },
@@ -870,6 +898,7 @@
     "difficulty": "easy",
     "cuisines": ["north_american"],
     "dietTags": ["dairy_free", "high_protein", "healthy"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "chicken-breast", "quantity": 2, "unit": "piece" },
       { "ingredientId": "chicken-broth", "quantity": 2, "unit": "l" },
@@ -902,6 +931,7 @@
     "difficulty": "easy",
     "cuisines": ["chinese"],
     "dietTags": ["pescatarian", "dairy_free", "high_protein"],
+    "mealSlots": ["lunch", "dinner"],
     "ingredients": [
       { "ingredientId": "shrimp", "quantity": 400, "unit": "g", "note": "peeled and deveined" },
       { "ingredientId": "white-rice", "quantity": 1.5, "unit": "cup", "note": "cooked and cooled — day-old is best" },

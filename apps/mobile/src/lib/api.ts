@@ -64,11 +64,26 @@ export interface Meal {
   recipe?: Recipe | null;
 }
 
+export interface MealPlanScore {
+  total: number;
+  explanation: string;
+}
+
 export interface MealPlan {
   id: string;
   weekStartDate: string;
   status: string;
+  estimatedCostCents: number | null;
   meals: Meal[];
+  score?: MealPlanScore | null;
+}
+
+export interface Household {
+  id: string;
+  name: string;
+  subscriptionTier: "free" | "pro";
+  weeklyBudgetCents: number;
+  defaultServings: number;
 }
 
 export interface ConflictMatch {
@@ -95,8 +110,14 @@ export const api = {
     return apiClient.get<Recipe[]>(`/api/recipes${qs ? `?${qs}` : ""}`);
   },
 
+  getHousehold: () => apiClient.get<Household>("/api/households/current"),
+
   getCurrentPlan: () => apiClient.get<MealPlan | null>("/api/meal-plans/current"),
   createEmptyWeek: (weekStartDate: string) => apiClient.post<MealPlan>("/api/meal-plans", { weekStartDate }),
+  /** Plan My Week — Pro only; the backend answers 403 for Free households. */
+  planMyWeek: (weekStartDate: string) => apiClient.post<MealPlan>("/api/meal-plans/generate", { weekStartDate }),
+  regenerateDinner: (mealPlanId: string, mealId: string) =>
+    apiClient.post<MealPlan>(`/api/meal-plans/${mealPlanId}/meals/${mealId}/regenerate`),
 
   setMealSlot: (mealPlanId: string, mealId: string, recipeId: string, acknowledgeWarnings = false) =>
     apiClient.patch<UpdateMealResult>(`/api/meal-plans/${mealPlanId}/meals/${mealId}`, {

@@ -139,6 +139,32 @@ you took and why. Never resolve one of these silently in code.
     `ProductPrice.effectiveFrom/effectiveTo`. Fix the unit (e.g. cents per kg/L, or a
     Float) before building receipts.
 
+16. **What Plan My Week fills — DECIDED 2026-10-01.** Dinners for all seven days,
+    and — with leftover tolerance on — the next day's lunch as leftovers (each dinner
+    but the last cooks double). Breakfasts and snacks are left for the user: there
+    are only 3 breakfast recipes, and filling 7 breakfasts from them would mostly
+    repeat eggs. Recipes gained `mealSlots` so a breakfast dish never lands on a
+    dinner. Re-planning a week rewrites lunches and dinners and keeps breakfasts and
+    snacks the user picked. Revisit when the library has enough breakfasts.
+17. **Protein variety needs protein groups — DECIDED 2026-10-01.** The first build
+    treated chicken breast, chicken thigh, and ground chicken as three proteins and
+    put three chicken dinners in the demo week (and scored its variety 100).
+    Ingredients gained `proteinGroup` (chicken, beef, pork, fish, shellfish, legumes,
+    eggs, soy, paneer); a recipe's main protein is its first ingredient with one.
+18. **AI candidates when the pool is thin — NOT BUILT.** Architecture step 2 says to
+    ask the AI for extra candidates when the library is too small. A candidate is only
+    usable with ingredients mapped to `Ingredient` rows (quantities, units, prices),
+    which is the AI-recipe import that `RecipesService.generate` (Phase 5, Pro) will
+    need anyway. Until then the planner draws from the library alone and, if it runs
+    out, repeats a dish. Pro's AI use in Plan My Week today is the explanation, which
+    only phrases computed numbers.
+19. **Diet goals vs. restrictions — DECIDED 2026-10-01.** `healthy` and
+    `high_protein` are goals: a bonus in planning, never a filter (the demo household
+    is "mostly healthy"). Every other diet tag is a restriction: a recipe without it
+    is never planned. A goal outweighs this week's deals: the first build re-picked
+    Bacon Cheddar Burgers for the healthy demo household because three of its
+    ingredients were on sale.
+
 ## Known gaps in the original spec
 
 - No unit-conversion strategy, which is the hardest part of aggregation

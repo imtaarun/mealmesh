@@ -65,10 +65,15 @@ function convenienceScore(input: MealPlanScoreInput): number {
   return clamp(100 - (ratio - 1) * 100 * busyMultiplier);
 }
 
-/** Distinct proteins/cuisines/cooking methods vs. a target of 3 each, averaged. */
+/**
+ * Distinct proteins/cuisines/cooking methods vs. a target of 3 each, averaged. Cooking
+ * methods are left out of the average when not supplied — recipes don't record a
+ * method yet, and scoring that as zero would mark every plan down for missing data.
+ */
 function varietyScore(input: MealPlanScoreInput): number {
   const proteinScore = clamp((input.distinctProteins / 3) * 100);
   const cuisineScore = clamp((input.distinctCuisines / 3) * 100);
+  if (input.distinctCookingMethods === undefined) return (proteinScore + cuisineScore) / 2;
   const methodScore = clamp((input.distinctCookingMethods / 3) * 100);
   return (proteinScore + cuisineScore + methodScore) / 3;
 }

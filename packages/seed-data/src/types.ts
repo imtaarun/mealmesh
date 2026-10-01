@@ -32,6 +32,7 @@ export interface SeedIngredient {
   density?: number;
   shelfLifeDays?: number;
   isStaple: boolean;
+  proteinGroup?: string; // e.g. "chicken" for every chicken cut — what Plan My Week varies
 }
 
 export interface SeedRecipeIngredient {
@@ -57,6 +58,7 @@ export interface SeedRecipe {
   difficulty: "easy" | "medium" | "hard";
   cuisines: string[];
   dietTags: string[];
+  mealSlots: Array<"breakfast" | "lunch" | "dinner" | "snack">;
   ingredients: SeedRecipeIngredient[];
   instructions: SeedRecipeInstruction[];
 }

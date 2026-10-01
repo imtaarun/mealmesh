@@ -62,9 +62,9 @@ package directly with `pnpm --filter <app> build`, build `@mealmesh/domain` firs
 
 ## Current state
 
-Phases 0-3 are done, and Phase 4 is split by subscription tier
-(`docs/open-questions.md` item 11) — the Free/manual path (**Build My Week**) is done,
-the Pro/AI path (**Plan My Week**) is not. Nothing described below is scaffolding —
+Phases 0-4 are done: both planning paths work — **Build My Week** (Free and Pro,
+by hand) and **Plan My Week** (Pro, one tap; `docs/open-questions.md` item 11).
+Nothing described below is scaffolding —
 every item was typechecked, built, and exercised end-to-end over real HTTP against a
 real local Postgres database, not just trusted to compile. Full detail in
 `IMPLEMENTATION_PLAN.md`; phase-by-phase status in `docs/roadmap.md`.
@@ -85,14 +85,18 @@ real local Postgres database, not just trusted to compile. Full detail in
   `pnpm db:seed` (local dev only).
 - **`MockGroceryProvider`**: product search, current price (a sale beats the regular
   price), active deals per store, stores within a radius — reading the seeded tables.
+- **Plan My Week** (Pro): one tap fills seven dinners and six leftover lunches, picked
+  for shared ingredients, pantry, expiring items, deals, cost, variety, and busy days;
+  shows `meals planned · $ estimated · score/100` with the Estimated pricing badge;
+  New pick re-chooses one dinner. Log in as the demo account to try it.
 - **Build My Week**: browse the local recipe library, pick a dish per day/slot, get
   blocked on an allergy match, get warned (with a confirm-to-override) on a dislike
   match, mark a slot as leftover of an earlier meal — all working on both the API and
   in the mobile UI (onboarding → Week grid → recipe picker).
 
-**Not built yet**: Plan My Week (Pro/AI auto-generate), the grocery list, pantry, and
-optimization screens (Phases 6–7 — the pantry API still returns "not yet implemented"),
-score display in the UI, and `pnpm lint` (no `eslint.config.js` exists yet despite every package
+**Not built yet**: recipe detail and cooking mode (Phase 5), the grocery list, pantry,
+and optimization screens (Phases 6–7 — the pantry API still returns "not yet
+implemented"), and `pnpm lint` (no `eslint.config.js` exists yet despite every package
 having a `lint` script — a known gap, not yet fixed).
 
 <details>

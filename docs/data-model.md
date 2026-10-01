@@ -28,10 +28,13 @@ preference)
 `eat_out_day`), value, weight
 
 **Ingredient** — id, name, aliases[], category (shopping aisle), baseUnit (`g` | `ml` |
-`piece`), gramsPerPiece?, gramsPerCup?, density?, shelfLifeDays?, isStaple
+`piece`), gramsPerPiece?, gramsPerCup?, density?, shelfLifeDays?, isStaple,
+proteinGroup? (`chicken` for breast, thigh, and ground chicken alike; `legumes`,
+`eggs`, … — what Plan My Week varies; null for non-proteins)
 
 **Recipe** — id, title, imageUrl, servings, prepMinutes, cookMinutes, difficulty,
-cuisines[], dietTags[], instructions (ordered steps with optional `timerSeconds`),
+cuisines[], dietTags[], mealSlots[] (which slots the dish suits — default lunch and
+dinner), instructions (ordered steps with optional `timerSeconds`),
 source (`seed` | `ai` | `user`), nutrition?
 
 **RecipeIngredient** — id, recipeId, ingredientId, quantity, unit, note?, optional

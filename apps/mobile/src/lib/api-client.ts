@@ -36,7 +36,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(res.status, await res.text());
   }
 
-  return res.json() as Promise<T>;
+  // NestJS sends a handler's `null` (e.g. "no plan yet") as an empty body, which
+  // res.json() would throw on.
+  const text = await res.text();
+  return (text ? JSON.parse(text) : null) as T;
 }
 
 export const apiClient = {

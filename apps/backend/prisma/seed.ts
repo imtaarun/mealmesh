@@ -45,6 +45,7 @@ async function main() {
       density: ingredient.density,
       shelfLifeDays: ingredient.shelfLifeDays,
       isStaple: ingredient.isStaple,
+      proteinGroup: ingredient.proteinGroup ?? null,
     };
     await prisma.ingredient.upsert({
       where: { id: ingredient.id },
@@ -62,6 +63,7 @@ async function main() {
       difficulty: recipe.difficulty as Difficulty,
       cuisines: recipe.cuisines,
       dietTags: recipe.dietTags,
+      mealSlots: recipe.mealSlots,
       instructions: recipe.instructions,
       source: "seed" as const,
     };

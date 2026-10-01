@@ -107,6 +107,12 @@ produces seven unrelated recipes and no ingredient reuse.
 5. **Score the plan** (deterministic) and **explain it** (AI, given the computed
    numbers — it only phrases them).
 
+As built (`PlanMyWeekService`, `packages/domain/src/planner`): it fills **dinners plus
+leftover lunches**; breakfasts and snacks stay with the user (item 16). Step 2's AI
+top-up isn't built — the library is the whole pool (item 18). Spend for the score is
+the cheapest product anywhere per line after pantry subtraction, read through the
+`GroceryProvider`.
+
 This keeps the plan reproducible, testable, cheap, and explainable. Regeneration of a
 single meal re-runs step 3 for that slot only. Steps 2 and 5 are the only AI calls in
 this whole pipeline — gate both on `subscriptionTier === 'pro'` per the AIProvider
