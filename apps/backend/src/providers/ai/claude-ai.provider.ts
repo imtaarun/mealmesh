@@ -13,13 +13,7 @@ import type {
   SubstitutionRequest,
 } from "./ai-provider.interface.js";
 
-/**
- * Real provider, backed by the Claude API. Every method must: call the model, validate
- * the response against a zod schema, retry once on validation failure, then fall back
- * to deterministic behaviour (never a guess) — see docs/architecture.md "AIProvider".
- * TODO(Phase 4+): implement per-method as each feature needs it; do not implement all
- * six up front against no real usage.
- */
+/** TODO: per method, validate with zod, retry once, then fall back deterministically. */
 @Injectable()
 export class ClaudeAiProvider implements AIProvider {
   async proposeMealCandidates(_input: CandidateRequest): Promise<RecipeCandidate[]> {

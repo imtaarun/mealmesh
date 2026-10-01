@@ -22,9 +22,6 @@ function today(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// Home — docs/ux.md "Home screen tells a story", starting with Tonight: tonight's
-// dinner from the real plan, one tap from cooking mode. The week summary and smart
-// suggestions join it once Phases 6–7 compute the numbers behind them — never before.
 export default function HomeScreen() {
   const { colors, spacing, typography } = useTheme();
   const [plan, setPlan] = useState<MealPlan | null | undefined>(undefined);

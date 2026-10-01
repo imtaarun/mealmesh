@@ -3,8 +3,7 @@ import { Screen } from "@/components/ui/Screen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useTheme } from "@/theme";
 
-// Pantry — fridge / freezer / pantry, "Use It First" (docs/product-spec.md
-// "Pantry"). TODO(Phase 6): CRUD against GET/POST/PATCH /api/pantry(/items).
+// TODO(Phase 6): pantry CRUD and Use It First.
 export default function PantryScreen() {
   const { colors, typography, spacing } = useTheme();
 

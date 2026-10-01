@@ -1,7 +1,5 @@
-// Unit normalization — docs/algorithms.md section 1.
-// Converts a recipe quantity into the ingredient's baseUnit. Never guesses: if the
-// conversion data required to cross mass/volume/count families is missing, the value
-// is returned unconverted, in its original unit, with needsReview: true.
+// docs/algorithms.md §1. Never guesses: without conversion data the value stays in its
+// own unit with needsReview.
 
 import type { ConvertedQuantity, IngredientConversion, MassUnit, NominalUnit, Quantity, Unit, VolumeUnit } from "../types.js";
 
@@ -69,9 +67,6 @@ function fromMl(ingredientId: string, ml: number, ingredient: IngredientConversi
   return review(ingredientId, ml, originalUnit);
 }
 
-/**
- * Convert a single recipe quantity into the ingredient's base unit — docs/algorithms.md §1.
- */
 export function convertToBaseUnit(quantity: Quantity, ingredient: IngredientConversion): ConvertedQuantity {
   const { value, unit } = quantity;
 
@@ -85,9 +80,7 @@ export function convertToBaseUnit(quantity: Quantity, ingredient: IngredientConv
   }
 
   if (isVolumeUnit(unit)) {
-    // The cup shortcut is preferred over density for dry goods, per docs/algorithms.md §1
-    // ("cup → mass: grams = cups * gramsPerCup") — it's usually the more accurate figure
-    // recipe writers have on hand for granular ingredients.
+    // For dry goods, gramsPerCup beats density.
     if (unit === "cup" && ingredient.gramsPerCup !== undefined) {
       if (ingredient.baseUnit === "g") return ok(ingredient.id, value * ingredient.gramsPerCup, "g");
     }

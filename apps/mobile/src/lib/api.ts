@@ -1,6 +1,4 @@
-// Typed calls against apps/backend's API surface (docs/architecture.md). Response
-// shapes are hand-mirrored from the Prisma models the backend returns — kept minimal
-// (only the fields screens actually use), not a full duplicate of the schema.
+// Response types list only the fields screens use.
 
 import { apiClient } from "./api-client";
 
@@ -149,14 +147,6 @@ export interface MealPlan {
   score?: MealPlanScore | null;
 }
 
-export interface Household {
-  id: string;
-  name: string;
-  subscriptionTier: "free" | "pro";
-  weeklyBudgetCents: number;
-  defaultServings: number;
-}
-
 export interface ConflictMatch {
   ingredientId: string;
   preferenceValue: string;
@@ -196,8 +186,6 @@ export const api = {
     const qs = params.toString();
     return apiClient.get<Recipe[]>(`/api/recipes${qs ? `?${qs}` : ""}`);
   },
-
-  getHousehold: () => apiClient.get<Household>("/api/households/current"),
 
   getRecipe: (id: string) => apiClient.get<RecipeDetail>(`/api/recipes/${id}`),
 

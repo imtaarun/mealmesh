@@ -30,7 +30,6 @@ interface NewAccount {
   defaultServings?: number | undefined;
 }
 
-/** Session-based, household-scoped auth — see docs/architecture.md "Cross-cutting". */
 @Injectable()
 export class AuthService {
   constructor(
@@ -60,11 +59,7 @@ export class AuthService {
     return this.prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
   }
 
-  /**
-   * A new user either joins the household that invited them (as a member) or gets a
-   * household of their own (as its owner). Either way they get a HouseholdMember row —
-   * that's who appears on the housemates screen and in the cost split.
-   */
+  /** Joins the inviting household as a member, or owns a new one. */
   private async createAccount(tx: Prisma.TransactionClient, account: NewAccount) {
     let householdId: string;
     let role: MemberRole = MemberRole.owner;
@@ -131,13 +126,7 @@ export class AuthService {
     return this.result(user.id, user.householdId);
   }
 
-  /**
-   * Google or Apple sign-in. Already linked → sign in. Same verified email as an
-   * existing account → link it and sign in (the provider has proved the person owns
-   * that address). Otherwise → new account, joining the invite's household if a valid
-   * code came with it. Unverified emails never link, or anyone could claim an account
-   * by creating a provider login with someone else's address.
-   */
+  /** Linked → sign in; same verified email → link; otherwise create. Unverified emails never link. */
   async oauth(dto: OAuthDto): Promise<AuthResult> {
     const identity = await this.oauthVerifier.verify(dto.provider, dto.idToken);
 
@@ -169,11 +158,7 @@ export class AuthService {
     return this.result(user.id, user.householdId);
   }
 
-  /**
-   * Replaces the household's preference set with the submitted onboarding answers.
-   * Idempotent by design — re-running onboarding (e.g. editing preferences later from
-   * Profile) fully replaces the previous answers rather than accumulating duplicates.
-   */
+  /** Owner only. Replaces the household's preferences. */
   async onboard(household: RequestHousehold, dto: OnboardingDto) {
     const me = await this.prisma.householdMember.findUnique({ where: { userId: household.userId } });
     if (me?.role !== MemberRole.owner) {

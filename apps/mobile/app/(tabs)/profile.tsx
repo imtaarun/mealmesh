@@ -1,22 +1,20 @@
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Pressable, Share, Text, View } from "react-native";
+import { Pressable, Share, Text, View } from "react-native";
 import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { Screen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { Button, TextField } from "@/components/ui/Form";
 import { useAuth } from "@/auth/AuthProvider";
 import { confirm } from "@/lib/confirm";
 import { api, type Housemate, type Me, type Members } from "@/lib/api";
+import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
 
 const METHOD_LABELS: Record<string, string> = { email: "email", google: "Google", apple: "Apple" };
-const dollars = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
-// Profile — you, your household and housemates (with the week's cost split), and the
-// way to everything we know about you (History, My data).
 export default function ProfileScreen() {
   const { colors, spacing, typography, radius } = useTheme();
   const { logout } = useAuth();
@@ -42,11 +40,7 @@ export default function ProfileScreen() {
   }
 
   if (!me || !members) {
-    return (
-      <Screen>
-        <ActivityIndicator color={colors.primary} />
-      </Screen>
-    );
+    return <LoadingScreen />;
   }
 
   const isOwner = me.member.role === "owner";

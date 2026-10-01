@@ -1,9 +1,4 @@
-// Store catalog — products, price timelines, and deals, generated from
-// reference-prices.json and stores.json. Approximate pricing, not live retailer data
-// (docs/open-questions.md item 1): each store's price for an ingredient is the
-// reference price times the store's priceFactor, nudged by a per-product deviation
-// that is derived from a hash of the ids, so re-seeding always produces the same
-// numbers. Nothing here is random and nothing here calls a model.
+// Store price = reference × priceFactor, nudged by a hash of the ids so re-seeding is deterministic.
 
 import type { SeedReferencePrice, SeedStore } from "./types.js";
 
@@ -66,12 +61,7 @@ function storeCarries(store: SeedStore, ingredientId: string): boolean {
   return !(store.excludedIngredientIds ?? []).includes(ingredientId);
 }
 
-/**
- * Every product gets two regular-price rows: the price from 8 to 4 weeks ago (within
- * ±5% of today's) and the current one, so there's real price history to show. Each
- * store deal adds a sale row and a Deal running from 2 days before `now` to 5 days
- * after — re-run the seed to roll deals forward.
- */
+/** Previous and current regular prices per product, plus sale rows for this week's deals. */
 export function buildCatalog(stores: SeedStore[], referencePrices: SeedReferencePrice[], now: Date): Catalog {
   const products: CatalogProduct[] = [];
   const prices: CatalogPrice[] = [];

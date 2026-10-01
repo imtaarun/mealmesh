@@ -6,10 +6,7 @@ import { useKeepAwake } from "expo-keep-awake";
 import { api, type RecipeDetail } from "@/lib/api";
 import { useTheme } from "@/theme";
 
-// Cooking mode — docs/ux.md "Cooking mode": full screen, one step, large type,
-// thumb-reachable prev/next at the bottom, inline timers on timed steps, the screen
-// stays awake, and ✕ goes back to where you came from. Timers keep running when you
-// move between steps (something can simmer on step 2 while you chop for step 3).
+// Timers keep running across steps.
 
 interface StepTimer {
   endsAt: number | null; // running: when it hits zero

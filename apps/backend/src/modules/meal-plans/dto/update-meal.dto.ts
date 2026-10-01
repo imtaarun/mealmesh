@@ -19,8 +19,7 @@ export class UpdateMealDto {
   @Min(1)
   servings?: number;
 
-  /** Set true to write a "replace" through even though it matched a soft dislike —
-   * the client shows the warning first and resubmits with this set. */
+  /** Confirms a dislike warning the client has shown. */
   @IsOptional()
   @IsBoolean()
   acknowledgeWarnings?: boolean;

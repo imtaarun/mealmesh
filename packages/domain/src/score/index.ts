@@ -1,11 +1,4 @@
-// MealMesh Score — docs/algorithms.md section 6. Fixed weights, deterministic,
-// 0-100 each sub-score, weighted total. The explanation string is the only AI part and
-// is generated elsewhere (providers/ai) from these already-computed numbers.
-//
-// The weights table in docs/algorithms.md names what each sub-score is based on but
-// not the exact formula; the formulas below are the chosen implementation — see the
-// comment on each sub-score. All are pure functions of the input, so the score is
-// stable by construction: same plan in, same number out.
+// docs/algorithms.md §6.
 
 import type { MealPlanScore, MealPlanScoreInput } from "../types.js";
 
@@ -41,10 +34,6 @@ function ingredientEfficiencyScore(usageCounts: Record<string, number>, costCent
   return clamp((reusedCost / totalCost) * 100);
 }
 
-/**
- * consumed value / spend (what was actually cooked vs. what was bought), weighted at
- * 80%, plus up to 20 points of credit for using items that were about to expire.
- */
 function wasteReductionScore(input: MealPlanScoreInput): number {
   const consumedRatio = input.spendCents > 0 ? input.consumedValueCents / input.spendCents : 0;
   const base = clamp(consumedRatio * 100) * 0.8;
@@ -52,10 +41,6 @@ function wasteReductionScore(input: MealPlanScoreInput): number {
   return clamp(base + expiringBonus);
 }
 
-/**
- * Average active cook minutes per meal vs. the household's preferred max, with the
- * penalty for running over amplified by how many busy days are in the plan.
- */
 function convenienceScore(input: MealPlanScoreInput): number {
   if (input.mealCount <= 0 || input.preferredMaxCookMinutes <= 0) return 100;
   const avgMinutesPerMeal = input.totalActiveCookMinutes / input.mealCount;
@@ -65,11 +50,7 @@ function convenienceScore(input: MealPlanScoreInput): number {
   return clamp(100 - (ratio - 1) * 100 * busyMultiplier);
 }
 
-/**
- * Distinct proteins/cuisines/cooking methods vs. a target of 3 each, averaged. Cooking
- * methods are left out of the average when not supplied — recipes don't record a
- * method yet, and scoring that as zero would mark every plan down for missing data.
- */
+/** Cooking methods are left out when not supplied, rather than scored as 0. */
 function varietyScore(input: MealPlanScoreInput): number {
   const proteinScore = clamp((input.distinctProteins / 3) * 100);
   const cuisineScore = clamp((input.distinctCuisines / 3) * 100);

@@ -2,12 +2,13 @@ import { useCallback, useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
-import { Screen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen } from "@/components/ui/Screen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
+import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
-import { api, type Household, type Meal, type MealPlan, type MealSlot, type Members } from "@/lib/api";
+import { api, type Me, type Meal, type MealPlan, type MealSlot, type Members } from "@/lib/api";
 
 const SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -24,23 +25,20 @@ function isoDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-// The week grid. Free and Pro both get Build My Week (pick each slot by hand); Pro
-// also gets Plan My Week, which fills dinners and leftover lunches in one tap and can
-// re-pick a single dinner (docs/product-spec.md, docs/ux.md "Empty states").
 export default function WeekScreen() {
   const { colors, spacing, typography, radius } = useTheme();
   const [plan, setPlan] = useState<MealPlan | null | undefined>(undefined); // undefined = loading
-  const [household, setHousehold] = useState<Household | null>(null);
+  const [me, setMe] = useState<Me | null>(null);
   const [members, setMembers] = useState<Members | null>(null);
   const [creating, setCreating] = useState(false);
   const [planning, setPlanning] = useState(false);
   const [planFailed, setPlanFailed] = useState(false);
   const [repickingId, setRepickingId] = useState<string | null>(null);
-  const isPro = household?.subscriptionTier === "pro";
+  const isPro = me?.household.subscriptionTier === "pro";
 
   const load = useCallback(() => {
     api.getCurrentPlan().then(setPlan);
-    api.getHousehold().then(setHousehold);
+    api.getMe().then(setMe);
     api.getMembers().then(setMembers);
   }, []);
 
@@ -91,11 +89,7 @@ export default function WeekScreen() {
   }
 
   if (plan === undefined) {
-    return (
-      <Screen>
-        <ActivityIndicator color={colors.primary} />
-      </Screen>
-    );
+    return <LoadingScreen />;
   }
 
   if (planning) {
@@ -168,11 +162,11 @@ export default function WeekScreen() {
       {plan.score && plan.estimatedCostCents !== null ? (
         <Card style={{ marginBottom: spacing.lg, gap: spacing.sm }}>
           <Text style={{ ...typography.bodyStrong, color: colors.text }}>
-            {mealsPlanned} meals planned · ${(plan.estimatedCostCents / 100).toFixed(0)} estimated · {plan.score.total}/100
+            {mealsPlanned} meals planned · {dollars(plan.estimatedCostCents, 0)} estimated · {plan.score.total}/100
           </Text>
           {you?.weekShareCents != null ? (
             <Text style={{ ...typography.body, color: colors.text }}>
-              Your share: ${(you.weekShareCents / 100).toFixed(2)} of {members!.members.length} people
+              Your share: {dollars(you.weekShareCents)} of {members!.members.length} people
             </Text>
           ) : null}
           <EstimatedPricingBadge />

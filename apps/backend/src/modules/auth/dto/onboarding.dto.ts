@@ -2,9 +2,6 @@ import { IsArray, IsBoolean, IsIn, IsInt, IsOptional, IsString, Min, MinLength }
 
 const BUDGET_TIERS = ["budget", "balanced", "premium"] as const;
 
-// One short flow (docs/product-spec.md "Onboarding + preferences") — every field here
-// becomes one or more Preference rows (docs/data-model.md), except the two that live
-// directly on Household.
 export class OnboardingDto {
   @IsOptional()
   @IsString()

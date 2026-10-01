@@ -23,14 +23,7 @@ export const recipesById: ReadonlyMap<string, SeedRecipe> = new Map(recipes.map(
 export * from "./types.js";
 export { buildCatalog, type Catalog, type CatalogDeal, type CatalogPrice, type CatalogProduct } from "./catalog.js";
 
-/**
- * Cross-checks the JSON files against each other: every ingredientId, unit, cuisine,
- * dietTag, and difficulty referenced by a recipe, store, price, or the demo pantry must
- * exist in the corresponding source of truth, and every ingredient must have a
- * reference price. Run this whenever the JSON changes —
- * apps/backend/prisma/seed.ts should call it before writing anything to the database,
- * so a typo in a recipe never silently seeds a broken reference.
- */
+/** Cross-checks the JSON files; the seed refuses to run if this returns errors. */
 export function validateSeedData(): string[] {
   const errors: string[] = [];
   const validUnits = new Set([
@@ -65,8 +58,7 @@ export function validateSeedData(): string[] {
       if (!validUnits.has(line.unit)) {
         errors.push(`${recipe.id}: unknown unit "${line.unit}" on ${line.ingredientId}`);
       }
-      // docs/algorithms.md §1: seed data must carry conversion factors for every
-      // ingredient the seed recipes use, so nothing lands on the list as needsReview.
+      // Every seed recipe line must convert (docs/algorithms.md §1).
       const ingredient = ingredientsById.get(line.ingredientId);
       if (ingredient && convertToBaseUnit({ value: line.quantity, unit: line.unit }, ingredient).needsReview) {
         errors.push(`${recipe.id}: ${line.quantity} ${line.unit} of ${line.ingredientId} can't convert to ${ingredient.baseUnit}`);

@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
-import { router } from "expo-router";
-import { Screen } from "@/components/ui/Screen";
+import { Text, View } from "react-native";
+import { Screen, LoadingScreen, BackLink } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { api, type History } from "@/lib/api";
+import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
 
-const dollars = (cents: number) => `$${(cents / 100).toFixed(0)}`;
 
-// Your history with MealMesh: every week planned, what got cooked, what it was
-// estimated to cost, and how it scored.
 export default function HistoryScreen() {
   const { colors, spacing, typography } = useTheme();
   const [history, setHistory] = useState<History | null>(null);
@@ -20,32 +17,21 @@ export default function HistoryScreen() {
     api.getHistory().then(setHistory);
   }, []);
 
-  const back = (
-    <Pressable onPress={() => router.back()} hitSlop={8} style={{ marginBottom: spacing.md }}>
-      <Text style={{ ...typography.caption, color: colors.primary }}>‹ Profile</Text>
-    </Pressable>
-  );
-
   if (!history) {
-    return (
-      <Screen>
-        {back}
-        <ActivityIndicator color={colors.primary} />
-      </Screen>
-    );
+    return <LoadingScreen back="Profile" />;
   }
 
   const { totals } = history;
   const stats = [
     { label: "Weeks planned", value: String(totals.weeksPlanned) },
     { label: "Meals cooked", value: String(totals.mealsCooked) },
-    { label: "Groceries", value: dollars(totals.estimatedSpendCents) },
+    { label: "Groceries", value: dollars(totals.estimatedSpendCents, 0) },
     { label: "Average score", value: totals.averageScore === null ? "—" : `${totals.averageScore}/100` },
   ];
 
   return (
     <Screen>
-      {back}
+      <BackLink label="Profile" />
       <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.lg }}>Your history</Text>
 
       {history.weeks.length === 0 ? (
@@ -83,7 +69,7 @@ export default function HistoryScreen() {
               <Text style={{ ...typography.bodyStrong, color: colors.text }}>Week of {week.weekStartDate.slice(0, 10)}</Text>
               <Text style={{ ...typography.caption, color: colors.textMuted }}>
                 {week.mealsCooked} cooked · {week.leftoverMeals} leftovers
-                {week.estimatedCostCents !== null ? ` · ${dollars(week.estimatedCostCents)} estimated` : ""}
+                {week.estimatedCostCents !== null ? ` · ${dollars(week.estimatedCostCents, 0)} estimated` : ""}
                 {week.score !== null ? ` · ${week.score}/100` : ""}
               </Text>
               {week.dishes.length > 0 ? (

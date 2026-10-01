@@ -3,8 +3,7 @@ import { Screen } from "@/components/ui/Screen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useTheme } from "@/theme";
 
-// Discover — recipes and ideas. Deliberately thin in the MVP (docs/ux.md
-// "Navigation") — do not build this out before the planner/list/optimizer spine works.
+// Deliberately thin in the MVP.
 export default function DiscoverScreen() {
   const { colors, typography, spacing } = useTheme();
 

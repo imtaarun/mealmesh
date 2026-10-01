@@ -1,10 +1,4 @@
-// Plan My Week selection — docs/architecture.md "Meal plan generation", step 3 and 4.
-// Greedy fill, one dinner per day in date order: every candidate is scored against the
-// dinners already chosen, the best one wins (ties → higher pantry coverage, then id, so
-// the same inputs always give the same week). Then leftovers: with leftover tolerance
-// on, each dinner cooks double and the next day's lunch eats the rest.
-// Hard constraints (slot, required diets, max cook time, recent meals) filter before
-// scoring; allergies are filtered by the caller with checkRecipeConflicts.
+// docs/algorithms.md §6b. Greedy, one dinner per day; ties go to pantry coverage, then id.
 
 export interface PlannerRecipe {
   id: string;
@@ -50,8 +44,7 @@ export interface PlannedMeal {
 /** Busy days get dishes at or under this many minutes without a penalty. */
 export const BUSY_DAY_MINUTES = 20;
 
-/** The dish's main protein — the group of its first protein ingredient ("chicken" for
- * thighs and breast alike, "legumes" for chickpeas), or "none". */
+/** Protein group of the first protein ingredient ("chicken" for any cut), or "none". */
 export function mainProtein(recipe: PlannerRecipe): string {
   return recipe.ingredients.find((i) => i.proteinGroup !== null)?.proteinGroup ?? "none";
 }
@@ -118,11 +111,7 @@ function best(scored: Scored[]): PlannerRecipe | null {
   return sorted[0]?.recipe ?? null;
 }
 
-/**
- * Best dinner for `day` given the dinners already chosen for the rest of the week.
- * Used for each day of planWeek and on its own to regenerate a single meal. Repeats a
- * dish only when every eligible recipe is already in the week.
- */
+/** Repeats a dish only once every eligible recipe is used. */
 export function pickDinner(input: PlanWeekInput, day: PlannerDay, chosen: PlannerRecipe[], previous: PlannerRecipe | null, excludeRecipeIds: string[] = []): PlannerRecipe | null {
   const pool = eligibleRecipes(input, "dinner").filter((r) => !excludeRecipeIds.includes(r.id));
   const unused = pool.filter((r) => !chosen.some((c) => c.id === r.id));

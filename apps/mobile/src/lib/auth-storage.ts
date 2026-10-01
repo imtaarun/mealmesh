@@ -1,8 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
-// The session token is a bearer credential (docs/architecture.md "Cross-cutting /
-// Auth") — SecureStore backs onto Keychain/Keystore, not plain AsyncStorage, because
-// this is equivalent to a password in value.
+// The session token is a credential: Keychain/Keystore, not AsyncStorage.
 const TOKEN_KEY = "mealmesh.session_token";
 
 export async function saveToken(token: string): Promise<void> {

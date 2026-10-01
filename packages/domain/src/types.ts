@@ -1,6 +1,4 @@
-// Shared value types for the deterministic core. Plain data only — no classes, no I/O.
-// Mirrors docs/data-model.md. Money is always integer cents; quantities are always
-// resolved to the ingredient's base unit before domain functions see them.
+// Money is integer cents; quantities are in the ingredient's base unit.
 
 export type MassUnit = "g" | "kg" | "oz" | "lb";
 export type VolumeUnit = "ml" | "l" | "tsp" | "tbsp" | "cup";

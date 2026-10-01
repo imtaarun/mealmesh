@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Switch, Text, View } from "react-native";
+import { Switch, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Screen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen } from "@/components/ui/Screen";
 import { Button, ChipRow, Section, TextField, toggle } from "@/components/ui/Form";
 import { useAuth } from "@/auth/AuthProvider";
 import { api, type Me } from "@/lib/api";
 import { useTheme } from "@/theme";
 
-// Profile setup (first sign-in) and editing (from Profile, with ?edit=1). One short
-// screen, every question changes the plan (docs/product-spec.md "Onboarding").
-// The owner sets the household and its preferences; a housemate sets only their own
-// name, allergies, and dislikes — the planner respects everyone's.
+// First sign-in, or editing with ?edit=1. Housemates set only their own name, allergies, and dislikes.
 const CUISINES = ["indian", "mediterranean", "north_american", "italian", "mexican", "middle_eastern", "chinese"];
 const ALLERGENS = ["peanut", "tree_nut", "dairy", "egg", "gluten", "soy", "fish", "shellfish", "sesame"];
 const DIET_TAGS = ["vegetarian", "vegan", "gluten_free", "dairy_free", "low_carb", "high_protein", "healthy"];
@@ -67,11 +64,7 @@ export default function ProfileSetupScreen() {
   }, []);
 
   if (!me) {
-    return (
-      <Screen>
-        <ActivityIndicator color={colors.primary} />
-      </Screen>
-    );
+    return <LoadingScreen />;
   }
   const isOwner = me.member.role === "owner";
 

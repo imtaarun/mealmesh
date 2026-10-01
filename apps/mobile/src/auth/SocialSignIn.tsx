@@ -9,8 +9,7 @@ import { useTheme } from "@/theme";
 // Lets the Google sign-in browser tab hand its result back to the app on web.
 WebBrowser.maybeCompleteAuthSession();
 
-// Each provider hands the app an ID token (a signed statement of who the user is);
-// the backend checks its signature before trusting it (apps/backend OAuthVerifier).
+// The backend verifies the ID token before trusting it.
 export interface SocialResult {
   provider: "google" | "apple";
   idToken: string;

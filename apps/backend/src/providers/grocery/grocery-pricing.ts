@@ -2,12 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import type { ProductOption } from "@mealmesh/domain";
 import { GROCERY_PROVIDER, type GroceryProvider } from "./grocery-provider.interface.js";
 
-/**
- * Current prices and deals, read through the GroceryProvider (CLAUDE.md rule 3 — no
- * service touches price tables directly). Shared by Plan My Week (every ingredient)
- * and the recipe page (just that recipe's). isDemo says whether the numbers are
- * estimates, which means the app must show the Estimated pricing badge.
- */
+/** Current prices and deals via the GroceryProvider; isDemo means show the Estimated pricing badge. */
 @Injectable()
 export class GroceryPricing {
   constructor(@Inject(GROCERY_PROVIDER) private readonly provider: GroceryProvider) {}

@@ -11,9 +11,7 @@ export interface VerifiedIdentity {
   name: string | null;
 }
 
-// Where each provider publishes its signing keys and what it puts in `iss`. The
-// accepted audiences are our own client IDs — a token Google issued to some other
-// app must not sign anyone in here. See docs/oauth-setup.md for where they come from.
+// Audiences are our own client IDs (docs/oauth-setup.md).
 const PROVIDERS: Record<OAuthProvider, { issuers: string[]; jwksUrl: string; audiencesEnv: string; jwksUrlEnv: string }> = {
   google: {
     issuers: ["https://accounts.google.com", "accounts.google.com"],
@@ -29,12 +27,7 @@ const PROVIDERS: Record<OAuthProvider, { issuers: string[]; jwksUrl: string; aud
   },
 };
 
-/**
- * Checks a Google or Apple ID token the app got from the provider's sign-in sheet:
- * signature against the provider's published keys, issuer, audience (our client IDs),
- * and expiry. The app never sends us a password or an access token — only this
- * signed statement of who the user is.
- */
+/** Verifies a Google/Apple ID token: signature, issuer, audience, expiry. */
 @Injectable()
 export class OAuthVerifier {
   private readonly keySets = new Map<OAuthProvider, JWTVerifyGetKey>();

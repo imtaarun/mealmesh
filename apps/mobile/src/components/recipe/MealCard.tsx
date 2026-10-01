@@ -9,12 +9,7 @@ interface MealCardProps {
   onPress?: () => void;
 }
 
-/**
- * Two deliberately different treatments (docs/ux.md "Recipe imagery"): local-library
- * recipes get the per-cuisine placeholder image; AI-generated recipes get no image at
- * all and a denser, text-forward layout instead — the absence is the honest signal,
- * not something to paper over with a lookalike placeholder.
- */
+/** AI recipes deliberately get no image (docs/ux.md "Recipe imagery"). */
 export function MealCard({ recipe, onPress }: MealCardProps) {
   const { colors, spacing, typography } = useTheme();
   const isLibraryRecipe = recipe.source === "seed";
