@@ -121,7 +121,19 @@ contract rule above.
 ## API surface
 
 ```
-POST /api/onboarding
+POST /api/auth/signup | /login | /oauth      email+password, or a Google/Apple ID token
+POST /api/onboarding                          owner only: household name, budget, shared preferences
+GET  /api/me                                  you, your household, needsProfile
+PUT  /api/me/profile                          your name, allergies, dislikes
+GET  /api/me/history                          weeks planned, meals cooked, spend, scores
+GET  /api/me/data                             everything stored about you, as JSON
+DELETE /api/me                                delete your account
+POST /api/me/join                             join a household by code (replaces yours if you're alone)
+GET  /api/households/current/members          housemates + this week's cost split
+POST /api/households/current/invites          owner: new invite code
+PATCH/api/households/current/members/:id      owner: cost share
+DELETE /api/households/current/members/:id    owner: remove a housemate
+POST /api/households/current/leave            member: leave
 GET  /api/meal-plans/current
 POST /api/meal-plans                          creates an empty week (Build My Week entry point)
 POST /api/meal-plans/generate                 Pro only — auto-fills a week; 402/403 for Free
@@ -146,9 +158,21 @@ recomputed derived values (list totals, score) so the client never has to guess.
 ## Cross-cutting
 
 - **Auth**: session-based, household-scoped. Every query filters by householdId — a
-  user must never read another household's pantry or prices.
-- **Privacy**: grocery habits are personal data. Minimal collection, full delete of a
-  household's data, no third-party sharing, no secrets in code.
+  user must never read another household's pantry or prices. Sign in with email and
+  password, Google, or Apple (`docs/oauth-setup.md`). For Google and Apple the
+  backend verifies the provider's ID token itself and never sees a password. A
+  verified email that matches an existing account links to it; an unverified one
+  never does.
+- **Households**: the owner creates the household, invites housemates with one-time
+  codes, removes people, and sets cost shares and the shared preferences. Members
+  set their own name, allergies, and dislikes, and planning respects everyone's.
+  Removing or leaving moves a person to a household of their own; nobody's account
+  is deleted by someone else.
+- **Privacy**: grocery habits are personal data. Minimal collection, no third-party
+  sharing, no secrets in code. Everyone can download everything stored about them
+  (`GET /api/me/data`, secrets and housemates' emails left out) and delete their
+  account (`DELETE /api/me`). The last person out takes the whole household's data
+  with them.
 - **Errors**: user-facing copy in `docs/ux.md`. Never silently show fabricated data;
   a stale price says it's stale.
 - **Tests**: domain functions unit-tested (that's most of the value), services tested

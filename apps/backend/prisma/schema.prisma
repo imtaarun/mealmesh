@@ -30,6 +30,13 @@ enum SubscriptionTier {
   pro
 }
 
+// Who can manage the household: the owner invites and removes housemates and edits
+// the household's shared preferences; members edit only their own.
+enum MemberRole {
+  owner
+  member
+}
+
 enum PreferenceType {
   cuisine_like
   dislike
@@ -114,15 +121,46 @@ enum MealRatingValue {
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
-  passwordHash String
+  passwordHash String? // null for accounts that only sign in with Google or Apple
   createdAt    DateTime @default(now())
 
   householdId String
   household   Household @relation(fields: [householdId], references: [id])
 
-  members  HouseholdMember[]
-  ratings  MealRating[]
-  sessions Session[]
+  members       HouseholdMember[]
+  ratings       MealRating[]
+  sessions      Session[]
+  oauthAccounts OAuthAccount[]
+}
+
+// A Google or Apple identity linked to a user. `subject` is the provider's stable
+// user id (the ID token's `sub`) — emails can change, `sub` doesn't.
+model OAuthAccount {
+  id        String   @id @default(cuid())
+  provider  String // "google" | "apple"
+  subject   String
+  email     String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([provider, subject])
+}
+
+// A one-time code a household owner shares so a housemate can join. Only the hash
+// is stored, like session tokens.
+model HouseholdInvite {
+  id               String    @id @default(cuid())
+  codeHash         String    @unique
+  expiresAt        DateTime
+  createdAt        DateTime  @default(now())
+  createdByUserId  String
+  acceptedAt       DateTime?
+  acceptedByUserId String?
+
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
 }
 
 // Session-based auth (docs/architecture.md "Cross-cutting / Auth"): the client holds
@@ -153,12 +191,17 @@ model Household {
   pantryItems  PantryItem[]
   mealPlans    MealPlan[]
   priceHistory PriceHistory[]
+  invites      HouseholdInvite[]
 }
 
 model HouseholdMember {
-  id      String  @id @default(cuid())
-  name    String
-  isChild Boolean @default(false)
+  id        String     @id @default(cuid())
+  name      String
+  isChild   Boolean    @default(false)
+  role      MemberRole @default(member)
+  costShare Int        @default(1) // weight when splitting the week's estimate; 0 = not paying
+  // Set when the person finishes profile setup; until then the app sends them there.
+  profileCompletedAt DateTime?
 
   householdId String
   household   Household @relation(fields: [householdId], references: [id])

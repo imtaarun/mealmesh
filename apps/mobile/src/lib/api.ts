@@ -8,16 +8,70 @@ export interface AuthResult {
   token: string;
   userId: string;
   householdId: string;
+  needsProfile: boolean;
 }
 
 export interface SignupInput {
   email: string;
   password: string;
-  householdName: string;
-  defaultServings?: number;
+  inviteCode?: string;
+}
+
+export interface OAuthInput {
+  provider: "google" | "apple";
+  idToken: string;
+  name?: string;
+  inviteCode?: string;
+}
+
+export interface Me {
+  user: { id: string; email: string; createdAt: string; signInMethods: string[] };
+  member: { id: string; name: string; role: "owner" | "member"; costShare: number; allergies: string[]; dislikes: string[] };
+  household: {
+    id: string;
+    name: string;
+    subscriptionTier: "free" | "pro";
+    weeklyBudgetCents: number;
+    budgetTier: "budget" | "balanced" | "premium";
+    defaultServings: number;
+    preferences: Array<{ type: string; value: string }>;
+  };
+  needsProfile: boolean;
+}
+
+export interface Housemate {
+  id: string;
+  name: string;
+  email: string | null;
+  role: "owner" | "member";
+  costShare: number;
+  isYou: boolean;
+  weekShareCents: number | null;
+}
+
+export interface Members {
+  weekStartDate: string | null;
+  weekEstimateCents: number | null;
+  members: Housemate[];
+}
+
+export interface History {
+  totals: { weeksPlanned: number; mealsCooked: number; estimatedSpendCents: number; averageScore: number | null };
+  favourites: Array<{ title: string; times: number }>;
+  weeks: Array<{
+    mealPlanId: string;
+    weekStartDate: string;
+    mealsCooked: number;
+    leftoverMeals: number;
+    estimatedCostCents: number | null;
+    score: number | null;
+    dishes: string[];
+  }>;
 }
 
 export interface OnboardingInput {
+  householdName?: string;
+  defaultServings?: number;
   weeklyBudgetCents?: number;
   budgetTier?: "budget" | "balanced" | "premium";
   cuisineLikes: string[];
@@ -99,7 +153,23 @@ export interface UpdateMealResult {
 export const api = {
   signup: (input: SignupInput) => apiClient.post<AuthResult>("/api/auth/signup", input),
   login: (email: string, password: string) => apiClient.post<AuthResult>("/api/auth/login", { email, password }),
+  oauth: (input: OAuthInput) => apiClient.post<AuthResult>("/api/auth/oauth", input),
   onboard: (input: OnboardingInput) => apiClient.post("/api/onboarding", input),
+
+  getMe: () => apiClient.get<Me>("/api/me"),
+  saveProfile: (input: { name: string; allergies?: string[]; dislikes?: string[] }) => apiClient.put<Me>("/api/me/profile", input),
+  getHistory: () => apiClient.get<History>("/api/me/history"),
+  /** Everything stored about you, as JSON — the app hands it to the share sheet. */
+  exportMyData: () => apiClient.get<unknown>("/api/me/data"),
+  deleteAccount: () => apiClient.delete<{ deleted: true }>("/api/me"),
+  joinHousehold: (code: string) => apiClient.post("/api/me/join", { code, replaceMyHousehold: true }),
+
+  getMembers: () => apiClient.get<Members>("/api/households/current/members"),
+  createInvite: () => apiClient.post<{ code: string; expiresAt: string }>("/api/households/current/invites"),
+  setCostShare: (memberId: string, costShare: number) =>
+    apiClient.patch<Members>(`/api/households/current/members/${memberId}`, { costShare }),
+  removeHousemate: (memberId: string) => apiClient.delete<Members>(`/api/households/current/members/${memberId}`),
+  leaveHousehold: () => apiClient.post("/api/households/current/leave"),
 
   listRecipes: (filters: { cuisine?: string; dietTag?: string; query?: string } = {}) => {
     const params = new URLSearchParams();

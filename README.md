@@ -36,7 +36,7 @@ pnpm install
 # backend
 cp apps/backend/.env.example apps/backend/.env   # fill in DATABASE_URL
 pnpm db:migrate
-pnpm db:seed           # writes packages/seed-data's ingredients + recipes; no pricing yet
+pnpm db:seed           # recipes, ingredients, stores, prices, deals, and the demo account
 pnpm dev:backend       # http://localhost:3000
 
 # mobile (separate terminal)
@@ -62,7 +62,7 @@ package directly with `pnpm --filter <app> build`, build `@mealmesh/domain` firs
 
 ## Current state
 
-Phases 0-4 are done: both planning paths work — **Build My Week** (Free and Pro,
+Phases 0-4 are done, plus accounts and housemates (4b): both planning paths work — **Build My Week** (Free and Pro,
 by hand) and **Plan My Week** (Pro, one tap; `docs/open-questions.md` item 11).
 Nothing described below is scaffolding —
 every item was typechecked, built, and exercised end-to-end over real HTTP against a
@@ -93,6 +93,11 @@ real local Postgres database, not just trusted to compile. Full detail in
   blocked on an allergy match, get warned (with a confirm-to-override) on a dislike
   match, mark a slot as leftover of an earlier meal — all working on both the API and
   in the mobile UI (onboarding → Week grid → recipe picker).
+
+- **Accounts and housemates**: sign in with email, Google, or Apple (Google and Apple
+  need keys first: `docs/oauth-setup.md`); profile setup; invite housemates with a
+  code; split the week's estimate by share; History; Your data (download, delete
+  account).
 
 **Not built yet**: recipe detail and cooking mode (Phase 5), the grocery list, pantry,
 and optimization screens (Phases 6–7 — the pantry API still returns "not yet

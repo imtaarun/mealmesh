@@ -152,7 +152,8 @@ export class PlanMyWeekService {
     const now = new Date();
     const [household, preferences, pantryItems, recipes, lastWeek] = await Promise.all([
       this.prisma.household.findUniqueOrThrow({ where: { id: householdId } }),
-      this.prisma.preference.findMany({ where: { householdId } }),
+      // Household-wide preferences plus every housemate's own allergies and dislikes.
+      this.prisma.preference.findMany({ where: { OR: [{ householdId }, { member: { householdId } }] } }),
       this.prisma.pantryItem.findMany({ where: { householdId } }),
       this.prisma.recipe.findMany({ where: { source: "seed" }, include: { ingredients: { include: { ingredient: true } } } }),
       this.prisma.mealPlan.findFirst({

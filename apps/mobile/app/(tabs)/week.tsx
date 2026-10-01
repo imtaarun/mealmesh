@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { useTheme } from "@/theme";
-import { api, type Household, type Meal, type MealPlan, type MealSlot } from "@/lib/api";
+import { api, type Household, type Meal, type MealPlan, type MealSlot, type Members } from "@/lib/api";
 
 const SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -31,6 +31,7 @@ export default function WeekScreen() {
   const { colors, spacing, typography, radius } = useTheme();
   const [plan, setPlan] = useState<MealPlan | null | undefined>(undefined); // undefined = loading
   const [household, setHousehold] = useState<Household | null>(null);
+  const [members, setMembers] = useState<Members | null>(null);
   const [creating, setCreating] = useState(false);
   const [planning, setPlanning] = useState(false);
   const [planFailed, setPlanFailed] = useState(false);
@@ -40,6 +41,7 @@ export default function WeekScreen() {
   const load = useCallback(() => {
     api.getCurrentPlan().then(setPlan);
     api.getHousehold().then(setHousehold);
+    api.getMembers().then(setMembers);
   }, []);
 
   useFocusEffect(
@@ -63,6 +65,7 @@ export default function WeekScreen() {
     setPlanFailed(false);
     try {
       setPlan(await api.planMyWeek(isoDate(mostRecentMonday())));
+      api.getMembers().then(setMembers);
     } catch {
       setPlanFailed(true);
     } finally {
@@ -75,6 +78,7 @@ export default function WeekScreen() {
     setRepickingId(meal.id);
     try {
       setPlan(await api.regenerateDinner(plan.id, meal.id));
+      api.getMembers().then(setMembers);
     } finally {
       setRepickingId(null);
     }
@@ -145,6 +149,10 @@ export default function WeekScreen() {
   }
   const dates = [...mealsByDate.keys()].sort();
   const mealsPlanned = plan.meals.filter((m) => m.type === "cook" || m.type === "leftover").length;
+  // Only meaningful with housemates, and only for the week the split was worked out on.
+  const you = members && members.members.length > 1 && members.weekStartDate?.slice(0, 10) === plan.weekStartDate.slice(0, 10)
+    ? members.members.find((m) => m.isYou)
+    : undefined;
 
   return (
     <Screen>
@@ -162,6 +170,11 @@ export default function WeekScreen() {
           <Text style={{ ...typography.bodyStrong, color: colors.text }}>
             {mealsPlanned} meals planned · ${(plan.estimatedCostCents / 100).toFixed(0)} estimated · {plan.score.total}/100
           </Text>
+          {you?.weekShareCents != null ? (
+            <Text style={{ ...typography.body, color: colors.text }}>
+              Your share: ${(you.weekShareCents / 100).toFixed(2)} of {members!.members.length} people
+            </Text>
+          ) : null}
           <EstimatedPricingBadge />
           <Text style={{ ...typography.caption, color: colors.textMuted }}>{plan.score.explanation}</Text>
         </Card>

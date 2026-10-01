@@ -195,9 +195,28 @@ session, not yet fixed).
   respected) and in the app via Expo web + Playwright at phone size. Expo web isn't a
   project dependency; it was installed only for screenshots and removed.
 
+## Phase 4b: accounts and housemates
+
+- **Schema** (one migration): `User.passwordHash` optional; `OAuthAccount`;
+  `HouseholdInvite`; `HouseholdMember.role`, `costShare`, `profileCompletedAt`. The
+  migration backfills an owner member for every existing user.
+- **Sign-in**: `OAuthVerifier` checks Google/Apple ID tokens with `jose` (signature,
+  issuer, audience, expiry); `AuthService.oauth` signs in, links by verified email,
+  or creates an account (joining an invite's household if given).
+- **Households / Me** modules: invites, shares, remove, leave, join; profile,
+  history, data export, delete account. Planning and Build My Week conflict checks
+  include every member's allergies and dislikes. `splitCents` in `packages/domain`.
+- **Mobile**: welcome (Apple, Google, email sign-up and log-in, invite code), profile
+  setup (owner vs. housemate), Profile tab, History, Your data, your share on Week.
+- **Bugs found by running it**: no login screen existed (signing out was a dead end);
+  onboarding never asked for a budget, so every budget score was 0; after sign-in
+  the welcome screen didn't move on; screens opened directly raced the saved session
+  and called the API without a token.
+
 ## Open items carried forward
 
 Everything else in `docs/open-questions.md` still applies (recipe content licensing,
 name/trademark, AI cost/latency budget, offline behaviour in-store, nutrition data,
 store distance/trip cost) except items 1, 2, 5, 9, and 11, which are now resolved. Items 12–15 were added
-during Phase 3; 16–19 during Phase 4.
+during Phase 3; 16–19 during Phase 4;
+20–23 during Phase 4b.

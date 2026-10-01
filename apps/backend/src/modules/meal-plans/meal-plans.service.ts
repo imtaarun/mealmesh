@@ -83,8 +83,9 @@ export class MealPlansService {
     });
     if (!recipe) throw new NotFoundException(`Recipe "${recipeId}" not found`);
 
+    // Household-wide preferences plus every housemate's own allergies and dislikes.
     const preferences = await this.prisma.preference.findMany({
-      where: { householdId, type: { in: ["allergy", "dislike"] } },
+      where: { OR: [{ householdId }, { member: { householdId } }], type: { in: ["allergy", "dislike"] } },
     });
 
     return checkRecipeConflicts({

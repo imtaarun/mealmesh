@@ -11,7 +11,10 @@ export default function RootLayout() {
         <StatusBar style="auto" />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="onboarding" />
+          <Stack.Screen name="welcome" />
+          <Stack.Screen name="profile-setup" />
+          <Stack.Screen name="history" />
+          <Stack.Screen name="my-data" />
           <Stack.Screen name="recipe-picker" options={{ presentation: "modal" }} />
         </Stack>
       </ThemeProvider>

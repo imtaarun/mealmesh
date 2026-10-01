@@ -14,14 +14,23 @@
 
 ## Entities
 
-**User** — id, email, passwordHash, createdAt, householdId
+**User** — id, email, passwordHash? (null when the account only uses Google or Apple),
+createdAt, householdId
+
+**OAuthAccount** — id, userId, provider (`google` | `apple`), subject (the provider's
+stable user id), email?, createdAt. Unique on (provider, subject).
+
+**HouseholdInvite** — id, householdId, codeHash (only the hash of the 8-character
+code is stored), expiresAt (7 days), createdByUserId, acceptedAt?, acceptedByUserId?
 
 **Household** — id, name, weeklyBudgetCents, budgetTier, defaultServings, timezone,
 subscriptionTier (`free` | `pro` — gates `AIProvider` access, see
 `docs/open-questions.md` item 11; unrelated to `budgetTier`, which is a grocery-spend
 preference)
 
-**HouseholdMember** — id, householdId, name, isChild, userId?
+**HouseholdMember** — id, householdId, name, isChild, userId?, role (`owner` |
+`member`), costShare (weight in the cost split; 0 = not paying), profileCompletedAt?
+(null until profile setup is done). Every user has exactly one member row.
 
 **Preference** — id, householdId | memberId, type (`cuisine_like`, `dislike`,
 `allergy`, `diet`, `skill`, `max_cook_minutes`, `leftover_tolerance`, `busy_day`,

@@ -139,11 +139,11 @@ async function seedDemoHousehold(now: Date) {
   const householdId = existing
     ? (await prisma.household.update({ where: { id: existing.householdId }, data: householdData })).id
     : (await prisma.household.create({ data: householdData })).id;
-  if (!existing) {
-    await prisma.user.create({
-      data: { email: demo.email, passwordHash: await bcrypt.hash(demo.password, 10), householdId },
-    });
-  }
+  const userId =
+    existing?.id ??
+    (await prisma.user.create({ data: { email: demo.email, passwordHash: await bcrypt.hash(demo.password, 10), householdId } })).id;
+  const member = { name: "Demo", role: "owner" as const, profileCompletedAt: now };
+  await prisma.householdMember.upsert({ where: { userId }, create: { ...member, householdId, userId }, update: member });
 
   await prisma.preference.deleteMany({ where: { householdId } });
   await prisma.preference.createMany({

@@ -88,6 +88,18 @@ expire, six leftover lunches; over HTTP it came to $91.91 estimated against the 
 scoring 76/100 — enforced by
 tests in `packages/seed-data`, and run end-to-end over HTTP and in the app.
 
+## Phase 4b — Accounts and housemates — DONE
+
+Added before Phase 5 at the product owner's request: sign in with Google and Apple
+(code done; keys pending, `docs/oauth-setup.md`), a welcome screen with email log-in
+(there was none — signing out was a dead end), profile setup, housemates with their
+own logins and invite codes, the week's estimated cost split by share, History, Your
+data (download + delete account). `docs/open-questions.md` items 20–23.
+
+**DoD met:** 37-step HTTP run (sign-in, linking, invites, permissions, planning around
+a housemate's allergy, split, history, export, join, leave, delete) and a two-person
+run in the app; 9 token-check tests, 5 split tests.
+
 ## Phase 5 — Recipes + cooking mode
 
 Recipe detail page, cooking mode with steps and timers.

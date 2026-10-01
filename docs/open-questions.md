@@ -165,6 +165,29 @@ you took and why. Never resolve one of these silently in code.
     Bacon Cheddar Burgers for the healthy demo household because three of its
     ingredients were on sale.
 
+20. **Housemates — DECIDED 2026-10-02.** Each housemate has their own login and
+    joins with a one-time invite code (8 characters, 7 days, single use). The owner
+    manages the household. Members can only set their own name, allergies, and
+    dislikes, and planning respects everyone's allergies and dislikes. Someone who
+    already has an account can join only if they're alone in their household, which
+    is then deleted (the app asks first). The owner can't leave while others remain:
+    they remove housemates first, or delete their account, which hands ownership on.
+21. **What "all your information" means — DECIDED 2026-10-02.** Two pages:
+    *History* (weeks, meals cooked, estimated spend, scores, most-cooked dishes) and
+    *Your data* (everything stored, a full JSON download through the share sheet, and
+    account deletion). The download leaves out password, session, and invite hashes,
+    and housemates' email addresses.
+22. **Google and Apple sign-in — BUILT, keys pending.** Steps in `docs/oauth-setup.md`.
+    Linking rule: a provider account signs in to the account with the same
+    *verified* email. **Open:** no nonce check yet. A stolen ID token could be
+    replayed within its lifetime (about an hour). Add a nonce (app generates it,
+    provider embeds it, backend compares) before launch.
+23. **Cost split — DECIDED 2026-10-02.** Splits the week's *estimated* grocery cost
+    by each member's share weight (default 1, 0 = not paying, integer cents adding up
+    exactly). It's an estimate, so it carries the Estimated pricing badge. Splitting
+    real shopping trips (who paid, who owes whom) is a later feature, once Phase 6
+    records actual purchases.
+
 ## Known gaps in the original spec
 
 - No unit-conversion strategy, which is the hardest part of aggregation
