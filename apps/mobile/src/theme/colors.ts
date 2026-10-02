@@ -1,33 +1,88 @@
-// Mirrored in tailwind.config.js — update both together.
-
-export const colors = {
+// Neutrals carry the UI; the palette is one accent family. Contrast: design-system.md.
+const forest = {
   light: {
-    background: "#FFF8F1", // cream
+    background: "#F5F5F2",
+    backgroundMuted: "#ECECE7",
     surface: "#FFFFFF",
-    surfaceMuted: "#F1EAE2", // mist
-    text: "#2B2320", // charcoal
-    textMuted: "#8A7F76", // stone
-    primary: "#C1622A", // clay
-    primaryPressed: "#9C4C1F", // clayDark
-    accent: "#5C7A5E", // sage — success / "already have" / savings
-    highlight: "#E0A93B", // gold — deals, score
-    danger: "#B3433B",
-    border: "#E7DDD2",
+    surfaceElevated: "#FFFFFF",
+    text: "#141513",
+    textMuted: "#62655E",
+    brandAccent: "#2F5D3A",
+    brandAccentPressed: "#244A2E",
+    onBrandAccent: "#FFFFFF",
+    accentTint: "#E5EDE3",
+    secondaryAccent: "#6A994E",
+    success: "#3B6E2C",
+    highlight: "#A7C957",
+    criticalError: "#A93C3E",
+    border: "rgba(20, 21, 19, 0.08)",
+    glassFill: "rgba(255, 255, 255, 0.55)",
+    glassEdge: "rgba(255, 255, 255, 0.9)",
   },
   dark: {
-    background: "#1C1613",
-    surface: "#241D19",
-    surfaceMuted: "#2E2621",
-    text: "#F5EEE6",
-    textMuted: "#A79A8D",
-    primary: "#E0895A",
-    primaryPressed: "#C1622A",
-    accent: "#83A385",
-    highlight: "#E7BD6B",
-    danger: "#D77268",
-    border: "#3A302A",
+    background: "#0C0D0C",
+    backgroundMuted: "#1F201E",
+    surface: "#181917",
+    surfaceElevated: "#181917",
+    text: "#F1F2EE",
+    textMuted: "#A4A69F",
+    brandAccent: "#A3C77F",
+    brandAccentPressed: "#8CB466",
+    onBrandAccent: "#11190C",
+    accentTint: "#1D2819",
+    secondaryAccent: "#6A994E",
+    success: "#A7C957",
+    highlight: "#A7C957",
+    criticalError: "#EE9A9B",
+    border: "rgba(241, 242, 238, 0.08)",
+    glassFill: "rgba(40, 42, 38, 0.45)",
+    glassEdge: "rgba(255, 255, 255, 0.16)",
   },
-} as const;
+};
 
-export type ThemeMode = keyof typeof colors;
-export type ColorTokens = (typeof colors)[ThemeMode];
+const autumn: typeof forest = {
+  light: {
+    background: "#F7F5F1",
+    backgroundMuted: "#EEEAE4",
+    surface: "#FFFFFF",
+    surfaceElevated: "#FFFFFF",
+    text: "#1A1512",
+    textMuted: "#6B625A",
+    brandAccent: "#99582A",
+    brandAccentPressed: "#7A4520",
+    onBrandAccent: "#FFFFFF",
+    accentTint: "#F4E9DE",
+    secondaryAccent: "#BB9457",
+    success: "#5A6623",
+    highlight: "#BB9457",
+    criticalError: "#6F1D1B",
+    border: "rgba(26, 21, 18, 0.08)",
+    glassFill: "rgba(255, 252, 248, 0.55)",
+    glassEdge: "rgba(255, 255, 255, 0.9)",
+  },
+  dark: {
+    background: "#0E0C0B",
+    backgroundMuted: "#221F1C",
+    surface: "#1A1715",
+    surfaceElevated: "#1A1715",
+    text: "#F5F0EA",
+    textMuted: "#ABA198",
+    brandAccent: "#DDA676",
+    brandAccentPressed: "#C88E5D",
+    onBrandAccent: "#2A160A",
+    accentTint: "#2C2219",
+    secondaryAccent: "#BB9457",
+    success: "#C9BC6E",
+    highlight: "#BB9457",
+    criticalError: "#F09A92",
+    border: "rgba(245, 240, 234, 0.08)",
+    glassFill: "rgba(44, 38, 34, 0.45)",
+    glassEdge: "rgba(255, 255, 255, 0.16)",
+  },
+};
+
+export const palettes = { forest, autumn };
+
+export type PaletteName = keyof typeof palettes;
+export type ThemeMode = keyof typeof forest;
+export type ColorTokens = typeof forest.light;

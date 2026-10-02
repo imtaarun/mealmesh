@@ -75,7 +75,7 @@ export default function RecipePickerScreen() {
       </View>
 
       {loading ? (
-        <ActivityIndicator color={colors.primary} />
+        <ActivityIndicator color={colors.brandAccent} />
       ) : recipes.length === 0 ? (
         <EmptyState message="No recipes match that filter yet." />
       ) : (

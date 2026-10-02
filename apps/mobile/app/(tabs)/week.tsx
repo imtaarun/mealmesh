@@ -5,6 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Screen, LoadingScreen } from "@/components/ui/Screen";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
+import { Pill, TextLink } from "@/components/ui/Form";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
@@ -26,7 +27,7 @@ function isoDate(d: Date): string {
 }
 
 export default function WeekScreen() {
-  const { colors, spacing, typography, radius } = useTheme();
+  const { colors, spacing, typography, minTouch } = useTheme();
   const [plan, setPlan] = useState<MealPlan | null | undefined>(undefined); // undefined = loading
   const [me, setMe] = useState<Me | null>(null);
   const [members, setMembers] = useState<Members | null>(null);
@@ -97,7 +98,7 @@ export default function WeekScreen() {
       <Screen>
         <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.md }}>Week</Text>
         <View style={{ alignItems: "center", paddingVertical: spacing.xxl, gap: spacing.md }}>
-          <ActivityIndicator color={colors.primary} />
+          <ActivityIndicator color={colors.brandAccent} />
           <Text style={{ ...typography.body, color: colors.textMuted }}>Balancing your week…</Text>
         </View>
       </Screen>
@@ -153,9 +154,7 @@ export default function WeekScreen() {
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing.lg }}>
         <Text style={{ ...typography.title, color: colors.text }}>Week</Text>
         {isPro ? (
-          <Pressable onPress={planMyWeek} hitSlop={8}>
-            <Text style={{ ...typography.caption, color: colors.primary }}>Plan My Week</Text>
-          </Pressable>
+          <TextLink label="Plan My Week" onPress={planMyWeek} />
         ) : null}
       </View>
 
@@ -207,12 +206,13 @@ export default function WeekScreen() {
                             params: { id: meal.recipe!.id, servings: String(meal.servings), ...(meal.type === "leftover" ? { leftover: "1" } : {}) },
                           })
                         }
-                        hitSlop={6}
+                        accessibilityRole="link"
+                        style={{ minHeight: minTouch, justifyContent: "center" }}
                       >
                         <Text style={{ ...typography.bodyStrong, color: colors.text }} numberOfLines={1}>
                           {meal.type === "leftover" ? `Leftovers · ${meal.recipe.title}` : meal.recipe.title}
                         </Text>
-                        <Text style={{ ...typography.caption, color: colors.primary }}>
+                        <Text style={{ ...typography.caption, color: colors.brandAccent }}>
                           {meal.type === "leftover" ? "View recipe ›" : `${meal.recipe.prepMinutes + meal.recipe.cookMinutes} min · View recipe ›`}
                         </Text>
                       </Pressable>
@@ -223,49 +223,14 @@ export default function WeekScreen() {
 
                   <View style={{ flexDirection: "row", gap: spacing.sm, justifyContent: "flex-end" }}>
                     {isPro && meal.slot === "dinner" && meal.type === "cook" ? (
-                      <Pressable
-                        onPress={() => repick(meal)}
-                        disabled={repickingId !== null}
-                        style={{
-                          paddingVertical: spacing.xs,
-                          paddingHorizontal: spacing.md,
-                          borderRadius: radius.pill,
-                          borderWidth: 1,
-                          borderColor: colors.primary,
-                        }}
-                      >
-                        <Text style={{ ...typography.caption, color: colors.primary }}>
-                          {repickingId === meal.id ? "Picking…" : "New pick"}
-                        </Text>
-                      </Pressable>
+                      <Pill label={repickingId === meal.id ? "Picking…" : "New pick"} onPress={() => repick(meal)} disabled={repickingId !== null} />
                     ) : null}
-                    <Pressable
+                    <Pill
+                      label={meal.recipe ? "Change" : "Add"}
+                      accessibilityLabel={`${meal.recipe ? "Change" : "Add"} ${slot}`}
                       onPress={() => router.push({ pathname: "/recipe-picker", params: { mealPlanId: plan.id, mealId: meal.id } })}
-                      style={{
-                        paddingVertical: spacing.xs,
-                        paddingHorizontal: spacing.md,
-                        borderRadius: radius.pill,
-                        backgroundColor: colors.primary,
-                      }}
-                    >
-                      <Text style={{ ...typography.caption, color: colors.background }}>
-                        {meal.recipe ? "Change" : "Add"}
-                      </Text>
-                    </Pressable>
-                    {meal.recipe ? (
-                      <Pressable
-                        onPress={() => skip(meal)}
-                        style={{
-                          paddingVertical: spacing.xs,
-                          paddingHorizontal: spacing.md,
-                          borderRadius: radius.pill,
-                          borderWidth: 1,
-                          borderColor: colors.border,
-                        }}
-                      >
-                        <Text style={{ ...typography.caption, color: colors.textMuted }}>Skip</Text>
-                      </Pressable>
-                    ) : null}
+                    />
+                    {meal.recipe ? <Pill label="Skip" variant="neutral" accessibilityLabel={`Skip ${slot}`} onPress={() => skip(meal)} /> : null}
                   </View>
                 </View>
               </Card>

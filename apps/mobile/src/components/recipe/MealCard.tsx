@@ -24,7 +24,7 @@ export function MealCard({ recipe, onPress }: MealCardProps) {
         <View
           style={{
             alignSelf: "flex-start",
-            backgroundColor: colors.surfaceMuted,
+            backgroundColor: colors.backgroundMuted,
             paddingVertical: 2,
             paddingHorizontal: spacing.sm,
             borderRadius: 999,
@@ -48,7 +48,7 @@ export function MealCard({ recipe, onPress }: MealCardProps) {
             <View
               key={tag}
               style={{
-                backgroundColor: colors.surfaceMuted,
+                backgroundColor: colors.backgroundMuted,
                 borderRadius: 999,
                 paddingVertical: 2,
                 paddingHorizontal: spacing.sm,

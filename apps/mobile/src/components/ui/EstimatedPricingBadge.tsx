@@ -9,7 +9,7 @@ export function EstimatedPricingBadge() {
     <View
       style={{
         alignSelf: "flex-start",
-        backgroundColor: colors.surfaceMuted,
+        backgroundColor: colors.backgroundMuted,
         paddingVertical: spacing.xs / 2,
         paddingHorizontal: spacing.sm,
         borderRadius: radius.pill,

@@ -1,13 +1,17 @@
 import { Redirect, Tabs } from "expo-router";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/theme";
 import { useAuth } from "@/auth/AuthProvider";
+import { Glass } from "@/components/ui/Glass";
 
 // Signed-out → /welcome; new accounts finish profile setup first.
 export default function TabsLayout() {
-  const { colors } = useTheme();
+  const { colors, spacing } = useTheme();
   const { status } = useAuth();
+  const insets = useSafeAreaInsets();
+  const android = Platform.OS === "android";
 
   if (status === "loading") {
     return <View style={{ flex: 1, backgroundColor: colors.background }} />;
@@ -21,11 +25,26 @@ export default function TabsLayout() {
 
   return (
     <Tabs
+      safeAreaInsets={android ? undefined : { bottom: 0 }}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
+        tabBarActiveTintColor: colors.brandAccent,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        tabBarStyle: android
+          ? { backgroundColor: colors.surfaceElevated, borderTopWidth: 0, elevation: 3, height: 80, paddingTop: 8, paddingBottom: 12 }
+          : {
+              // A floating glass capsule over scrolling content.
+              position: "absolute",
+              bottom: Math.max(insets.bottom - spacing.sm, spacing.md),
+              marginHorizontal: spacing.md,
+              height: 64,
+              paddingTop: spacing.sm,
+              paddingBottom: spacing.sm,
+              backgroundColor: "transparent",
+              borderTopWidth: 0,
+              elevation: 0,
+            },
+        tabBarBackground: android ? undefined : () => <Glass style={{ flex: 1 }} />,
       }}
     >
       <Tabs.Screen

@@ -6,7 +6,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Screen, LoadingScreen } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
-import { Button, TextField } from "@/components/ui/Form";
+import { Button, Pill, TextField } from "@/components/ui/Form";
+import { Chip } from "@/components/ui/Chip";
 import { useAuth } from "@/auth/AuthProvider";
 import { confirm } from "@/lib/confirm";
 import { api, type Housemate, type Me, type Members } from "@/lib/api";
@@ -16,7 +17,7 @@ import { useTheme } from "@/theme";
 const METHOD_LABELS: Record<string, string> = { email: "email", google: "Google", apple: "Apple" };
 
 export default function ProfileScreen() {
-  const { colors, spacing, typography, radius } = useTheme();
+  const { colors, spacing, typography, palette, setPalette, minTouch } = useTheme();
   const { logout } = useAuth();
   const [me, setMe] = useState<Me | null>(null);
   const [members, setMembers] = useState<Members | null>(null);
@@ -75,7 +76,6 @@ export default function ProfileScreen() {
   }
 
   const row = { flexDirection: "row" as const, alignItems: "center" as const, justifyContent: "space-between" as const };
-  const pill = { paddingVertical: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.border };
 
   return (
     <Screen>
@@ -85,7 +85,7 @@ export default function ProfileScreen() {
       </Text>
 
       <Card style={{ marginBottom: spacing.lg }}>
-        <Pressable onPress={() => router.push({ pathname: "/profile-setup", params: { edit: "1" } })} style={row}>
+        <Pressable onPress={() => router.push({ pathname: "/profile-setup", params: { edit: "1" } })} style={{ ...row, minHeight: minTouch }}>
           <View style={{ flexShrink: 1 }}>
             <Text style={{ ...typography.bodyStrong, color: colors.text }}>{isOwner ? "Household preferences" : "Your preferences"}</Text>
             <Text style={{ ...typography.caption, color: colors.textMuted }}>
@@ -94,6 +94,14 @@ export default function ProfileScreen() {
           </View>
           <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
         </Pressable>
+      </Card>
+
+      <Card style={{ marginBottom: spacing.lg }}>
+        <Text style={{ ...typography.bodyStrong, color: colors.text, marginBottom: spacing.sm }}>Appearance</Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <Chip label="Green forest" selected={palette === "forest"} onPress={() => setPalette("forest")} />
+          <Chip label="Autumn fall" selected={palette === "autumn"} onPress={() => setPalette("autumn")} />
+        </View>
       </Card>
 
       <Text style={{ ...typography.heading, color: colors.text, marginBottom: spacing.sm }}>{me.household.name}</Text>
@@ -124,17 +132,9 @@ export default function ProfileScreen() {
                 <Text style={{ ...typography.caption, color: colors.textMuted }}>
                   {person.costShare === 0 ? "Not paying" : person.costShare === 1 ? "1 share" : `${person.costShare} shares`}
                 </Text>
-                <Pressable style={pill} onPress={() => attempt(async () => setMembers(await api.setCostShare(person.id, Math.max(0, person.costShare - 1))))}>
-                  <Text style={{ ...typography.caption, color: colors.text }}>−</Text>
-                </Pressable>
-                <Pressable style={pill} onPress={() => attempt(async () => setMembers(await api.setCostShare(person.id, Math.min(10, person.costShare + 1))))}>
-                  <Text style={{ ...typography.caption, color: colors.text }}>+</Text>
-                </Pressable>
-                {!person.isYou ? (
-                  <Pressable style={{ ...pill, borderColor: colors.danger }} onPress={() => remove(person)}>
-                    <Text style={{ ...typography.caption, color: colors.danger }}>Remove</Text>
-                  </Pressable>
-                ) : null}
+                <Pill label="−" variant="neutral" accessibilityLabel={`Fewer shares for ${person.name}`} onPress={() => attempt(async () => setMembers(await api.setCostShare(person.id, Math.max(0, person.costShare - 1))))} />
+                <Pill label="+" variant="neutral" accessibilityLabel={`More shares for ${person.name}`} onPress={() => attempt(async () => setMembers(await api.setCostShare(person.id, Math.min(10, person.costShare + 1))))} />
+                {!person.isYou ? <Pill label="Remove" variant="danger" accessibilityLabel={`Remove ${person.name}`} onPress={() => remove(person)} /> : null}
               </View>
             ) : null}
           </View>
@@ -164,14 +164,14 @@ export default function ProfileScreen() {
         </Card>
       ) : null}
 
-      {error ? <Text style={{ ...typography.caption, color: colors.danger, marginBottom: spacing.md }}>{error}</Text> : null}
+      {error ? <Text style={{ ...typography.caption, color: colors.criticalError, marginBottom: spacing.md }}>{error}</Text> : null}
 
       <Card style={{ marginBottom: spacing.lg, gap: spacing.md }}>
         {[
           { label: "Your history", hint: "Weeks planned, meals cooked, money spent", path: "/history" as const },
           { label: "Your data", hint: "Everything we store about you — download or delete", path: "/my-data" as const },
         ].map((item) => (
-          <Pressable key={item.path} onPress={() => router.push(item.path)} style={row}>
+          <Pressable key={item.path} onPress={() => router.push(item.path)} style={{ ...row, minHeight: minTouch }}>
             <View style={{ flexShrink: 1 }}>
               <Text style={{ ...typography.bodyStrong, color: colors.text }}>{item.label}</Text>
               <Text style={{ ...typography.caption, color: colors.textMuted }}>{item.hint}</Text>

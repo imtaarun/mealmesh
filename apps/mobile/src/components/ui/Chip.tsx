@@ -1,4 +1,5 @@
-import { Pressable, Text } from "react-native";
+import { Text } from "react-native";
+import { PressableScale } from "./PressableScale";
 import { useTheme } from "@/theme";
 
 interface ChipProps {
@@ -7,25 +8,25 @@ interface ChipProps {
   onPress: () => void;
 }
 
-/** Toggleable pill button — used for the multi-select preference groups in onboarding. */
 export function Chip({ label, selected, onPress }: ChipProps) {
-  const { colors, spacing, radius, typography } = useTheme();
+  const { colors, spacing, radius, typography, minTouch } = useTheme();
 
   return (
-    <Pressable
+    <PressableScale
       onPress={onPress}
+      accessibilityLabel={label}
+      accessibilityState={{ selected }}
       style={{
-        paddingVertical: spacing.xs,
+        minHeight: minTouch,
+        justifyContent: "center",
         paddingHorizontal: spacing.md,
         borderRadius: radius.pill,
-        borderWidth: 1,
-        borderColor: selected ? colors.primary : colors.border,
-        backgroundColor: selected ? colors.primary : colors.surface,
+        backgroundColor: selected ? colors.accentTint : colors.backgroundMuted,
         marginRight: spacing.sm,
         marginBottom: spacing.sm,
       }}
     >
-      <Text style={{ ...typography.caption, color: selected ? colors.background : colors.text }}>{label}</Text>
-    </Pressable>
+      <Text style={{ ...typography.caption, color: selected ? colors.brandAccent : colors.text, fontWeight: selected ? "600" : "500" }}>{selected ? `✓ ${label}` : label}</Text>
+    </PressableScale>
   );
 }

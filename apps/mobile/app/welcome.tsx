@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { router } from "expo-router";
 import { Screen } from "@/components/ui/Screen";
-import { Button, TextField } from "@/components/ui/Form";
+import { Button, TextField, TextLink } from "@/components/ui/Form";
 import { AppleSignInButton, GoogleSignInButton, googleConfigured, type SocialResult } from "@/auth/SocialSignIn";
 import { useAuth } from "@/auth/AuthProvider";
 import { useTheme } from "@/theme";
@@ -58,15 +58,15 @@ export default function WelcomeScreen() {
             ) : (
               <Button label={busy ? "Logging in…" : "Log in"} disabled={busy} onPress={() => run(() => login(email, password))} />
             )}
-            <Pressable onPress={() => setEmailMode(emailMode === "signup" ? "login" : "signup")} hitSlop={8}>
-              <Text style={{ ...typography.caption, color: colors.primary, textAlign: "center", marginBottom: spacing.md }}>
-                {emailMode === "signup" ? "Already have an account? Log in" : "New here? Create an account"}
-              </Text>
-            </Pressable>
+            <TextLink
+              align="center"
+              label={emailMode === "signup" ? "Already have an account? Log in" : "New here? Create an account"}
+              onPress={() => setEmailMode(emailMode === "signup" ? "login" : "signup")}
+            />
           </View>
         )}
 
-        {error ? <Text style={{ ...typography.caption, color: colors.danger, marginVertical: spacing.sm }}>{error}</Text> : null}
+        {error ? <Text style={{ ...typography.caption, color: colors.criticalError, marginVertical: spacing.sm }}>{error}</Text> : null}
 
         <View style={{ marginTop: spacing.lg }}>
           {inviteOpen ? (
@@ -77,9 +77,7 @@ export default function WelcomeScreen() {
               <TextField placeholder="Invite code" autoCapitalize="characters" value={inviteCode} onChangeText={setInviteCode} />
             </>
           ) : (
-            <Pressable onPress={() => setInviteOpen(true)} hitSlop={8}>
-              <Text style={{ ...typography.caption, color: colors.primary, textAlign: "center" }}>Have an invite code?</Text>
-            </Pressable>
+            <TextLink align="center" label="Have an invite code?" onPress={() => setInviteOpen(true)} />
           )}
         </View>
       </View>
