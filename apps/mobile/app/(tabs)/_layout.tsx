@@ -1,4 +1,5 @@
-import { Redirect, Tabs } from "expo-router";
+import { Redirect } from "expo-router";
+import { Tabs } from "expo-router/js-tabs";
 import { Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { aggregateDemand, applyPantryAndRound } from "../src/aggregation/index.js";
+import { aggregateDemand, applyPantryAndRound, buildGroceryList } from "../src/aggregation/index.js";
 import type { IngredientConversion, RecipeIngredientDemand } from "../src/types.js";
 
 const onion: IngredientConversion = { id: "onion", baseUnit: "g", gramsPerPiece: 150 };
@@ -78,5 +78,40 @@ describe("applyPantryAndRound", () => {
     const line = applyPantryAndRound(demand!, 0);
     expect(line.neededQuantity).toBe(220);
     expect(line.finalQuantity).toBe(250); // next 50g step
+  });
+});
+
+describe("buildGroceryList", () => {
+  const ingredients = {
+    onion: { ...onion, category: "Produce" },
+    rice: { ...rice, category: "Pantry" },
+    salt: { id: "salt", baseUnit: "g" as const, category: "Pantry" },
+  };
+  const line = (ingredientId: string, quantity: number, unit: RecipeIngredientDemand["unit"]): RecipeIngredientDemand =>
+    ({ recipeId: "r", ingredientId, quantity, unit, recipeServings: 1, mealServings: 1 });
+
+  it("1 + ½ + 2 onions is one line of whole onions", () => {
+    const [onions] = buildGroceryList([line("onion", 1, "piece"), line("onion", 0.5, "piece"), line("onion", 2, "piece")], ingredients, {});
+    expect(onions).toMatchObject({ unit: "piece", neededQuantity: 3.5, finalQuantity: 4 });
+  });
+
+  it("subtracts the pantry before counting onions", () => {
+    const [onions] = buildGroceryList([line("onion", 3, "piece")], ingredients, { onion: 300 });
+    expect(onions).toMatchObject({ unit: "piece", pantryCovered: 2, finalQuantity: 1 });
+  });
+
+  it("keeps a fully covered line, with nothing to buy", () => {
+    const [riceLine] = buildGroceryList([line("rice", 400, "g")], ingredients, { rice: 500 });
+    expect(riceLine).toMatchObject({ unit: "g", pantryCovered: 400, finalQuantity: 0 });
+  });
+
+  it("drops salt to taste when the pantry has salt, and keeps it otherwise", () => {
+    expect(buildGroceryList([line("salt", 1, "to_taste")], ingredients, { salt: 800 })).toEqual([]);
+    expect(buildGroceryList([line("salt", 1, "to_taste")], ingredients, {})).toMatchObject([{ isNominal: true }]);
+  });
+
+  it("leaves non-produce in its base unit", () => {
+    const [riceLine] = buildGroceryList([line("rice", 420, "g")], ingredients, {});
+    expect(riceLine).toMatchObject({ unit: "g", finalQuantity: 450 });
   });
 });
