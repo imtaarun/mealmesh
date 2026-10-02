@@ -1,6 +1,34 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 import { GroceryListService } from "./grocery-list.service.js";
 import { CurrentHousehold, type RequestHousehold } from "../../common/household-context.js";
+
+class UpdateItemDto {
+  @IsOptional()
+  @IsBoolean()
+  checked?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  alreadyHave?: boolean;
+
+  /** null goes back to the computed quantity. */
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  userOverrideQuantity?: number | null;
+
+  /** For a line the pantry covers: put it back on the list anyway. */
+  @IsOptional()
+  @IsBoolean()
+  buyAnyway?: boolean;
+}
+
+class AddItemDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+}
 
 @Controller("api")
 export class GroceryListController {
@@ -12,8 +40,18 @@ export class GroceryListController {
   }
 
   @Patch("grocery-list/items/:id")
-  updateItem(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string, @Body() patch: unknown) {
-    return this.groceryListService.updateItem(household, id, patch);
+  updateItem(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string, @Body() dto: UpdateItemDto) {
+    return this.groceryListService.updateItem(household, id, dto);
+  }
+
+  @Post("grocery-list/:id/items")
+  addItem(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string, @Body() dto: AddItemDto) {
+    return this.groceryListService.addItem(household, id, dto.name);
+  }
+
+  @Delete("grocery-list/items/:id")
+  removeItem(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string) {
+    return this.groceryListService.removeItem(household, id);
   }
 
   @Post("grocery/optimize")

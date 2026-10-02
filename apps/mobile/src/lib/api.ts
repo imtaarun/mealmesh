@@ -157,6 +157,58 @@ export interface UpdateMealResult {
   meal: Meal | null;
 }
 
+export type BaseUnit = "g" | "ml" | "piece";
+
+export interface GroceryItem {
+  id: string;
+  name: string;
+  category: string;
+  unit: BaseUnit;
+  neededQuantity: number;
+  pantryCovered: number;
+  quantity: number;
+  isOverridden: boolean;
+  isNominal: boolean;
+  isCustom: boolean;
+  checked: boolean;
+  alreadyHave: boolean;
+}
+
+export interface GroceryList {
+  id: string;
+  mealPlanId: string;
+  items: GroceryItem[];
+}
+
+export type PantryLocation = "fridge" | "freezer" | "pantry";
+
+export interface IngredientOption {
+  id: string;
+  name: string;
+  category: string;
+  baseUnit: BaseUnit;
+  gramsPerPiece: number | null;
+}
+
+export interface PantryItem {
+  id: string;
+  ingredientId: string;
+  name: string;
+  category: string;
+  gramsPerPiece: number | null;
+  quantity: number;
+  unit: BaseUnit;
+  location: PantryLocation;
+  expiresAt: string | null;
+}
+
+export interface Pantry {
+  items: PantryItem[];
+  useItFirst: Array<{ ingredientId: string; name: string; expiresAt: string; recipeCount: number; recipes: Array<{ id: string; title: string }> }>;
+}
+
+export type PantryItemInput = { quantity?: number; location?: PantryLocation; expiresAt?: string | null };
+
 export const api = {
   signup: (input: SignupInput) => apiClient.post<AuthResult>("/api/auth/signup", input),
   login: (email: string, password: string) => apiClient.post<AuthResult>("/api/auth/login", { email, password }),
@@ -206,4 +258,17 @@ export const api = {
 
   skipMealSlot: (mealPlanId: string, mealId: string) =>
     apiClient.patch<Meal>(`/api/meal-plans/${mealPlanId}/meals/${mealId}`, { action: "skip" }),
+
+  getGroceryList: (mealPlanId: string) => apiClient.get<GroceryList>(`/api/grocery-list?mealPlanId=${mealPlanId}`),
+  updateGroceryItem: (id: string, patch: { checked?: boolean; alreadyHave?: boolean; userOverrideQuantity?: number | null; buyAnyway?: boolean }) =>
+    apiClient.patch<GroceryItem>(`/api/grocery-list/items/${id}`, patch),
+  addGroceryItem: (groceryListId: string, name: string) => apiClient.post<GroceryItem>(`/api/grocery-list/${groceryListId}/items`, { name }),
+  removeGroceryItem: (id: string) => apiClient.delete<{ deleted: true }>(`/api/grocery-list/items/${id}`),
+
+  getPantry: () => apiClient.get<Pantry>("/api/pantry"),
+  listIngredients: () => apiClient.get<IngredientOption[]>("/api/pantry/ingredients"),
+  addPantryItem: (input: PantryItemInput & { ingredientId: string; quantity: number; location: PantryLocation }) =>
+    apiClient.post<PantryItem>("/api/pantry/items", input),
+  updatePantryItem: (id: string, input: PantryItemInput) => apiClient.patch<PantryItem>(`/api/pantry/items/${id}`, input),
+  removePantryItem: (id: string) => apiClient.delete<{ deleted: true }>(`/api/pantry/items/${id}`),
 };

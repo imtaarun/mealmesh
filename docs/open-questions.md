@@ -194,6 +194,18 @@ you took and why. Never resolve one of these silently in code.
     until then, cooks go by the ingredient list. Worth doing before AI recipes arrive,
     since they could be generated with markup from the start.
 
+25. **Grocery list stays in step with the plan — DECIDED 2026-10-02.** The list is
+    rebuilt from the plan and pantry every time it's opened, so editing the week never
+    leaves it stale. What the shopper did carries over: ticks, "Already have", and
+    their own items. A changed quantity override is cleared when the plan or pantry
+    changes that line, because the old number no longer means anything. Recipe items
+    can't be deleted (the plan would bring them back), so they get "Already have";
+    custom items can be removed.
+
+26. **Shopping doesn't fill the pantry yet — OPEN.** Ticking items off doesn't add
+    them to the pantry. That needs "finished shopping" as a moment (and ideally
+    receipts, P2). Until then the pantry is filled by hand.
+
 ## Known gaps in the original spec
 
 - No unit-conversion strategy, which is the hardest part of aggregation

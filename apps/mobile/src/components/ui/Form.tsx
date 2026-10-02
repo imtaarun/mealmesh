@@ -69,7 +69,7 @@ export function Button({ label, onPress, disabled, variant = "primary" }: { labe
     <PressableScale
       onPress={onPress}
       disabled={disabled}
-      accessibilityState={{ disabled: !!disabled }}
+      aria-disabled={!!disabled}
       style={[
         look.box,
         {

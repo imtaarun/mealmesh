@@ -367,13 +367,18 @@ model GroceryListItem {
   category              String
   checked               Boolean  @default(false)
   isCustom              Boolean  @default(false)
+  // "a pinch", "to taste": on the list without a quantity.
+  isNominal             Boolean  @default(false)
+  alreadyHave           Boolean  @default(false)
   userOverrideQuantity  Float?
+  customName            String?
 
   groceryListId String
   groceryList   GroceryList @relation(fields: [groceryListId], references: [id])
 
-  ingredientId String
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  // Null for custom items ("paper towels").
+  ingredientId String?
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id])
 }
 
 // ---------- Stores, products, prices ----------

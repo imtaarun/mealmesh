@@ -46,6 +46,15 @@ whole point of "1 + ½ + 2 onions = 3", not 4.
 Pantry subtraction is a preview until the user confirms; keep `pantryCovered` visible
 so they can override "already have".
 
+Implemented as `buildGroceryList` in `packages/domain/src/aggregation`:
+
+- Produce with a known piece weight (`soldByCount`) is converted to whole pieces
+  after summing: ½ + 1 cucumber → 2.
+- "To taste" lines drop off when the pantry has any of that ingredient, and show
+  "as needed" when it doesn't.
+- Pantry items past their expiry date don't count.
+- Optional recipe lines aren't on the list.
+
 ## 3. Costing
 
 `ProductPrice.priceCents` itself comes from `MockGroceryProvider`'s approximate

@@ -122,12 +122,26 @@ recipe → 4 → 6 servings (300 g → 450 g lentils, $2.52 → $3.78) → cooki
 timer counts down and keeps running on the next step → ✕ back. Not yet on a real
 phone (vibration and keep-awake only work there).
 
-## Phase 6 — Grocery list + pantry
+## Phase 6 — Grocery list + pantry — DONE
 
-Pantry CRUD, list generation with pantry subtraction, categories, check off, overrides,
-Use It First.
+- **Shop**: one list built from the week (`buildGroceryList`): summed across recipes,
+  pantry subtracted, rounded to what you can buy. Produce comes in whole pieces
+  ("Yellow Onion — 4"). Grouped Produce → Meat & Seafood → Dairy → Pantry → Frozen →
+  Other. Tick items off; tap one for −/+ (in purchase steps), "Already have", or
+  "Reset". Add your own items ("Paper towels"). An **Already have** section shows what
+  the pantry covers, with "Buy anyway". The list follows the plan: change a dinner and
+  it updates, keeping your ticks (open-questions item 25).
+- **Pantry**: Fridge / Freezer / Pantry, add by searching ingredients, amounts in
+  pieces for produce, optional use-by (3 days to 1 month), edit and remove. Expired
+  items don't count against the list.
+- **Use It First**: anything expiring within 3 days, with the recipes that use it
+  (never ones that break an allergy), linking to the recipe page.
 
-**DoD:** plan → one consolidated list, pantry-aware, with no manual copying.
+**DoD met:** in a phone-sized browser: three dinners planned → Shop shows one list
+with one onion line → tick garlic, + an onion, add paper towels → Pantry: add 2 kg
+lentils and 2 onions expiring in 3 days → Use It First card appears → back on Shop,
+lentils and onions sit under Already have → "Buy anyway" puts lentils back. Plus 33
+HTTP checks, including that another household can't see or change any of it.
 
 ## Phase 7 — Prices, optimization, Deal Radar, budget
 

@@ -15,7 +15,7 @@ export function Chip({ label, selected, onPress }: ChipProps) {
     <PressableScale
       onPress={onPress}
       accessibilityLabel={label}
-      accessibilityState={{ selected }}
+      aria-selected={selected}
       style={{
         minHeight: minTouch,
         justifyContent: "center",
