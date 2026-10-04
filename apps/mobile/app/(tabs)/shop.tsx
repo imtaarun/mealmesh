@@ -7,6 +7,7 @@ import { Screen } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Pill, TextField } from "@/components/ui/Form";
+import { WeekSummary } from "@/components/shop/WeekSummary";
 import { api, type GroceryItem, type GroceryList } from "@/lib/api";
 import { useTheme } from "@/theme";
 
@@ -21,11 +22,10 @@ export default function ShopScreen() {
   const [open, setOpen] = useState<string | null>(null);
   const [newItem, setNewItem] = useState("");
 
-  useFocusEffect(
-    useCallback(() => {
-      api.getCurrentPlan().then((plan) => (plan ? api.getGroceryList(plan.id).then(setList) : setList(null)));
-    }, []),
-  );
+  const load = useCallback(() => {
+    api.getCurrentPlan().then((plan) => (plan ? api.getGroceryList(plan.id).then(setList) : setList(null)));
+  }, []);
+  useFocusEffect(load);
 
   const replace = (item: GroceryItem) => setList((l) => l && { ...l, items: l.items.map((i) => (i.id === item.id ? item : i)) });
   const update = (item: GroceryItem, patch: Parameters<typeof api.updateGroceryItem>[1]) => api.updateGroceryItem(item.id, patch).then(replace);
@@ -70,6 +70,8 @@ export default function ShopScreen() {
       <Text style={{ ...typography.body, color: colors.textMuted, marginBottom: spacing.md }}>
         {left === 0 ? "All done — everything's in the cart." : `${left} of ${toBuy.length} left to get`}
       </Text>
+
+      <WeekSummary list={list} onPlanChanged={load} />
 
       <View style={{ flexDirection: "row", alignItems: "flex-start", gap: spacing.sm }}>
         <View style={{ flex: 1 }}>

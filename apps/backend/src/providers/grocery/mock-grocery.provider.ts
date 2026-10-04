@@ -53,6 +53,10 @@ export class MockGroceryProvider implements GroceryProvider {
     });
   }
 
+  async listStores(): Promise<Store[]> {
+    return this.prisma.store.findMany({ select: { id: true, name: true, chain: true, lat: true, lng: true, isDemo: true }, orderBy: { name: "asc" } });
+  }
+
   async getStoreLocations(near: LatLng, radiusKm: number): Promise<Store[]> {
     const stores = await this.prisma.store.findMany({
       select: { id: true, name: true, chain: true, lat: true, lng: true, isDemo: true },

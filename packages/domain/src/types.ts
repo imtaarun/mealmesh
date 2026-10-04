@@ -85,10 +85,18 @@ export interface StoreDistance {
   distanceKm: number;
 }
 
+/** What to buy for one item: which product, how many packs, for how much. */
+export interface BasketPick {
+  ingredientId: string;
+  productId: string;
+  packs: number;
+  cents: number;
+}
+
 export interface OptimizationResult {
   strategy: OptimizationStrategy;
   totalCents: number;
-  storeBreakdown: Array<{ storeId: string; subtotalCents: number; itemIds: string[] }>;
+  storeBreakdown: Array<{ storeId: string; subtotalCents: number; items: BasketPick[] }>;
   unavailableItemIds: string[];
   savingsCents: number;
   topSavingsDrivers: string[]; // ingredientIds, ranked

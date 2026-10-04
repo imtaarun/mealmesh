@@ -72,6 +72,7 @@ interface GroceryProvider {
   getPrice(productId: string): Promise<ProductPrice | null>;
   getDeals(storeId: string): Promise<Deal[]>;
   getStoreLocations(near: LatLng, radiusKm: number): Promise<Store[]>;
+  listStores(): Promise<Store[]>;
 }
 ```
 
@@ -141,14 +142,17 @@ POST /api/meal-plans/:id/meals/:mealId/regenerate   Pro only — AI re-pick; Fre
 PATCH/api/meal-plans/:id/meals/:mealId        replace, skip, leftover, servings — how Build My Week writes picks
 GET  /api/recipes/:id                         recipe + cost per serving + what's in your pantry
 POST /api/recipes/generate
-GET  /api/pantry
+GET  /api/pantry                              items + Use It First
+GET  /api/pantry/ingredients
 POST /api/pantry/items
 PATCH/api/pantry/items/:id
-GET  /api/grocery-list?mealPlanId=
-PATCH/api/grocery-list/items/:id
-POST /api/grocery/optimize                     { strategy }
-GET  /api/stores
-GET  /api/deals?mealPlanId=
+DELETE /api/pantry/items/:id
+GET  /api/grocery-list?mealPlanId=            rebuilt from plan + pantry on every read
+PATCH/api/grocery-list/items/:id              checked, alreadyHave, userOverrideQuantity, buyAnyway
+POST /api/grocery-list/:id/items              your own item
+DELETE /api/grocery-list/items/:id            your own items only
+GET  /api/grocery-list/:id/optimize           all three strategies + budget and swap ideas
+GET  /api/grocery-list/:id/deals              Deal Radar
 POST /api/receipts/parse                       (P2)
 ```
 

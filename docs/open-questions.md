@@ -78,8 +78,11 @@ you took and why. Never resolve one of these silently in code.
    original proposed rule — allergies/hard dislikes as vetoes, soft preferences
    averaged with a fairness counter — still applies specifically to the Pro-tier
    automatic "Plan My Week" path, where there is no per-slot human in the loop.
-10. **Store distance and detour cost.** Needs a location source and a default trip cost
-    ($6 assumed in the optimizer). Confirm or make it a user setting.
+10. **Store distance and detour cost — INTERIM 2026-10-04.** Households have no location
+    yet, so the optimizer treats all five demo stores as nearby (distance 0), and
+    charges the default $6 for each extra stop. The Optimize screen shows savings both
+    before and after that trip cost. Still open: a location source (postal code at
+    onboarding is the cheapest option) and whether the trip cost becomes a setting.
 11. **Subscription tiers — RESOLVED 2026-09-10.** MealMesh ships two tiers:
     - **Free (default)**: local recipe library only (`packages/seed-data`, `Recipe.source
       = 'seed'`). No `AIProvider` calls anywhere in the request path. The weekly plan
@@ -205,6 +208,19 @@ you took and why. Never resolve one of these silently in code.
 26. **Shopping doesn't fill the pantry yet — OPEN.** Ticking items off doesn't add
     them to the pantry. That needs "finished shopping" as a moment (and ideally
     receipts, P2). Until then the pantry is filled by hand.
+
+27. **Which total is "the week's cost" — DECIDED 2026-10-04.** The budget card on Shop
+    uses **Best overall**: what we'd actually recommend buying, at no more than two
+    stores. The Week tab's "estimated" figure is still the one saved when Plan My Week
+    ran, which works out to the Cheapest strategy (every item from wherever it's
+    cheapest). The two are a few dollars apart, and the Week figure doesn't update
+    when meals change. Worth unifying in Phase 8.
+
+28. **Budget swaps — DECIDED 2026-10-04.** Only shown when the week is over budget. Up to
+    two, each pairing one of the priciest dinners with a different cheaper dinner the
+    planner would also allow (diet, cook time, no allergy or dislike, not already this
+    week). Never applied without a tap, and applying one also changes the leftover lunch
+    that came from that dinner.
 
 ## Known gaps in the original spec
 

@@ -209,6 +209,37 @@ export interface Pantry {
 
 export type PantryItemInput = { quantity?: number; location?: PantryLocation; expiresAt?: string | null };
 
+export interface StrategyResult {
+  strategy: "min_cost" | "min_stores" | "best_overall";
+  totalCents: number;
+  savingsCents: number;
+  stores: Array<{ storeId: string; name: string; subtotalCents: number; items: Array<{ ingredientId: string; name: string; product: string; packs: number; cents: number }> }>;
+  unavailable: string[];
+  topSavingsDrivers: string[];
+}
+
+export interface Swap {
+  mealId: string;
+  date: string;
+  from: { id: string; title: string };
+  to: { id: string; title: string };
+  savingsCents: number;
+}
+
+export interface Optimization {
+  isDemo: boolean;
+  tripCostCents: number;
+  minCost: StrategyResult;
+  minStores: StrategyResult;
+  bestOverall: StrategyResult;
+  budget: { budgetCents: number; plannedCents: number; remainingCents: number; swaps: Swap[] };
+}
+
+export interface DealRadar {
+  isDemo: boolean;
+  deals: Array<{ id: string; item: string; product: string; store: string; discountPercent: number; packs: number; regularCents: number; saleCents: number; savingsCents: number; mealsUsing: number }>;
+}
+
 export const api = {
   signup: (input: SignupInput) => apiClient.post<AuthResult>("/api/auth/signup", input),
   login: (email: string, password: string) => apiClient.post<AuthResult>("/api/auth/login", { email, password }),
@@ -264,6 +295,9 @@ export const api = {
     apiClient.patch<GroceryItem>(`/api/grocery-list/items/${id}`, patch),
   addGroceryItem: (groceryListId: string, name: string) => apiClient.post<GroceryItem>(`/api/grocery-list/${groceryListId}/items`, { name }),
   removeGroceryItem: (id: string) => apiClient.delete<{ deleted: true }>(`/api/grocery-list/items/${id}`),
+  /** All three basket strategies plus the week against the budget. Estimated pricing. */
+  optimizeGroceryList: (groceryListId: string) => apiClient.get<Optimization>(`/api/grocery-list/${groceryListId}/optimize`),
+  getDeals: (groceryListId: string) => apiClient.get<DealRadar>(`/api/grocery-list/${groceryListId}/deals`),
 
   getPantry: () => apiClient.get<Pantry>("/api/pantry"),
   listIngredients: () => apiClient.get<IngredientOption[]>("/api/pantry/ingredients"),

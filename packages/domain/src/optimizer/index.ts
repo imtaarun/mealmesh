@@ -1,6 +1,6 @@
 // docs/algorithms.md §4. Greedy is good enough; no solver.
 
-import type { OptimizationResult, OptimizationStrategy, ProductOption, StoreDistance } from "../types.js";
+import type { BasketPick, OptimizationResult, OptimizationStrategy, ProductOption, StoreDistance } from "../types.js";
 import { cheapestForQuantity } from "../pricing/index.js";
 
 export const DEFAULT_TRIP_COST_CENTS = 600;
@@ -20,11 +20,8 @@ export interface OptimizeBasketInput {
   maxDetourKm?: number;
 }
 
-interface PricedItem {
-  ingredientId: string;
-  productId: string;
+interface PricedItem extends BasketPick {
   storeId: string;
-  cents: number;
 }
 
 /** Cheapest way to buy one item at one specific store, or null if that store doesn't carry it. */
@@ -32,7 +29,7 @@ function priceAtStore(item: BasketItem, storeId: string, candidatesByIngredient:
   const candidates = (candidatesByIngredient[item.ingredientId] ?? []).filter((c) => c.storeId === storeId);
   const priced = cheapestForQuantity(candidates, item.neededQuantity);
   if (!priced) return null;
-  return { ingredientId: item.ingredientId, productId: priced.candidate.productId, storeId, cents: priced.cents };
+  return { ingredientId: item.ingredientId, productId: priced.candidate.productId, storeId, packs: priced.packsNeeded, cents: priced.cents };
 }
 
 /** Cheapest way to buy one item across every store. */
@@ -40,7 +37,7 @@ function priceAnywhere(item: BasketItem, candidatesByIngredient: Record<string, 
   const candidates = candidatesByIngredient[item.ingredientId] ?? [];
   const priced = cheapestForQuantity(candidates, item.neededQuantity);
   if (!priced) return null;
-  return { ingredientId: item.ingredientId, productId: priced.candidate.productId, storeId: priced.candidate.storeId, cents: priced.cents };
+  return { ingredientId: item.ingredientId, productId: priced.candidate.productId, storeId: priced.candidate.storeId, packs: priced.packsNeeded, cents: priced.cents };
 }
 
 interface SingleStoreBasket {
@@ -91,12 +88,12 @@ function allStoreIds(storeDistances: StoreDistance[], candidatesByIngredient: Re
 }
 
 function toBreakdown(pricedItems: PricedItem[]): OptimizationResult["storeBreakdown"] {
-  const byStore = new Map<string, { subtotalCents: number; itemIds: string[] }>();
-  for (const p of pricedItems) {
-    const entry = byStore.get(p.storeId) ?? { subtotalCents: 0, itemIds: [] };
-    entry.subtotalCents += p.cents;
-    entry.itemIds.push(p.ingredientId);
-    byStore.set(p.storeId, entry);
+  const byStore = new Map<string, { subtotalCents: number; items: BasketPick[] }>();
+  for (const { storeId, ...pick } of pricedItems) {
+    const entry = byStore.get(storeId) ?? { subtotalCents: 0, items: [] };
+    entry.subtotalCents += pick.cents;
+    entry.items.push(pick);
+    byStore.set(storeId, entry);
   }
   return [...byStore.entries()].map(([storeId, v]) => ({ storeId, ...v }));
 }

@@ -6,5 +6,6 @@ import { PlanMyWeekService } from "./plan-my-week.service.js";
 @Module({
   controllers: [MealPlansController],
   providers: [MealPlansService, PlanMyWeekService],
+  exports: [PlanMyWeekService],
 })
 export class MealPlansModule {}

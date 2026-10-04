@@ -143,12 +143,28 @@ lentils and 2 onions expiring in 3 days → Use It First card appears → back o
 lentils and onions sit under Already have → "Buy anyway" puts lentils back. Plus 33
 HTTP checks, including that another household can't see or change any of it.
 
-## Phase 7 — Prices, optimization, Deal Radar, budget
+## Phase 7 — Prices, optimization, Deal Radar, budget — DONE
 
-MockGroceryProvider wired through, three optimization strategies, savings breakdown,
-Deal Radar filtered to the plan, weekly budget panel.
+- **Optimize my cart** (from Shop): the one-store price crossed out → Best overall,
+  "Save $11.40", and "Most of your savings come from chicken breast, plain yogurt and
+  canned chickpeas." Pick Best overall, Cheapest or One store to see each store's
+  part: item, product, how many packs, price. With more than one stop it shows the
+  saving after $6 per extra trip. Everything priced from what's still to buy (ticks
+  and "Already have" respected), with the Estimated pricing badge.
+- **Deal Radar**: only sales on things this week's list needs. Item, store, % off,
+  packs you'd buy, regular → sale total, saving, and how many meals use it.
+- **Weekly budget** (top of Shop): this week's estimate against the budget and what's
+  left. When over, up to two swap ideas ("Save $6.52: Red Lentil Dal instead of
+  Chicken Souvlaki Pitas on Tuesday") with a Swap button. Never automatic
+  (open-questions item 28).
+- Stores are all treated as nearby until households have a location
+  (open-questions item 10).
 
-**DoD:** the full demo scenario in `docs/product-spec.md` runs start to finish.
+**DoD met:** demo household: Plan My Week → list with pantry subtracted → Optimize →
+$106.11 → $94.71, save $11.40, savings named → Deal Radar, in a phone-sized browser
+in light and dark (recipe → cooking mode was verified in Phase 5). Plus 22 HTTP checks (strategy ordering,
+store subtotals adding up, swaps, leftovers following a swap, other households
+blocked).
 
 ## Phase 8 — Polish
 

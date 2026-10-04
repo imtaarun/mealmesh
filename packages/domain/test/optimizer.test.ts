@@ -96,7 +96,8 @@ describe("optimizeBasket — min_cost and min_stores", () => {
     // storeA covers both items (1500c); storeB only carries chicken (700c) and would need
     // rice priced elsewhere too — storeA is cheaper and complete, so it wins outright.
     expect(result.totalCents).toBe(1500);
-    expect(result.storeBreakdown).toEqual([{ storeId: "storeA", subtotalCents: 1500, itemIds: expect.arrayContaining(["chicken", "rice"]) }]);
+    expect(result.storeBreakdown).toMatchObject([{ storeId: "storeA", subtotalCents: 1500 }]);
+    expect(result.storeBreakdown[0]!.items.map((i) => i.ingredientId).sort()).toEqual(["chicken", "rice"]);
   });
 
   it("default trip cost constant matches the $6 assumed in docs/algorithms.md", () => {
