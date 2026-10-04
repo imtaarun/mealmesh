@@ -59,8 +59,9 @@ leftoverOfMealId?, customTitle?
 
 **GroceryList** — id, mealPlanId, generatedAt, status
 
-**GroceryListItem** — id, groceryListId, ingredientId, neededQuantity, unit,
-pantryCovered, finalQuantity, category, checked, isCustom, userOverrideQuantity?
+**GroceryListItem** — id, groceryListId, ingredientId? (null for custom items),
+customName?, neededQuantity, unit, pantryCovered, finalQuantity, category, checked,
+isCustom, isNominal ("to taste": no quantity), alreadyHave, userOverrideQuantity?
 
 **Store** — id, name, chain, address, lat, lng, isDemo
 
@@ -93,11 +94,12 @@ wasteReduction, convenience, variety, explanation
 
 - **Money is integer cents.** No floats anywhere near a price. Format only at render.
 - **Quantities are stored in the ingredient's `baseUnit`** on GroceryListItem and
-  PantryItem. Recipe input units are converted on the way in.
+  PantryItem. Recipe input units are converted on the way in. One exception: produce
+  sold by count (`soldByCount`) is listed in `piece`, so "Onions — 3", not "450 g".
 - A `leftover` Meal must reference `leftoverOfMealId`, contributes **zero** grocery
   demand, and its source meal must have cooked servings ≥ combined consumption.
-- `finalQuantity = max(0, roundUp(neededQuantity - pantryCovered))`, rounded to a
-  sensible purchase increment for the ingredient.
+- `neededQuantity` is what's left after the pantry; `finalQuantity =
+  roundUp(neededQuantity)` to a sensible purchase increment for the ingredient.
 - Allergies are hard filters. Dislikes are soft (heavy penalty). Never trade an allergy
   for cost or score.
 - Every ProductPrice row carries `source`. UI must be able to tell demo pricing from

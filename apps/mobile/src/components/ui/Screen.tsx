@@ -2,7 +2,7 @@ import { useContext, type PropsWithChildren } from "react";
 import { ActivityIndicator, ScrollView, View, type ViewProps } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BottomTabBarHeightContext } from "@react-navigation/bottom-tabs";
+import { BottomTabBarHeightContext } from "expo-router/js-tabs";
 import { TextLink } from "@/components/ui/Form";
 import { useTheme } from "@/theme";
 

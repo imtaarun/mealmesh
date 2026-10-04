@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import { Pressable, Share, Text, View } from "react-native";
-import { router } from "expo-router";
-import { useFocusEffect } from "@react-navigation/native";
+import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Screen, LoadingScreen } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";

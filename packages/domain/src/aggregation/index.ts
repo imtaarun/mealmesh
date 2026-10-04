@@ -46,7 +46,12 @@ const PURCHASE_INCREMENTS: Partial<Record<Unit, number>> = {
   ml: 50,
 };
 
-function roundUpToPurchaseIncrement(quantity: number, unit: Unit): number {
+/** The step a quantity of this unit is bought in; 1 when there's no sensible step. */
+export function purchaseIncrement(unit: Unit): number {
+  return PURCHASE_INCREMENTS[unit] ?? 1;
+}
+
+export function roundUpToPurchaseIncrement(quantity: number, unit: Unit): number {
   if (quantity <= 0) return 0;
   const increment = PURCHASE_INCREMENTS[unit];
   if (!increment) return quantity; // no sensible increment for this unit — pass through
@@ -79,4 +84,30 @@ export function applyPantryAndRound(demand: AggregatedDemand, pantryQuantity: nu
     needsReview: false,
     isNominal: false,
   };
+}
+
+/** Produce with a known piece weight is bought by count: "Onions — 3", not "450 g". */
+export function soldByCount(ingredient: { category: string; gramsPerPiece?: number | null }): boolean {
+  return ingredient.category === "Produce" && !!ingredient.gramsPerPiece;
+}
+
+/**
+ * The week's shopping lines: summed, pantry subtracted, rounded. Count-sold produce is
+ * converted to whole pieces; "to taste" lines drop off when the pantry has any.
+ */
+export function buildGroceryList(
+  demands: RecipeIngredientDemand[],
+  ingredients: Record<string, IngredientConversion & { category: string }>,
+  pantry: Record<string, number>,
+): GroceryLineItem[] {
+  return aggregateDemand(demands, ingredients).flatMap((demand) => {
+    const have = pantry[demand.ingredientId] ?? 0;
+    if (demand.isNominal && have > 0) return [];
+    const line = applyPantryAndRound(demand, have);
+    const ingredient = ingredients[demand.ingredientId]!;
+    if (!soldByCount(ingredient) || line.isNominal || line.needsReview) return [line];
+    const perPiece = ingredient.gramsPerPiece!;
+    const pieces = line.neededQuantity / perPiece;
+    return [{ ...line, unit: "piece" as const, neededQuantity: pieces, pantryCovered: line.pantryCovered / perPiece, finalQuantity: Math.ceil(pieces - 1e-9) }];
+  });
 }
