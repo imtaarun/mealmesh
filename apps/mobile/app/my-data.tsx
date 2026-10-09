@@ -29,7 +29,7 @@ export default function MyDataScreen() {
   }, []);
 
   if (!data) {
-    return <LoadingScreen back="Profile" />;
+    return <LoadingScreen back="Profile" messages={["Gathering everything we store about you…"]} />;
   }
 
   const rows = [

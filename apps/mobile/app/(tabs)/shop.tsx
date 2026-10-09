@@ -1,9 +1,14 @@
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { formatQuantity, purchaseIncrement } from "@mealmesh/domain";
-import { Screen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
+import { Appear, reorder } from "@/components/ui/Motion";
+import { reportError } from "@/components/ui/Toast";
+import { haptic } from "@/lib/feedback";
+import { messageOf } from "@/lib/useLoad";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Pill, TextField } from "@/components/ui/Form";
@@ -21,36 +26,57 @@ export default function ShopScreen() {
   const [list, setList] = useState<GroceryList | null | undefined>(undefined);
   const [open, setOpen] = useState<string | null>(null);
   const [newItem, setNewItem] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    api.getCurrentPlan().then((plan) => (plan ? api.getGroceryList(plan.id).then(setList) : setList(null)));
+    setError(null);
+    api
+      .getCurrentPlan()
+      .then((plan) => (plan ? api.getGroceryList(plan.id).then(setList) : setList(null)))
+      .catch((err) => setError(messageOf(err)));
   }, []);
   useFocusEffect(load);
 
-  const replace = (item: GroceryItem) => setList((l) => l && { ...l, items: l.items.map((i) => (i.id === item.id ? item : i)) });
-  const update = (item: GroceryItem, patch: Parameters<typeof api.updateGroceryItem>[1]) => api.updateGroceryItem(item.id, patch).then(replace);
+  const update = async (item: GroceryItem, patch: Parameters<typeof api.updateGroceryItem>[1]) => {
+    try {
+      const updated = await api.updateGroceryItem(item.id, patch);
+      setList((l) => {
+        if (!l) return l;
+        const items = l.items.map((i) => (i.id === updated.id ? updated : i));
+        const finished = patch.checked && items.filter((i) => !covered(i)).every((i) => i.checked);
+        finished ? haptic.success() : haptic.tap();
+        return { ...l, items };
+      });
+    } catch (err) {
+      reportError(err);
+    }
+  };
   const step = (item: GroceryItem, direction: 1 | -1) => {
     const by = purchaseIncrement(item.unit);
     update(item, { userOverrideQuantity: Math.max(by, item.quantity + direction * by) });
   };
   const add = async () => {
     if (!list || !newItem.trim()) return;
-    const item = await api.addGroceryItem(list.id, newItem);
-    setList({ ...list, items: [...list.items, item] });
-    setNewItem("");
+    try {
+      const item = await api.addGroceryItem(list.id, newItem);
+      haptic.tap();
+      setList({ ...list, items: [...list.items, item] });
+      setNewItem("");
+    } catch (err) {
+      reportError(err);
+    }
   };
   const remove = async (item: GroceryItem) => {
-    await api.removeGroceryItem(item.id);
-    setList((l) => l && { ...l, items: l.items.filter((i) => i.id !== item.id) });
+    try {
+      await api.removeGroceryItem(item.id);
+      setList((l) => l && { ...l, items: l.items.filter((i) => i.id !== item.id) });
+    } catch (err) {
+      reportError(err);
+    }
   };
 
-  if (list === undefined) {
-    return (
-      <Screen>
-        <ActivityIndicator color={colors.brandAccent} />
-      </Screen>
-    );
-  }
+  if (error && list === undefined) return <ErrorScreen title="Shop" message={error} onRetry={load} />;
+  if (list === undefined) return <LoadingScreen title="Shop" messages={["Building your grocery list…", "Checking your pantry…", "Looking for better-value options…"]} />;
   if (list === null || list.items.length === 0) {
     return (
       <Screen>
@@ -71,6 +97,18 @@ export default function ShopScreen() {
         {left === 0 ? "All done — everything's in the cart." : `${left} of ${toBuy.length} left to get`}
       </Text>
 
+      {left === 0 && toBuy.length > 0 ? (
+        <Appear>
+          <Card style={{ alignItems: "center", gap: spacing.sm, marginBottom: spacing.lg, backgroundColor: colors.accentTint, borderWidth: 0 }}>
+            <Animated.View entering={FadeIn.delay(150).springify()}>
+              <Ionicons name="checkmark-circle" size={48} color={colors.brandAccent} />
+            </Animated.View>
+            <Text style={{ ...typography.heading, color: colors.text }}>That's everything. Nice shop.</Text>
+            <Text style={{ ...typography.caption, color: colors.textMuted, textAlign: "center" }}>Put things away and tick them off in Pantry when you have a minute.</Text>
+          </Card>
+        </Appear>
+      ) : null}
+
       <WeekSummary list={list} onPlanChanged={load} />
 
       <View style={{ flexDirection: "row", alignItems: "flex-start", gap: spacing.sm }}>
@@ -88,7 +126,7 @@ export default function ShopScreen() {
             <Text style={{ ...typography.label, color: colors.textMuted, marginBottom: spacing.sm }}>{category.toUpperCase()}</Text>
             <Card style={{ paddingVertical: spacing.xs }}>
               {items.map((item) => (
-                <View key={item.id}>
+                <Animated.View key={item.id} layout={reorder} entering={FadeIn} exiting={FadeOut}>
                   <View style={{ flexDirection: "row", alignItems: "center", minHeight: minTouch }}>
                     <Pressable
                       onPress={() => update(item, { checked: !item.checked })}
@@ -117,7 +155,7 @@ export default function ShopScreen() {
                     </Pressable>
                   </View>
                   {open === item.id ? (
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, paddingBottom: spacing.sm, paddingLeft: minTouch - spacing.sm }}>
+                    <Animated.View entering={FadeIn.duration(200)} style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, paddingBottom: spacing.sm, paddingLeft: minTouch - spacing.sm }}>
                       {!item.isNominal ? (
                         <>
                           <Pill label="−" variant="neutral" accessibilityLabel={`Less ${item.name}`} onPress={() => step(item, -1)} />
@@ -130,9 +168,9 @@ export default function ShopScreen() {
                         <Pill label="Already have" onPress={() => update(item, { alreadyHave: true })} />
                       )}
                       {item.isOverridden ? <Pill label="Reset" variant="neutral" onPress={() => update(item, { userOverrideQuantity: null })} /> : null}
-                    </View>
+                    </Animated.View>
                   ) : null}
-                </View>
+                </Animated.View>
               ))}
             </Card>
           </View>
@@ -144,7 +182,7 @@ export default function ShopScreen() {
           <Text style={{ ...typography.label, color: colors.textMuted, marginBottom: spacing.sm }}>ALREADY HAVE</Text>
           <Card style={{ paddingVertical: spacing.xs }}>
             {have.map((item) => (
-              <View key={item.id} style={{ flexDirection: "row", alignItems: "center", minHeight: minTouch, gap: spacing.sm }}>
+              <Animated.View key={item.id} layout={reorder} entering={FadeIn} style={{ flexDirection: "row", alignItems: "center", minHeight: minTouch, gap: spacing.sm }}>
                 <View style={{ flex: 1 }}>
                   <Text style={{ ...typography.body, color: colors.textMuted }}>{item.name}</Text>
                   <Text style={{ ...typography.caption, color: colors.textMuted }}>{item.alreadyHave ? "You said you have it" : "Covered by your pantry"}</Text>
@@ -154,7 +192,7 @@ export default function ShopScreen() {
                 ) : (
                   <Pill label="Buy anyway" variant="neutral" onPress={() => update(item, { buyAnyway: true })} />
                 )}
-              </View>
+              </Animated.View>
             ))}
           </Card>
         </View>

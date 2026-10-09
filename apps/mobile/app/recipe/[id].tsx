@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { formatQuantity, scaleQuantity, type Unit } from "@mealmesh/domain";
-import { Screen, LoadingScreen, BackLink } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, ErrorScreen, BackLink } from "@/components/ui/Screen";
+import { Appear } from "@/components/ui/Motion";
+import { useLoad } from "@/lib/useLoad";
+import { haptic } from "@/lib/feedback";
 import { Card } from "@/components/ui/Card";
 import { Button, Pill } from "@/components/ui/Form";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { CuisinePlaceholder } from "@/components/recipe/CuisinePlaceholder";
-import { api, type RecipeDetail } from "@/lib/api";
+import { api } from "@/lib/api";
 import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
 
@@ -16,19 +19,16 @@ const label = (s: string) => s.replace(/_/g, " ");
 export default function RecipeScreen() {
   const { colors, spacing, typography } = useTheme();
   const params = useLocalSearchParams<{ id: string; servings?: string; leftover?: string }>();
-  const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
-  const [servings, setServings] = useState<number | null>(params.servings ? Number(params.servings) : null);
+  const { data: recipe, error, reload } = useLoad(() => api.getRecipe(params.id), [params.id]);
+  const [chosenServings, setServings] = useState<number | null>(params.servings ? Number(params.servings) : null);
 
-  useEffect(() => {
-    api.getRecipe(params.id).then((r) => {
-      setRecipe(r);
-      setServings((s) => s ?? r.servings);
-    });
-  }, [params.id]);
-
-  if (!recipe || servings === null) {
-    return <LoadingScreen />;
-  }
+  if (error && !recipe) return <ErrorScreen back="Back" message={error} onRetry={reload} />;
+  if (!recipe) return <LoadingScreen back="Back" messages={["Scaling the ingredients…", "Checking your pantry…"]} />;
+  const servings = chosenServings ?? recipe.servings;
+  const changeServings = (next: number) => {
+    haptic.tap();
+    setServings(next);
+  };
 
   const have = new Set(recipe.pantryIngredientIds);
   const totalMinutes = recipe.prepMinutes + recipe.cookMinutes;
@@ -39,9 +39,9 @@ export default function RecipeScreen() {
       <BackLink />
 
       {recipe.source === "seed" ? (
-        <View style={{ marginBottom: spacing.md }}>
-          <CuisinePlaceholder cuisine={recipe.cuisines[0] ?? "other"} />
-        </View>
+        <Appear style={{ marginBottom: spacing.md }}>
+          <CuisinePlaceholder cuisine={recipe.cuisines[0] ?? "other"} height={180} />
+        </Appear>
       ) : null}
 
       <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.xs }}>{recipe.title}</Text>
@@ -62,9 +62,9 @@ export default function RecipeScreen() {
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text style={{ ...typography.bodyStrong, color: colors.text }}>Servings</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.sm }}>
-            <Pill label="−" variant="neutral" accessibilityLabel="Fewer servings" onPress={() => setServings(Math.max(1, servings - 1))} />
+            <Pill label="−" variant="neutral" accessibilityLabel="Fewer servings" onPress={() => changeServings(Math.max(1, servings - 1))} />
             <Text style={{ ...typography.heading, color: colors.text, minWidth: 24, textAlign: "center" }}>{servings}</Text>
-            <Pill label="+" variant="neutral" accessibilityLabel="More servings" onPress={() => setServings(Math.min(20, servings + 1))} />
+            <Pill label="+" variant="neutral" accessibilityLabel="More servings" onPress={() => changeServings(Math.min(20, servings + 1))} />
           </View>
         </View>
         {recipe.costPerServingCents !== null ? (

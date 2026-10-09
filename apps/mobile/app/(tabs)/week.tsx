@@ -1,7 +1,12 @@
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { router, useFocusEffect } from "expo-router";
-import { Screen, LoadingScreen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
+import { LoadingState } from "@/components/ui/States";
+import { Appear } from "@/components/ui/Motion";
+import { reportError } from "@/components/ui/Toast";
+import { haptic } from "@/lib/feedback";
+import { messageOf } from "@/lib/useLoad";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
 import { Pill, TextLink } from "@/components/ui/Form";
@@ -34,12 +39,26 @@ export default function WeekScreen() {
   const [planning, setPlanning] = useState(false);
   const [planFailed, setPlanFailed] = useState(false);
   const [repickingId, setRepickingId] = useState<string | null>(null);
+  const [weekCents, setWeekCents] = useState<number | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const isPro = me?.household.subscriptionTier === "pro";
 
+  // Same figure as Shop's budget: what Best overall would cost (open-questions item 27).
+  // Housemates' shares are worked out from that figure, so they load after it.
+  const refreshCost = (planId: string) =>
+    api
+      .getGroceryList(planId)
+      .then((list) => api.optimizeGroceryList(list.id))
+      .then((o) => setWeekCents(o.budget.plannedCents), () => setWeekCents(null))
+      .then(() => api.getMembers().then(setMembers, () => {}));
+
   const load = useCallback(() => {
-    api.getCurrentPlan().then(setPlan);
-    api.getMe().then(setMe);
-    api.getMembers().then(setMembers);
+    setLoadError(null);
+    api.getCurrentPlan().then((p) => {
+      setPlan(p);
+      if (p) refreshCost(p.id);
+    }, (err) => setLoadError(messageOf(err)));
+    api.getMe().then(setMe, () => {});
   }, []);
 
   useFocusEffect(
@@ -53,6 +72,8 @@ export default function WeekScreen() {
     try {
       const created = await api.createEmptyWeek(isoDate(mostRecentMonday()));
       setPlan(created);
+    } catch (err) {
+      reportError(err);
     } finally {
       setCreating(false);
     }
@@ -62,9 +83,12 @@ export default function WeekScreen() {
     setPlanning(true);
     setPlanFailed(false);
     try {
-      setPlan(await api.planMyWeek(isoDate(mostRecentMonday())));
-      api.getMembers().then(setMembers);
+      const planned = await api.planMyWeek(isoDate(mostRecentMonday()));
+      haptic.success();
+      setPlan(planned);
+      refreshCost(planned.id);
     } catch {
+      haptic.warning();
       setPlanFailed(true);
     } finally {
       setPlanning(false);
@@ -76,7 +100,10 @@ export default function WeekScreen() {
     setRepickingId(meal.id);
     try {
       setPlan(await api.regenerateDinner(plan.id, meal.id));
-      api.getMembers().then(setMembers);
+      haptic.success();
+      refreshCost(plan.id);
+    } catch (err) {
+      reportError(err);
     } finally {
       setRepickingId(null);
     }
@@ -84,22 +111,24 @@ export default function WeekScreen() {
 
   async function skip(meal: Meal) {
     if (!plan) return;
-    const updated = await api.skipMealSlot(plan.id, meal.id);
-    setPlan({ ...plan, meals: plan.meals.map((m) => (m.id === meal.id ? updated : m)) });
+    try {
+      const updated = await api.skipMealSlot(plan.id, meal.id);
+      haptic.tap();
+      setPlan({ ...plan, meals: plan.meals.map((m) => (m.id === meal.id ? updated : m)) });
+      refreshCost(plan.id);
+    } catch (err) {
+      reportError(err);
+    }
   }
 
-  if (plan === undefined) {
-    return <LoadingScreen />;
-  }
+  if (loadError && plan === undefined) return <ErrorScreen title="Week" message={loadError} onRetry={load} />;
+  if (plan === undefined) return <LoadingScreen title="Week" messages={["Opening your week…"]} />;
 
   if (planning) {
     return (
       <Screen>
         <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.md }}>Week</Text>
-        <View style={{ alignItems: "center", paddingVertical: spacing.xxl, gap: spacing.md }}>
-          <ActivityIndicator color={colors.brandAccent} />
-          <Text style={{ ...typography.body, color: colors.textMuted }}>Balancing your week…</Text>
-        </View>
+        <LoadingState messages={["Balancing your week…", "Finding ways to use leftovers…", "Comparing your ingredients…", "Looking for better-value options…"]} />
       </Screen>
     );
   }
@@ -157,23 +186,25 @@ export default function WeekScreen() {
         ) : null}
       </View>
 
-      {plan.score && plan.estimatedCostCents !== null ? (
-        <Card style={{ marginBottom: spacing.lg, gap: spacing.sm }}>
-          <Text style={{ ...typography.bodyStrong, color: colors.text }}>
-            {mealsPlanned} meals planned · {dollars(plan.estimatedCostCents, 0)} estimated · {plan.score.total}/100
-          </Text>
-          {you?.weekShareCents != null ? (
-            <Text style={{ ...typography.body, color: colors.text }}>
-              Your share: {dollars(you.weekShareCents)} of {members!.members.length} people
+      {weekCents ? (
+        <Appear>
+          <Card style={{ marginBottom: spacing.lg, gap: spacing.sm }}>
+            <Text style={{ ...typography.bodyStrong, color: colors.text }}>
+              {mealsPlanned} meals planned · {dollars(weekCents, 0)} estimated{plan.score ? ` · ${plan.score.total}/100` : ""}
             </Text>
-          ) : null}
-          <EstimatedPricingBadge />
-          <Text style={{ ...typography.caption, color: colors.textMuted }}>{plan.score.explanation}</Text>
-        </Card>
+            {you?.weekShareCents != null ? (
+              <Text style={{ ...typography.body, color: colors.text }}>
+                Your share: {dollars(you.weekShareCents)} of {members!.members.length} people
+              </Text>
+            ) : null}
+            <EstimatedPricingBadge />
+            {plan.score ? <Text style={{ ...typography.caption, color: colors.textMuted }}>{plan.score.explanation}</Text> : null}
+          </Card>
+        </Appear>
       ) : null}
 
       {dates.map((date, dayIndex) => (
-        <View key={date} style={{ marginBottom: spacing.lg }}>
+        <Appear key={date} index={dayIndex + 1} style={{ marginBottom: spacing.lg }}>
           <Text style={{ ...typography.bodyStrong, color: colors.textMuted, marginBottom: spacing.sm }}>
             {DAY_LABELS[dayIndex] ?? date} · {date}
           </Text>
@@ -235,7 +266,7 @@ export default function WeekScreen() {
               </Card>
             );
           })}
-        </View>
+        </Appear>
       ))}
     </Screen>
   );

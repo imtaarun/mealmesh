@@ -6,12 +6,14 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",
+    "postinstall": "prisma generate",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "test:demo": "nest build && DEMO_FLOW=1 vitest run test/demo-flow.test.ts"
   },
   "dependencies": {
     "@mealmesh/domain": "workspace:*",

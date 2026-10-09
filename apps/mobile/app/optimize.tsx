@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { Screen, BackLink, LoadingScreen } from "@/components/ui/Screen";
+import { Screen, BackLink, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
+import { Appear, CountUp } from "@/components/ui/Motion";
+import { useLoad } from "@/lib/useLoad";
+import { haptic } from "@/lib/feedback";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
-import { api, type Optimization } from "@/lib/api";
+import { api } from "@/lib/api";
 import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
 
@@ -24,14 +27,13 @@ const listed = (names: string[]) => {
 export default function OptimizeScreen() {
   const { colors, spacing, typography } = useTheme();
   const { listId } = useLocalSearchParams<{ listId: string }>();
-  const [optimization, setOptimization] = useState<Optimization | null>(null);
+  const { data: optimization, error, reload } = useLoad(() => api.optimizeGroceryList(listId), [listId]);
   const [chosen, setChosen] = useState<(typeof STRATEGIES)[number]["key"]>("bestOverall");
 
-  useEffect(() => {
-    api.optimizeGroceryList(listId).then(setOptimization);
-  }, [listId]);
-
-  if (!optimization) return <LoadingScreen back="Shop" />;
+  if (error && !optimization) return <ErrorScreen back="Shop" title="Optimize my cart" message={error} onRetry={reload} />;
+  if (!optimization) {
+    return <LoadingScreen back="Shop" title="Optimize my cart" messages={["Comparing five stores…", "Pricing every pack size…", "Checking if a second stop pays off…"]} />;
+  }
 
   const oneStore = optimization.minStores.totalCents;
   const best = optimization.bestOverall;
@@ -44,29 +46,39 @@ export default function OptimizeScreen() {
       <BackLink label="Shop" />
       <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.md }}>Optimize my cart</Text>
 
-      <Card style={{ marginBottom: spacing.lg, gap: spacing.xs }}>
-        {best.savingsCents > 0 ? (
-          <>
-            <Text style={{ ...typography.heading, color: colors.textMuted }}>
-              <Text style={{ textDecorationLine: "line-through" }}>{dollars(oneStore)}</Text> → <Text style={{ color: colors.text }}>{dollars(best.totalCents)}</Text>
-            </Text>
-            <Text style={{ ...typography.title, color: colors.success }}>Save {dollars(best.savingsCents)}</Text>
-            {best.topSavingsDrivers.length > 0 ? (
-              <Text style={{ ...typography.body, color: colors.text }}>Most of your savings come from {listed(best.topSavingsDrivers)}.</Text>
-            ) : null}
-          </>
-        ) : (
-          <>
-            <Text style={{ ...typography.title, color: colors.text }}>{dollars(best.totalCents)}</Text>
-            <Text style={{ ...typography.body, color: colors.text }}>One store is already the best deal this week.</Text>
-          </>
-        )}
-        <EstimatedPricingBadge />
-      </Card>
+      <Appear>
+        <Card style={{ marginBottom: spacing.lg, gap: spacing.xs }}>
+          {best.savingsCents > 0 ? (
+            <>
+              <Text style={{ ...typography.heading, color: colors.textMuted }}>
+                <Text style={{ textDecorationLine: "line-through" }}>{dollars(oneStore)}</Text> → <Text style={{ color: colors.text }}>{dollars(best.totalCents)}</Text>
+              </Text>
+              <CountUp cents={best.savingsCents} format={(c) => `Save ${dollars(c)}`} style={{ ...typography.title, color: colors.success }} />
+              {best.topSavingsDrivers.length > 0 ? (
+                <Text style={{ ...typography.body, color: colors.text }}>Most of your savings come from {listed(best.topSavingsDrivers)}.</Text>
+              ) : null}
+            </>
+          ) : (
+            <>
+              <Text style={{ ...typography.title, color: colors.text }}>{dollars(best.totalCents)}</Text>
+              <Text style={{ ...typography.body, color: colors.text }}>One store is already the best deal this week.</Text>
+            </>
+          )}
+          <EstimatedPricingBadge />
+        </Card>
+      </Appear>
 
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {STRATEGIES.map((s) => (
-          <Chip key={s.key} label={s.label} selected={chosen === s.key} onPress={() => setChosen(s.key)} />
+          <Chip
+            key={s.key}
+            label={s.label}
+            selected={chosen === s.key}
+            onPress={() => {
+              haptic.tap();
+              setChosen(s.key);
+            }}
+          />
         ))}
       </View>
       <Text style={{ ...typography.caption, color: colors.textMuted, marginBottom: spacing.md }}>{STRATEGIES.find((s) => s.key === chosen)!.hint}</Text>
@@ -84,25 +96,27 @@ export default function OptimizeScreen() {
         <View style={{ height: spacing.md }} />
       )}
 
-      {result.stores.map((store) => (
-        <Card key={store.storeId} style={{ marginBottom: spacing.md, gap: spacing.sm }}>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", gap: spacing.sm }}>
-            <Text style={{ ...typography.heading, color: colors.text, flex: 1 }}>{store.name}</Text>
-            <Text style={{ ...typography.heading, color: colors.text }}>{dollars(store.subtotalCents)}</Text>
-          </View>
-          {store.items.map((item) => (
-            <View key={item.ingredientId} style={{ flexDirection: "row", gap: spacing.sm }}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ ...typography.body, color: colors.text }}>{item.name}</Text>
-                <Text style={{ ...typography.caption, color: colors.textMuted }}>
-                  {item.packs > 1 ? `${item.packs} × ` : ""}
-                  {item.product}
-                </Text>
-              </View>
-              <Text style={{ ...typography.body, color: colors.text }}>{dollars(item.cents)}</Text>
+      {result.stores.map((store, i) => (
+        <Appear key={`${chosen}-${store.storeId}`} index={i}>
+          <Card style={{ marginBottom: spacing.md, gap: spacing.sm }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", gap: spacing.sm }}>
+              <Text style={{ ...typography.heading, color: colors.text, flex: 1 }}>{store.name}</Text>
+              <Text style={{ ...typography.heading, color: colors.text }}>{dollars(store.subtotalCents)}</Text>
             </View>
-          ))}
-        </Card>
+            {store.items.map((item) => (
+              <View key={item.ingredientId} style={{ flexDirection: "row", gap: spacing.sm }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ ...typography.body, color: colors.text }}>{item.name}</Text>
+                  <Text style={{ ...typography.caption, color: colors.textMuted }}>
+                    {item.packs > 1 ? `${item.packs} × ` : ""}
+                    {item.product}
+                  </Text>
+                </View>
+                <Text style={{ ...typography.body, color: colors.text }}>{dollars(item.cents)}</Text>
+              </View>
+            ))}
+          </Card>
+        </Appear>
       ))}
 
       {result.unavailable.length > 0 ? (

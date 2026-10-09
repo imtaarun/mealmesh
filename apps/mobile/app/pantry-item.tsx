@@ -8,6 +8,8 @@ import { Chip } from "@/components/ui/Chip";
 import { Button, Section, TextField } from "@/components/ui/Form";
 import { api, type IngredientOption, type PantryItem, type PantryLocation } from "@/lib/api";
 import { expiryText } from "@/lib/pantry";
+import { haptic } from "@/lib/feedback";
+import { reportError, toast } from "@/components/ui/Toast";
 import { useTheme } from "@/theme";
 
 const LOCATIONS: Array<[PantryLocation, string]> = [
@@ -44,7 +46,7 @@ export default function PantryItemScreen() {
 
   useEffect(() => {
     if (!id) {
-      api.listIngredients().then(setIngredients);
+      api.listIngredients().then(setIngredients, reportError);
       return;
     }
     api.getPantry().then(({ items }) => {
@@ -55,7 +57,7 @@ export default function PantryItemScreen() {
       setAmount(String(Math.round((soldByCount(ingredient) ? item.quantity / item.gramsPerPiece! : item.quantity) * 100) / 100));
       setLocation(item.location);
       setExpiresInDays(item.expiresAt ? undefined : null);
-    });
+    }, reportError);
   }, [id]);
 
   if (id && !existing) return <LoadingScreen back="Pantry" />;
@@ -100,15 +102,24 @@ export default function PantryItemScreen() {
     try {
       if (existing) await api.updatePantryItem(existing.id, { quantity, location, expiresAt });
       else await api.addPantryItem({ ingredientId: picked.id, quantity, location, ...(expiresAt ? { expiresAt } : {}) });
+      haptic.success();
+      toast(existing ? `${picked.name} updated.` : `${picked.name} is in your pantry.`);
       router.back();
+    } catch (err) {
+      reportError(err);
     } finally {
       setSaving(false);
     }
   };
 
   const remove = async () => {
-    await api.removePantryItem(existing!.id);
-    router.back();
+    try {
+      await api.removePantryItem(existing!.id);
+      toast(`${existing!.name} removed.`);
+      router.back();
+    } catch (err) {
+      reportError(err);
+    }
   };
 
   return (

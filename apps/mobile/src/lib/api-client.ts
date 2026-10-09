@@ -17,15 +17,21 @@ export function setAuthToken(token: string | null): void {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
-      ...init?.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
+        ...init?.headers,
+      },
+    });
+  } catch {
+    throw new ApiError(0, "Can't reach MealMesh right now. Check your connection and try again.");
+  }
 
+  if (res.status >= 500) throw new ApiError(res.status, "Something went wrong on our side. Try again in a moment.");
   if (!res.ok) {
     // The backend explains itself in a `message` field; show that, not raw JSON.
     const text = await res.text();

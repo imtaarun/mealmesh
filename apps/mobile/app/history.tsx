@@ -18,7 +18,7 @@ export default function HistoryScreen() {
   }, []);
 
   if (!history) {
-    return <LoadingScreen back="Profile" />;
+    return <LoadingScreen back="Profile" messages={["Adding up your weeks…"]} />;
   }
 
   const { totals } = history;
