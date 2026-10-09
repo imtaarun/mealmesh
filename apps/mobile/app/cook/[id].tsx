@@ -29,7 +29,7 @@ export default function CookingScreen() {
   useKeepAwake();
   const { colors, spacing, typography } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: recipe, error, reload } = useLoad(() => api.getRecipe(id), [id]);
+  const { data: recipe, error, reload } = useLoad(() => api.getRecipe(id), [id], { onFocus: false });
   const [index, setIndex] = useState(0);
   const [forward, setForward] = useState(true);
   const [finished, setFinished] = useState(false);

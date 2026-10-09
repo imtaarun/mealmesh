@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { router } from "expo-router";
-import { Screen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
 import { Chip } from "@/components/ui/Chip";
 import { TextField } from "@/components/ui/Form";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ErrorState, LoadingState } from "@/components/ui/States";
 import { Appear } from "@/components/ui/Motion";
 import { MealCard } from "@/components/recipe/MealCard";
 import { api } from "@/lib/api";
@@ -16,20 +15,12 @@ const QUICK = "quick";
 
 export default function DiscoverScreen() {
   const { colors, spacing, typography } = useTheme();
-  const { data: recipes, error, reload } = useLoad(() => api.listRecipes());
+  const { data: recipes, error, reload } = useLoad(() => api.listRecipes(), [], { onFocus: false });
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<string | null>(null);
 
-  const title = <Text style={{ ...typography.title, color: colors.text }}>Discover</Text>;
-  if (!recipes) {
-    return (
-      <Screen>
-        {title}
-        <View style={{ height: spacing.md }} />
-        {error ? <ErrorState message={error} onRetry={reload} /> : <LoadingState messages={["Opening the recipe box…"]} />}
-      </Screen>
-    );
-  }
+  if (error && !recipes) return <ErrorScreen title="Discover" message={error} onRetry={reload} />;
+  if (!recipes) return <LoadingScreen title="Discover" messages={["Opening the recipe box…"]} />;
 
   const cuisines = [...new Set(recipes.map((r) => r.cuisines[0]).filter((c): c is string => !!c))].sort();
   const q = query.trim().toLowerCase();
@@ -41,7 +32,7 @@ export default function DiscoverScreen() {
 
   return (
     <Screen>
-      {title}
+      <Text style={{ ...typography.title, color: colors.text }}>Discover</Text>
       <Text style={{ ...typography.body, color: colors.textMuted, marginBottom: spacing.md }}>
         {recipes.length} dishes, each costed and ready for cooking mode.
       </Text>
@@ -58,7 +49,7 @@ export default function DiscoverScreen() {
         <EmptyState message="Nothing matches that yet. Try another word or filter." />
       ) : (
         shown.map((recipe, i) => (
-          <Appear key={`${filter}-${recipe.id}`} index={i} style={{ marginBottom: spacing.md }}>
+          <Appear key={recipe.id} index={i} style={{ marginBottom: spacing.md }}>
             <MealCard recipe={recipe} onPress={() => router.push({ pathname: "/recipe/[id]", params: { id: recipe.id } })} />
           </Appear>
         ))

@@ -1,19 +1,20 @@
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
 import { LoadingState } from "@/components/ui/States";
 import { Appear } from "@/components/ui/Motion";
-import { reportError } from "@/components/ui/Toast";
+import { attempt } from "@/components/ui/Toast";
 import { haptic } from "@/lib/feedback";
-import { messageOf } from "@/lib/useLoad";
+import { useLoad } from "@/lib/useLoad";
+import { loadWeekCost, sharesOf } from "@/lib/weekCost";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
 import { Pill, TextLink } from "@/components/ui/Form";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
-import { api, type Me, type Meal, type MealPlan, type MealSlot, type Members } from "@/lib/api";
+import { api, type Meal, type MealPlan, type MealSlot } from "@/lib/api";
 
 const SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -32,64 +33,40 @@ function isoDate(d: Date): string {
 
 export default function WeekScreen() {
   const { colors, spacing, typography, minTouch } = useTheme();
-  const [plan, setPlan] = useState<MealPlan | null | undefined>(undefined); // undefined = loading
-  const [me, setMe] = useState<Me | null>(null);
-  const [members, setMembers] = useState<Members | null>(null);
+  const { data, setData, error, reload } = useLoad(async () => {
+    const [plan, me, members] = await Promise.all([api.getCurrentPlan(), api.getMe(), api.getMembers()]);
+    return { plan, me, members };
+  });
   const [creating, setCreating] = useState(false);
   const [planning, setPlanning] = useState(false);
   const [planFailed, setPlanFailed] = useState(false);
   const [repickingId, setRepickingId] = useState<string | null>(null);
   const [weekCents, setWeekCents] = useState<number | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const isPro = me?.household.subscriptionTier === "pro";
+  const plan = data?.plan;
+  const setPlan = (next: MealPlan) => setData((d) => d && { ...d, plan: next });
+  const isPro = data?.me.household.subscriptionTier === "pro";
 
-  // Same figure as Shop's budget: what Best overall would cost (open-questions item 27).
-  // Housemates' shares are worked out from that figure, so they load after it.
-  const refreshCost = (planId: string) =>
-    api
-      .getGroceryList(planId)
-      .then((list) => api.optimizeGroceryList(list.id))
-      .then((o) => setWeekCents(o.budget.plannedCents), () => setWeekCents(null))
-      .then(() => api.getMembers().then(setMembers, () => {}));
-
-  const load = useCallback(() => {
-    setLoadError(null);
-    api.getCurrentPlan().then((p) => {
-      setPlan(p);
-      if (p) refreshCost(p.id);
-    }, (err) => setLoadError(messageOf(err)));
-    api.getMe().then(setMe, () => {});
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      load();
-    }, [load]),
-  );
+  // Re-priced whenever the plan changes; the same Best overall figure Shop shows.
+  useEffect(() => {
+    if (plan) loadWeekCost(plan.id).then(setWeekCents, () => setWeekCents(null));
+  }, [plan]);
 
   async function buildWeek() {
     setCreating(true);
-    try {
-      const created = await api.createEmptyWeek(isoDate(mostRecentMonday()));
-      setPlan(created);
-    } catch (err) {
-      reportError(err);
-    } finally {
-      setCreating(false);
-    }
+    const created = await attempt(() => api.createEmptyWeek(isoDate(mostRecentMonday())));
+    if (created) setPlan(created);
+    setCreating(false);
   }
 
   async function planMyWeek() {
     setPlanning(true);
     setPlanFailed(false);
     try {
-      const planned = await api.planMyWeek(isoDate(mostRecentMonday()));
+      setPlan(await api.planMyWeek(isoDate(mostRecentMonday())));
       haptic.success();
-      setPlan(planned);
-      refreshCost(planned.id);
     } catch {
       haptic.warning();
-      setPlanFailed(true);
+      setPlanFailed(true); // its own screen: "Meal planning took a wrong turn" (docs/ux.md)
     } finally {
       setPlanning(false);
     }
@@ -98,31 +75,24 @@ export default function WeekScreen() {
   async function repick(meal: Meal) {
     if (!plan) return;
     setRepickingId(meal.id);
-    try {
-      setPlan(await api.regenerateDinner(plan.id, meal.id));
+    const updated = await attempt(() => api.regenerateDinner(plan.id, meal.id));
+    if (updated) {
       haptic.success();
-      refreshCost(plan.id);
-    } catch (err) {
-      reportError(err);
-    } finally {
-      setRepickingId(null);
+      setPlan(updated);
     }
+    setRepickingId(null);
   }
 
   async function skip(meal: Meal) {
     if (!plan) return;
-    try {
-      const updated = await api.skipMealSlot(plan.id, meal.id);
-      haptic.tap();
-      setPlan({ ...plan, meals: plan.meals.map((m) => (m.id === meal.id ? updated : m)) });
-      refreshCost(plan.id);
-    } catch (err) {
-      reportError(err);
-    }
+    const updated = await attempt(() => api.skipMealSlot(plan.id, meal.id));
+    if (!updated) return;
+    haptic.tap();
+    setPlan({ ...plan, meals: plan.meals.map((m) => (m.id === meal.id ? updated : m)) });
   }
 
-  if (loadError && plan === undefined) return <ErrorScreen title="Week" message={loadError} onRetry={load} />;
-  if (plan === undefined) return <LoadingScreen title="Week" messages={["Opening your week…"]} />;
+  if (error && !data) return <ErrorScreen title="Week" message={error} onRetry={reload} />;
+  if (!data) return <LoadingScreen title="Week" messages={["Opening your week…"]} />;
 
   if (planning) {
     return (
@@ -142,7 +112,7 @@ export default function WeekScreen() {
     );
   }
 
-  if (plan === null) {
+  if (!plan) {
     return (
       <Screen>
         <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.md }}>Week</Text>
@@ -172,10 +142,9 @@ export default function WeekScreen() {
   }
   const dates = [...mealsByDate.keys()].sort();
   const mealsPlanned = plan.meals.filter((m) => m.type === "cook" || m.type === "leftover").length;
-  // Only meaningful with housemates, and only for the week the split was worked out on.
-  const you = members && members.members.length > 1 && members.weekStartDate?.slice(0, 10) === plan.weekStartDate.slice(0, 10)
-    ? members.members.find((m) => m.isYou)
-    : undefined;
+  // With housemates, your part of the same figure the card shows.
+  const housemates = data.members.members;
+  const yourShare = weekCents && housemates.length > 1 ? sharesOf(weekCents, housemates)?.[housemates.find((m) => m.isYou)!.id] : undefined;
 
   return (
     <Screen>
@@ -192,9 +161,9 @@ export default function WeekScreen() {
             <Text style={{ ...typography.bodyStrong, color: colors.text }}>
               {mealsPlanned} meals planned · {dollars(weekCents, 0)} estimated{plan.score ? ` · ${plan.score.total}/100` : ""}
             </Text>
-            {you?.weekShareCents != null ? (
+            {yourShare !== undefined ? (
               <Text style={{ ...typography.body, color: colors.text }}>
-                Your share: {dollars(you.weekShareCents)} of {members!.members.length} people
+                Your share: {dollars(yourShare)} of {housemates.length} people
               </Text>
             ) : null}
             <EstimatedPricingBadge />

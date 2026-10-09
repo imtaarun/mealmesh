@@ -9,7 +9,7 @@ import { Button, Section, TextField } from "@/components/ui/Form";
 import { api, type IngredientOption, type PantryItem, type PantryLocation } from "@/lib/api";
 import { expiryText } from "@/lib/pantry";
 import { haptic } from "@/lib/feedback";
-import { reportError, toast } from "@/components/ui/Toast";
+import { attempt, reportError, toast } from "@/components/ui/Toast";
 import { useTheme } from "@/theme";
 
 const LOCATIONS: Array<[PantryLocation, string]> = [
@@ -99,27 +99,22 @@ export default function PantryItemScreen() {
     setSaving(true);
     const quantity = counted ? convertToBaseUnit({ value, unit: "piece" }, { id: picked.id, baseUnit: "g", gramsPerPiece: picked.gramsPerPiece! }).value : value;
     const expiresAt = expiresInDays == null ? expiresInDays : new Date(Date.now() + expiresInDays * 86_400_000).toISOString();
-    try {
-      if (existing) await api.updatePantryItem(existing.id, { quantity, location, expiresAt });
-      else await api.addPantryItem({ ingredientId: picked.id, quantity, location, ...(expiresAt ? { expiresAt } : {}) });
-      haptic.success();
-      toast(existing ? `${picked.name} updated.` : `${picked.name} is in your pantry.`);
-      router.back();
-    } catch (err) {
-      reportError(err);
-    } finally {
-      setSaving(false);
-    }
+    const saved = await attempt(() =>
+      existing
+        ? api.updatePantryItem(existing.id, { quantity, location, expiresAt })
+        : api.addPantryItem({ ingredientId: picked.id, quantity, location, ...(expiresAt ? { expiresAt } : {}) }),
+    );
+    setSaving(false);
+    if (!saved) return;
+    haptic.success();
+    toast(existing ? `${picked.name} updated.` : `${picked.name} is in your pantry.`);
+    router.back();
   };
 
   const remove = async () => {
-    try {
-      await api.removePantryItem(existing!.id);
-      toast(`${existing!.name} removed.`);
-      router.back();
-    } catch (err) {
-      reportError(err);
-    }
+    if (!(await attempt(() => api.removePantryItem(existing!.id)))) return;
+    toast(`${existing!.name} removed.`);
+    router.back();
   };
 
   return (

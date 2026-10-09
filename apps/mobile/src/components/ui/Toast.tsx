@@ -21,6 +21,16 @@ export function reportError(err: unknown) {
   toast(messageOf(err), "error");
 }
 
+/** Runs an action; a failure becomes a toast and the result is undefined. */
+export async function attempt<T>(action: () => Promise<T>): Promise<T | undefined> {
+  try {
+    return await action();
+  } catch (err) {
+    reportError(err);
+    return undefined;
+  }
+}
+
 /** Rendered once at the root; floats over everything. */
 export function ToastHost() {
   const { colors, spacing, typography } = useTheme();

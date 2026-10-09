@@ -12,13 +12,13 @@ export function localDate(offsetDays = 0): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export interface Suggestion {
+interface Suggestion {
   icon: ComponentProps<typeof Ionicons>["name"];
   text: string;
   href: Href;
 }
 
-export interface HomeModel {
+interface HomeModel {
   name: string;
   plan: MealPlan | null;
   list: GroceryList | null;
@@ -28,7 +28,7 @@ export interface HomeModel {
   tomorrowCoverage: number | null; // share of tomorrow's dinner ingredients already in the pantry
 }
 
-const dinnerOn = (plan: MealPlan | null, date: string): Meal | undefined =>
+export const dinnerOn = (plan: MealPlan | null, date: string): Meal | undefined =>
   plan?.meals.find((m) => m.slot === "dinner" && m.date.slice(0, 10) === date);
 
 export async function loadHome(): Promise<HomeModel> {
@@ -50,14 +50,14 @@ export async function loadHome(): Promise<HomeModel> {
   };
 }
 
-/** Changes with the hour and the day, so Home never opens the same way twice in a row. */
-export function greeting(name: string, now = new Date()): string {
-  const hour = now.getHours();
+export function greeting(name: string): string {
+  const hour = new Date().getHours();
   const part = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   return `${part}, ${name}`;
 }
 
-export function subline(model: HomeModel, now = new Date()): string {
+/** Follows tonight's plan, and otherwise the day of the week. */
+export function subline(model: HomeModel): string {
   const tonight = dinnerOn(model.plan, localDate());
   if (!model.plan) return "Nothing planned yet. A couple of minutes and the whole week's sorted.";
   if (tonight?.type === "leftover") return "Tonight's already cooked — it's leftovers.";
@@ -71,7 +71,7 @@ export function subline(model: HomeModel, now = new Date()): string {
     "Friday. Something good tonight.",
     "Saturday — take your time.",
   ];
-  return byDay[now.getDay()]!;
+  return byDay[new Date().getDay()]!;
 }
 
 /** Only things the app can back with a number (docs/ux.md "Home screen tells a story"). */

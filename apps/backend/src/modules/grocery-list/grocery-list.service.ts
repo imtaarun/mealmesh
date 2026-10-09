@@ -148,10 +148,6 @@ export class GroceryListService {
 
     const budgetCents = list.mealPlan.household.weeklyBudgetCents;
     const plannedCents = bestOverall!.totalCents;
-    // The plan's saved estimate follows the latest pricing, so Week, Home, Shop and the cost split agree.
-    if (list.mealPlan.estimatedCostCents !== plannedCents) {
-      await this.prisma.mealPlan.update({ where: { id: list.mealPlanId }, data: { estimatedCostCents: plannedCents } });
-    }
     const swaps = plannedCents > budgetCents ? await this.planMyWeek.suggestSwaps(household.householdId, list.mealPlanId) : [];
     return {
       isDemo,

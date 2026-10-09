@@ -13,6 +13,7 @@ export function LoadingState({ messages = ["Getting things ready…"] }: { messa
 
   useEffect(() => {
     if (!reduce) pulse.value = withRepeat(withTiming(0.45, { duration: 900 }), -1, true);
+    if (messages.length < 2) return;
     const rotate = setInterval(() => setLine((i) => (i + 1) % messages.length), 1800);
     return () => clearInterval(rotate);
   }, []);

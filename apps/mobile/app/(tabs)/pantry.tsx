@@ -1,8 +1,7 @@
 import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Screen } from "@/components/ui/Screen";
-import { ErrorState, LoadingState } from "@/components/ui/States";
+import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
 import { Appear } from "@/components/ui/Motion";
 import { useLoad } from "@/lib/useLoad";
 import { Card } from "@/components/ui/Card";
@@ -29,14 +28,8 @@ export default function PantryScreen() {
     </View>
   );
 
-  if (!pantry) {
-    return (
-      <Screen>
-        {header}
-        {error ? <ErrorState message={error} onRetry={reload} /> : <LoadingState messages={["Checking the fridge…", "Looking for anything about to expire…"]} />}
-      </Screen>
-    );
-  }
+  if (error && !pantry) return <ErrorScreen title="Pantry" message={error} onRetry={reload} />;
+  if (!pantry) return <LoadingScreen title="Pantry" messages={["Checking the fridge…", "Looking for anything about to expire…"]} />;
   if (pantry.items.length === 0) {
     return (
       <Screen>

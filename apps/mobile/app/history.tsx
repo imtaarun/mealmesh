@@ -1,25 +1,20 @@
-import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
-import { Screen, LoadingScreen, BackLink } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, ErrorScreen, BackLink } from "@/components/ui/Screen";
+import { useLoad } from "@/lib/useLoad";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
-import { api, type History } from "@/lib/api";
+import { api } from "@/lib/api";
 import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
 
 
 export default function HistoryScreen() {
   const { colors, spacing, typography } = useTheme();
-  const [history, setHistory] = useState<History | null>(null);
+  const { data: history, error, reload } = useLoad(api.getHistory, [], { onFocus: false });
 
-  useEffect(() => {
-    api.getHistory().then(setHistory);
-  }, []);
-
-  if (!history) {
-    return <LoadingScreen back="Profile" messages={["Adding up your weeks…"]} />;
-  }
+  if (error && !history) return <ErrorScreen back="Profile" title="Your history" message={error} onRetry={reload} />;
+  if (!history) return <LoadingScreen back="Profile" messages={["Adding up your weeks…"]} />;
 
   const { totals } = history;
   const stats = [

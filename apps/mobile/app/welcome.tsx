@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { IconBadge } from "@/components/ui/IconBadge";
 import { Appear } from "@/components/ui/Motion";
 import { haptic } from "@/lib/feedback";
 import { Screen } from "@/components/ui/Screen";
@@ -18,7 +18,7 @@ const PROMISES = [
 ] as const;
 
 export default function WelcomeScreen() {
-  const { colors, spacing, radius, typography } = useTheme();
+  const { colors, spacing, typography } = useTheme();
   const { signup, login, oauth } = useAuth();
   const [emailMode, setEmailMode] = useState<"closed" | "login" | "signup">("closed");
   const [email, setEmail] = useState("");
@@ -56,9 +56,7 @@ export default function WelcomeScreen() {
         </Appear>
         {PROMISES.map((promise, i) => (
           <Appear key={promise.icon} index={i + 1} style={{ flexDirection: "row", alignItems: "center", gap: spacing.smd, marginBottom: spacing.smd }}>
-            <View style={{ width: 40, height: 40, borderRadius: radius.pill, backgroundColor: colors.accentTint, alignItems: "center", justifyContent: "center" }}>
-              <Ionicons name={promise.icon} size={20} color={colors.brandAccent} />
-            </View>
+            <IconBadge name={promise.icon} />
             <Text style={{ ...typography.body, color: colors.text, flex: 1 }}>{promise.text}</Text>
           </Appear>
         ))}

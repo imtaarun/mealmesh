@@ -7,7 +7,7 @@ import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { api, type GroceryList, type Optimization } from "@/lib/api";
 import { dollars } from "@/lib/format";
 import { haptic } from "@/lib/feedback";
-import { reportError } from "@/components/ui/Toast";
+import { attempt } from "@/components/ui/Toast";
 import { Appear, CountUp } from "@/components/ui/Motion";
 import { useTheme } from "@/theme";
 
@@ -21,9 +21,13 @@ export function WeekSummary({ list, onPlanChanged }: { list: GroceryList; onPlan
 
   // Ticking items off doesn't change what to buy, so only quantities and "Already have" re-price.
   const basket = list.items.map((i) => `${i.id}:${i.quantity}:${i.alreadyHave}`).join();
+  // A short wait so tapping + three times re-prices once.
   useEffect(() => {
-    api.optimizeGroceryList(list.id).then(setOptimization, () => {});
-    api.getDeals(list.id).then((radar) => setDealCount(radar.deals.length), () => {});
+    const wait = setTimeout(() => {
+      api.optimizeGroceryList(list.id).then(setOptimization, () => {});
+      api.getDeals(list.id).then((radar) => setDealCount(radar.deals.length), () => {});
+    }, optimization ? 400 : 0);
+    return () => clearTimeout(wait);
   }, [list.id, basket]);
 
   if (!optimization) {
@@ -38,13 +42,9 @@ export function WeekSummary({ list, onPlanChanged }: { list: GroceryList; onPlan
   const { budget, bestOverall } = optimization;
   const over = budget.remainingCents < 0;
   const swap = async (mealId: string, recipeId: string) => {
-    try {
-      await api.setMealSlot(list.mealPlanId, mealId, recipeId, true);
-      haptic.success();
-      onPlanChanged();
-    } catch (err) {
-      reportError(err);
-    }
+    if (!(await attempt(() => api.setMealSlot(list.mealPlanId, mealId, recipeId, true)))) return;
+    haptic.success();
+    onPlanChanged();
   };
 
   return (

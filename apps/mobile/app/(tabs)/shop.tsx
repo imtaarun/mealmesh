@@ -1,19 +1,19 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { formatQuantity, purchaseIncrement } from "@mealmesh/domain";
 import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
 import { Appear, reorder } from "@/components/ui/Motion";
-import { reportError } from "@/components/ui/Toast";
+import { attempt } from "@/components/ui/Toast";
 import { haptic } from "@/lib/feedback";
-import { messageOf } from "@/lib/useLoad";
+import { useLoad } from "@/lib/useLoad";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Pill, TextField } from "@/components/ui/Form";
 import { WeekSummary } from "@/components/shop/WeekSummary";
-import { api, type GroceryItem, type GroceryList } from "@/lib/api";
+import { api, type GroceryItem } from "@/lib/api";
 import { useTheme } from "@/theme";
 
 const CATEGORIES = ["Produce", "Meat & Seafood", "Dairy", "Pantry", "Frozen", "Other"];
@@ -23,33 +23,20 @@ const covered = (item: GroceryItem) => item.alreadyHave || (item.quantity === 0 
 
 export default function ShopScreen() {
   const { colors, spacing, typography, minTouch } = useTheme();
-  const [list, setList] = useState<GroceryList | null | undefined>(undefined);
+  const { data: list, setData: setList, error, reload } = useLoad(async () => {
+    const plan = await api.getCurrentPlan();
+    return plan ? api.getGroceryList(plan.id) : null;
+  });
   const [open, setOpen] = useState<string | null>(null);
   const [newItem, setNewItem] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(() => {
-    setError(null);
-    api
-      .getCurrentPlan()
-      .then((plan) => (plan ? api.getGroceryList(plan.id).then(setList) : setList(null)))
-      .catch((err) => setError(messageOf(err)));
-  }, []);
-  useFocusEffect(load);
 
   const update = async (item: GroceryItem, patch: Parameters<typeof api.updateGroceryItem>[1]) => {
-    try {
-      const updated = await api.updateGroceryItem(item.id, patch);
-      setList((l) => {
-        if (!l) return l;
-        const items = l.items.map((i) => (i.id === updated.id ? updated : i));
-        const finished = patch.checked && items.filter((i) => !covered(i)).every((i) => i.checked);
-        finished ? haptic.success() : haptic.tap();
-        return { ...l, items };
-      });
-    } catch (err) {
-      reportError(err);
-    }
+    const updated = await attempt(() => api.updateGroceryItem(item.id, patch));
+    if (!updated) return;
+    const swapIn = (items: GroceryItem[]) => items.map((i) => (i.id === updated.id ? updated : i));
+    setList((l) => l && { ...l, items: swapIn(l.items) });
+    if (patch.checked && list && swapIn(list.items).filter((i) => !covered(i)).every((i) => i.checked)) haptic.success();
+    else haptic.tap();
   };
   const step = (item: GroceryItem, direction: 1 | -1) => {
     const by = purchaseIncrement(item.unit);
@@ -57,25 +44,17 @@ export default function ShopScreen() {
   };
   const add = async () => {
     if (!list || !newItem.trim()) return;
-    try {
-      const item = await api.addGroceryItem(list.id, newItem);
-      haptic.tap();
-      setList({ ...list, items: [...list.items, item] });
-      setNewItem("");
-    } catch (err) {
-      reportError(err);
-    }
+    const item = await attempt(() => api.addGroceryItem(list.id, newItem));
+    if (!item) return;
+    haptic.tap();
+    setList((l) => l && { ...l, items: [...l.items, item] });
+    setNewItem("");
   };
   const remove = async (item: GroceryItem) => {
-    try {
-      await api.removeGroceryItem(item.id);
-      setList((l) => l && { ...l, items: l.items.filter((i) => i.id !== item.id) });
-    } catch (err) {
-      reportError(err);
-    }
+    if (await attempt(() => api.removeGroceryItem(item.id))) setList((l) => l && { ...l, items: l.items.filter((i) => i.id !== item.id) });
   };
 
-  if (error && list === undefined) return <ErrorScreen title="Shop" message={error} onRetry={load} />;
+  if (error && list === undefined) return <ErrorScreen title="Shop" message={error} onRetry={reload} />;
   if (list === undefined) return <LoadingScreen title="Shop" messages={["Building your grocery list…", "Checking your pantry…", "Looking for better-value options…"]} />;
   if (list === null || list.items.length === 0) {
     return (
@@ -109,7 +88,7 @@ export default function ShopScreen() {
         </Appear>
       ) : null}
 
-      <WeekSummary list={list} onPlanChanged={load} />
+      <WeekSummary list={list} onPlanChanged={reload} />
 
       <View style={{ flexDirection: "row", alignItems: "flex-start", gap: spacing.sm }}>
         <View style={{ flex: 1 }}>

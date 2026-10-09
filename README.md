@@ -37,6 +37,8 @@ address (e.g. `http://192.168.1.20:3000`), since `localhost` on the phone is the
 **Try the demo:** log in as `demo@mealmesh.app` / `mealmesh-demo` (local only). It's a
 Pro household with a stocked pantry. Week → **Plan My Week** → Shop → **Optimize my cart**
 → Home → **Start cooking**.
+The seeded sales run for a week from when you seed; run `pnpm db:seed` again to refresh
+them (it's safe to re-run).
 
 Google and Apple sign-in need keys only the app's owner can create: `docs/oauth-setup.md`.
 Email sign-in works without them.

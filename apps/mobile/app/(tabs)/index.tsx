@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/Form";
 import { Appear } from "@/components/ui/Motion";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { CuisinePlaceholder } from "@/components/recipe/CuisinePlaceholder";
-import { greeting, loadHome, localDate, subline, suggestions } from "@/lib/home";
+import { dinnerOn, greeting, loadHome, localDate, subline, suggestions } from "@/lib/home";
+import { IconBadge } from "@/components/ui/IconBadge";
 import { useLoad } from "@/lib/useLoad";
 import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
@@ -23,9 +24,11 @@ export default function HomeScreen() {
 
   const { plan } = home;
   const today = localDate();
-  const tonight = plan?.meals.find((m) => m.slot === "dinner" && m.date.slice(0, 10) === today);
+  const tonight = dinnerOn(plan, today);
   const dinners = plan?.meals.filter((m) => m.slot === "dinner").sort((a, b) => a.date.localeCompare(b.date)) ?? [];
-  const planned = dinners.filter((m) => m.type === "cook" || m.type === "leftover").length;
+  const isFilled = (meal: { type: string }) => meal.type === "cook" || meal.type === "leftover";
+  const planned = dinners.filter(isFilled).length;
+  const estimate = home.optimization?.budget.plannedCents ?? 0;
   const ideas = suggestions(home);
 
   return (
@@ -71,7 +74,7 @@ export default function HomeScreen() {
             <View style={{ flexDirection: "row", justifyContent: "space-between" }} accessibilityLabel={`${planned} of 7 dinners planned`}>
               {dinners.map((meal, i) => {
                 const isToday = meal.date.slice(0, 10) === today;
-                const filled = meal.type === "cook" || meal.type === "leftover";
+                const filled = isFilled(meal);
                 return (
                   <View key={meal.id} style={{ alignItems: "center", gap: spacing.xs }}>
                     <Text style={{ ...typography.label, color: isToday ? colors.brandAccent : colors.textMuted }}>{DAY_INITIALS[i]}</Text>
@@ -95,10 +98,10 @@ export default function HomeScreen() {
             </View>
             <Text style={{ ...typography.bodyStrong, color: colors.text }}>
               {planned} {planned === 1 ? "dinner" : "dinners"} planned
-              {home.optimization && home.optimization.budget.plannedCents > 0 ? ` · ${dollars(home.optimization.budget.plannedCents, 0)} estimated` : ""}
+              {estimate > 0 ? ` · ${dollars(estimate, 0)} estimated` : ""}
               {plan.score ? ` · ${plan.score.total}/100` : ""}
             </Text>
-            {home.optimization && home.optimization.budget.plannedCents > 0 ? <EstimatedPricingBadge /> : null}
+            {estimate > 0 ? <EstimatedPricingBadge /> : null}
           </Card>
         </Appear>
       ) : null}
@@ -114,9 +117,7 @@ export default function HomeScreen() {
                 accessibilityRole="button"
                 style={{ flexDirection: "row", alignItems: "center", gap: spacing.smd, minHeight: minTouch + spacing.sm, paddingVertical: spacing.xs }}
               >
-                <View style={{ width: 36, height: 36, borderRadius: radius.pill, backgroundColor: colors.accentTint, alignItems: "center", justifyContent: "center" }}>
-                  <Ionicons name={idea.icon} size={18} color={colors.brandAccent} />
-                </View>
+                <IconBadge name={idea.icon} size={36} />
                 <Text style={{ ...typography.body, color: colors.text, flex: 1 }}>{idea.text}</Text>
                 <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
               </Pressable>

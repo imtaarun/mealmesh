@@ -27,7 +27,7 @@ const listed = (names: string[]) => {
 export default function OptimizeScreen() {
   const { colors, spacing, typography } = useTheme();
   const { listId } = useLocalSearchParams<{ listId: string }>();
-  const { data: optimization, error, reload } = useLoad(() => api.optimizeGroceryList(listId), [listId]);
+  const { data: optimization, error, reload } = useLoad(() => api.optimizeGroceryList(listId), [listId], { onFocus: false });
   const [chosen, setChosen] = useState<(typeof STRATEGIES)[number]["key"]>("bestOverall");
 
   if (error && !optimization) return <ErrorScreen back="Shop" title="Optimize my cart" message={error} onRetry={reload} />;

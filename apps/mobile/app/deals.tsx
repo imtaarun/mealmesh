@@ -14,7 +14,7 @@ import { useTheme } from "@/theme";
 export default function DealsScreen() {
   const { colors, spacing, typography } = useTheme();
   const { listId } = useLocalSearchParams<{ listId: string }>();
-  const { data: radar, error, reload } = useLoad(() => api.getDeals(listId), [listId]);
+  const { data: radar, error, reload } = useLoad(() => api.getDeals(listId), [listId], { onFocus: false });
 
   if (error && !radar) return <ErrorScreen back="Shop" title="Deal Radar" message={error} onRetry={reload} />;
   if (!radar) return <LoadingScreen back="Shop" title="Deal Radar" messages={["Scanning this week's sales…", "Matching them to your list…"]} />;

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Share, Text, View } from "react-native";
-import { Screen, LoadingScreen, BackLink } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, ErrorScreen, BackLink } from "@/components/ui/Screen";
+import { useLoad } from "@/lib/useLoad";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Form";
 import { useAuth } from "@/auth/AuthProvider";
@@ -21,16 +22,11 @@ interface DataExport {
 export default function MyDataScreen() {
   const { colors, spacing, typography } = useTheme();
   const { deleteAccount } = useAuth();
-  const [data, setData] = useState<DataExport | null>(null);
+  const { data, error, reload } = useLoad(async () => (await api.exportMyData()) as DataExport, [], { onFocus: false });
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    api.exportMyData().then((d) => setData(d as DataExport));
-  }, []);
-
-  if (!data) {
-    return <LoadingScreen back="Profile" messages={["Gathering everything we store about you…"]} />;
-  }
+  if (error && !data) return <ErrorScreen back="Profile" title="Your data" message={error} onRetry={reload} />;
+  if (!data) return <LoadingScreen back="Profile" messages={["Gathering everything we store about you…"]} />;
 
   const rows = [
     { label: "Account", value: `${data.account.email}, since ${data.account.createdAt.slice(0, 10)}` },

@@ -19,7 +19,7 @@ const label = (s: string) => s.replace(/_/g, " ");
 export default function RecipeScreen() {
   const { colors, spacing, typography } = useTheme();
   const params = useLocalSearchParams<{ id: string; servings?: string; leftover?: string }>();
-  const { data: recipe, error, reload } = useLoad(() => api.getRecipe(params.id), [params.id]);
+  const { data: recipe, error, reload } = useLoad(() => api.getRecipe(params.id), [params.id], { onFocus: false });
   const [chosenServings, setServings] = useState<number | null>(params.servings ? Number(params.servings) : null);
 
   if (error && !recipe) return <ErrorScreen back="Back" message={error} onRetry={reload} />;
