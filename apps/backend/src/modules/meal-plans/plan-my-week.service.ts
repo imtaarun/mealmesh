@@ -6,6 +6,8 @@ import {
   applyPantryAndRound,
   computeMealPlanScore,
   costLine,
+  costPerServingCents,
+  eligibleRecipes,
   mainProtein,
   pickDinner,
   planWeek,
@@ -93,6 +95,37 @@ export class PlanMyWeekService {
 
     await this.scorePlan(plan.id, context);
     return this.prisma.mealPlan.findUniqueOrThrow({ where: { id: plan.id }, include: PLAN_INCLUDE });
+  }
+
+  /**
+   * Budget help, never applied automatically: for each cooked dinner, the cheapest
+   * dinner the planner would also allow. Free and Pro alike — no AI involved.
+   */
+  async suggestSwaps(householdId: string, mealPlanId: string, limit = 2) {
+    const plan = await this.prisma.mealPlan.findFirstOrThrow({
+      where: { id: mealPlanId, householdId },
+      include: { meals: { where: { slot: MealSlot.dinner, type: MealType.cook, recipeId: { not: null } }, include: { recipe: true } } },
+    });
+    const context = await this.loadContext(householdId, plan.weekStartDate);
+    const perServing = (r: PlannerRecipe) => costPerServingCents(r, context.input.unitPriceCents);
+    const inPlan = new Set(plan.meals.map((m) => m.recipeId));
+    const alternatives = eligibleRecipes({ ...context.input, avoidRecipeIds: [] }, "dinner")
+      .filter((r) => !inPlan.has(r.id) && r.dislikeMatches === 0)
+      .sort((a, b) => perServing(a) - perServing(b))
+      .slice(0, limit);
+    const priciest = plan.meals
+      .filter((m) => context.recipesById.has(m.recipeId!))
+      .sort((a, b) => perServing(context.recipesById.get(b.recipeId!)!) * b.servings - perServing(context.recipesById.get(a.recipeId!)!) * a.servings);
+
+    const titles = new Map((await this.prisma.recipe.findMany({ where: { id: { in: alternatives.map((r) => r.id) } } })).map((r) => [r.id, r.title]));
+    return alternatives.flatMap((to, i) => {
+      const meal = priciest[i];
+      if (!meal) return [];
+      const savingsCents = Math.round((perServing(context.recipesById.get(meal.recipeId!)!) - perServing(to)) * meal.servings);
+      return savingsCents >= 100
+        ? [{ mealId: meal.id, date: meal.date, from: { id: meal.recipe!.id, title: meal.recipe!.title }, to: { id: to.id, title: titles.get(to.id)! }, savingsCents }]
+        : [];
+    });
   }
 
   /** Re-picks one dinner against the rest of the week. */

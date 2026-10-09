@@ -33,6 +33,6 @@ export class GroceryPricing {
     const ingredientByProduct = new Map(products.map((p) => [p.id, p.ingredientId]));
     const dealIngredientIds = [...new Set(deals.flatMap((d) => ingredientByProduct.get(d.productId) ?? []))];
 
-    return { productOptions, dealIngredientIds, isDemo: this.provider.isDemo };
+    return { products, productOptions, dealIngredientIds, isDemo: this.provider.isDemo };
   }
 }

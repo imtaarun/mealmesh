@@ -1,19 +1,38 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { MealType, type BaseUnit, type GroceryListItem, type Ingredient } from "@prisma/client";
-import { buildGroceryList, roundUpToPurchaseIncrement, type IngredientConversion, type RecipeIngredientDemand, type Unit } from "@mealmesh/domain";
+import {
+  buildGroceryList,
+  cheapestForQuantity,
+  convertToBaseUnit,
+  DEFAULT_TRIP_COST_CENTS,
+  optimizeBasket,
+  roundUpToPurchaseIncrement,
+  type BasketItem,
+  type IngredientConversion,
+  type OptimizationResult,
+  type OptimizationStrategy,
+  type ProductOption,
+  type RecipeIngredientDemand,
+  type Unit,
+} from "@mealmesh/domain";
 import { PrismaService } from "../../common/prisma.service.js";
 import { toConversion } from "../../common/recipes.js";
 import { GROCERY_PROVIDER, type GroceryProvider } from "../../providers/grocery/grocery-provider.interface.js";
+import { GroceryPricing } from "../../providers/grocery/grocery-pricing.js";
+import { PlanMyWeekService } from "../meal-plans/plan-my-week.service.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
 type ItemPatch = { checked?: boolean; alreadyHave?: boolean; userOverrideQuantity?: number | null; buyAnyway?: boolean };
 
-/** Grocery list (Phase 6); basket optimization and deals (Phase 7). */
+const STRATEGIES: OptimizationStrategy[] = ["min_cost", "min_stores", "best_overall"];
+
 @Injectable()
 export class GroceryListService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(GROCERY_PROVIDER) private readonly groceryProvider: GroceryProvider,
+    private readonly pricing: GroceryPricing,
+    private readonly planMyWeek: PlanMyWeekService,
   ) {}
 
   /** Rebuilt from the plan and pantry on every read, so it never goes stale; checks and overrides carry over. */
@@ -98,16 +117,101 @@ export class GroceryListService {
     return item;
   }
 
-  async optimize(_household: RequestHousehold, _groceryListId: string, _strategy: string): Promise<never> {
-    throw new Error("GroceryListService.optimize: not yet implemented — Phase 7");
+  /** All three strategies for what's left to buy, plus the week against the budget. */
+  async optimize(household: RequestHousehold, groceryListId: string) {
+    const { list, items, names } = await this.basket(household, groceryListId);
+    const [{ products, productOptions, isDemo }, stores] = await Promise.all([
+      this.pricing.load(items.map((i) => i.ingredientId)),
+      this.groceryProvider.listStores(),
+    ]);
+    const candidatesByIngredient: Record<string, ProductOption[]> = {};
+    for (const option of productOptions) (candidatesByIngredient[option.ingredientId] ??= []).push(option);
+    // Households have no location yet, so every demo store counts as nearby (open-questions item 10).
+    const storeDistances = stores.map((s) => ({ storeId: s.id, distanceKm: 0 }));
+    const storeNames = new Map(stores.map((s) => [s.id, s.name]));
+    const productNames = new Map(products.map((p) => [p.id, p.name]));
+
+    const view = (result: OptimizationResult) => ({
+      strategy: result.strategy,
+      totalCents: result.totalCents,
+      savingsCents: result.savingsCents,
+      stores: result.storeBreakdown.map((b) => ({
+        storeId: b.storeId,
+        name: storeNames.get(b.storeId)!,
+        subtotalCents: b.subtotalCents,
+        items: b.items.map((p) => ({ ingredientId: p.ingredientId, name: names.get(p.ingredientId)!, product: productNames.get(p.productId)!, packs: p.packs, cents: p.cents })),
+      })),
+      unavailable: result.unavailableItemIds.map((id) => names.get(id)!),
+      topSavingsDrivers: result.topSavingsDrivers.map((id) => names.get(id)!),
+    });
+    const [minCost, minStores, bestOverall] = STRATEGIES.map((strategy) => view(optimizeBasket({ strategy, items, candidatesByIngredient, storeDistances })));
+
+    const budgetCents = list.mealPlan.household.weeklyBudgetCents;
+    const plannedCents = bestOverall!.totalCents;
+    const swaps = plannedCents > budgetCents ? await this.planMyWeek.suggestSwaps(household.householdId, list.mealPlanId) : [];
+    return {
+      isDemo,
+      tripCostCents: DEFAULT_TRIP_COST_CENTS,
+      minCost: minCost!,
+      minStores: minStores!,
+      bestOverall: bestOverall!,
+      budget: { budgetCents, plannedCents, remainingCents: budgetCents - plannedCents, swaps },
+    };
   }
 
-  async listStores(): Promise<never> {
-    throw new Error("GroceryListService.listStores: not yet implemented — Phase 7");
+  /** Deal Radar: only sales on things this week's list still needs. */
+  async deals(household: RequestHousehold, groceryListId: string) {
+    const { list, items, names } = await this.basket(household, groceryListId);
+    const need = new Map(items.map((i) => [i.ingredientId, i.neededQuantity]));
+    const [{ products, productOptions, isDemo }, stores, meals] = await Promise.all([
+      this.pricing.load([...need.keys()]),
+      this.groceryProvider.listStores(),
+      this.prisma.meal.findMany({ where: { mealPlanId: list.mealPlanId, type: MealType.cook, recipeId: { not: null } }, include: { recipe: { include: { ingredients: true } } } }),
+    ]);
+    const deals = (await Promise.all(stores.map((s) => this.groceryProvider.getDeals(s.id)))).flat();
+    const storeNames = new Map(stores.map((s) => [s.id, s.name]));
+
+    const radar = await Promise.all(
+      deals.map(async (deal) => {
+        const product = products.find((p) => p.id === deal.productId);
+        const price = product && (await this.groceryProvider.getPrice(product.id));
+        if (!product || !price?.isSale || price.regularPriceCents === null) return [];
+        const sale = cheapestForQuantity(productOptions.filter((o) => o.productId === product.id), need.get(product.ingredientId)!)!;
+        const regularCents = sale.packsNeeded * price.regularPriceCents;
+        return [{
+          id: deal.id,
+          item: names.get(product.ingredientId)!,
+          product: product.name,
+          store: storeNames.get(deal.storeId)!,
+          discountPercent: deal.discountPercent,
+          packs: sale.packsNeeded,
+          regularCents,
+          saleCents: sale.cents,
+          savingsCents: regularCents - sale.cents,
+          mealsUsing: meals.filter((m) => m.recipe!.ingredients.some((l) => l.ingredientId === product.ingredientId && !l.optional)).length,
+        }];
+      }),
+    );
+    return { isDemo, deals: radar.flat().sort((a, b) => b.savingsCents - a.savingsCents) };
   }
 
-  async getDeals(_household: RequestHousehold, _mealPlanId: string): Promise<never> {
-    throw new Error("GroceryListService.getDeals: not yet implemented — Phase 7");
+  /** What's still to buy, in base units. Uses the exact need, since packs do the rounding (open-questions item 14). */
+  private async basket(household: RequestHousehold, groceryListId: string) {
+    const owned = await this.prisma.groceryList.findFirst({ where: { id: groceryListId, mealPlan: { householdId: household.householdId } } });
+    if (!owned) throw new NotFoundException("That list isn't in your household");
+    await this.getForPlan(household, owned.mealPlanId); // catch up with plan and pantry changes first
+    const list = await this.prisma.groceryList.findUniqueOrThrow({
+      where: { id: groceryListId },
+      include: { items: { include: { ingredient: true } }, mealPlan: { include: { household: true } } },
+    });
+
+    const toBuy = list.items.filter((i) => i.ingredient && !i.isNominal && !i.alreadyHave && (i.userOverrideQuantity ?? i.finalQuantity) > 0);
+    const items: BasketItem[] = toBuy.map((i) => {
+      const quantity = i.userOverrideQuantity ?? i.neededQuantity;
+      const inBaseUnit = i.unit === i.ingredient!.baseUnit ? quantity : convertToBaseUnit({ value: quantity, unit: i.unit }, toConversion(i.ingredient!)).value;
+      return { ingredientId: i.ingredientId!, neededQuantity: inBaseUnit };
+    });
+    return { list, items, names: new Map(toBuy.map((i) => [i.ingredientId!, i.ingredient!.name])) };
   }
 }
 

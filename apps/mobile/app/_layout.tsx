@@ -19,6 +19,8 @@ export default function RootLayout() {
           <Stack.Screen name="cook/[id]" options={{ presentation: "fullScreenModal", gestureEnabled: false }} />
           <Stack.Screen name="recipe-picker" options={{ presentation: "modal" }} />
           <Stack.Screen name="pantry-item" options={{ presentation: "modal" }} />
+          <Stack.Screen name="optimize" />
+          <Stack.Screen name="deals" />
         </Stack>
       </ThemeProvider>
     </AuthProvider>

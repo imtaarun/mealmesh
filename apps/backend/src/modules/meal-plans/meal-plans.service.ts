@@ -114,16 +114,20 @@ export class MealPlansService {
       return { conflict: conflicts, meal: null };
     }
 
-    const updated = await this.prisma.meal.update({
-      where: { id: mealId },
-      data: {
-        recipeId: dto.recipeId,
-        type: MealType.cook,
-        leftoverOfMealId: null,
-        servings: dto.servings ?? meal.servings,
-      },
-      include: { recipe: true },
-    });
+    const [updated] = await this.prisma.$transaction([
+      this.prisma.meal.update({
+        where: { id: mealId },
+        data: {
+          recipeId: dto.recipeId,
+          type: MealType.cook,
+          leftoverOfMealId: null,
+          servings: dto.servings ?? meal.servings,
+        },
+        include: { recipe: true },
+      }),
+      // Tomorrow's leftovers follow tonight's dinner.
+      this.prisma.meal.updateMany({ where: { leftoverOfMealId: mealId }, data: { recipeId: dto.recipeId } }),
+    ]);
     return { conflict: null, meal: updated };
   }
 }

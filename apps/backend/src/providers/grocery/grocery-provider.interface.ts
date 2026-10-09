@@ -56,4 +56,5 @@ export interface GroceryProvider {
   getPrice(productId: string): Promise<ProductPrice | null>;
   getDeals(storeId: string): Promise<Deal[]>;
   getStoreLocations(near: LatLng, radiusKm: number): Promise<Store[]>;
+  listStores(): Promise<Store[]>;
 }

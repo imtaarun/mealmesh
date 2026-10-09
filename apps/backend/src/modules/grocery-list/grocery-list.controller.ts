@@ -54,18 +54,13 @@ export class GroceryListController {
     return this.groceryListService.removeItem(household, id);
   }
 
-  @Post("grocery/optimize")
-  optimize(@CurrentHousehold() household: RequestHousehold, @Body() body: { groceryListId: string; strategy: string }) {
-    return this.groceryListService.optimize(household, body.groceryListId, body.strategy);
+  @Get("grocery-list/:id/optimize")
+  optimize(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string) {
+    return this.groceryListService.optimize(household, id);
   }
 
-  @Get("stores")
-  listStores() {
-    return this.groceryListService.listStores();
-  }
-
-  @Get("deals")
-  getDeals(@CurrentHousehold() household: RequestHousehold, @Query("mealPlanId") mealPlanId: string) {
-    return this.groceryListService.getDeals(household, mealPlanId);
+  @Get("grocery-list/:id/deals")
+  deals(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string) {
+    return this.groceryListService.deals(household, id);
   }
 }
