@@ -34,7 +34,12 @@ export default function ProfileScreen() {
 
   // The split uses the same Best overall figure Week and Shop show.
   useEffect(() => {
-    if (data?.plan) loadWeekCost(data.plan.id).then(setWeekCents, () => setWeekCents(null));
+    let current = true;
+    if (!data?.plan) setWeekCents(null);
+    else loadWeekCost(data.plan.id).then((cents) => current && setWeekCents(cents), () => current && setWeekCents(null));
+    return () => {
+      current = false;
+    };
   }, [data?.plan]);
 
   async function attempt(action: () => Promise<unknown>) {

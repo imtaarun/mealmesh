@@ -48,7 +48,11 @@ export default function WeekScreen() {
 
   // Re-priced whenever the plan changes; the same Best overall figure Shop shows.
   useEffect(() => {
-    if (plan) loadWeekCost(plan.id).then(setWeekCents, () => setWeekCents(null));
+    let current = true;
+    if (plan) loadWeekCost(plan.id).then((cents) => current && setWeekCents(cents), () => current && setWeekCents(null));
+    return () => {
+      current = false;
+    };
   }, [plan]);
 
   async function buildWeek() {
@@ -155,18 +159,19 @@ export default function WeekScreen() {
         ) : null}
       </View>
 
-      {weekCents ? (
+      {mealsPlanned > 0 ? (
         <Appear>
           <Card style={{ marginBottom: spacing.lg, gap: spacing.sm }}>
             <Text style={{ ...typography.bodyStrong, color: colors.text }}>
-              {mealsPlanned} meals planned · {dollars(weekCents, 0)} estimated{plan.score ? ` · ${plan.score.total}/100` : ""}
+              {mealsPlanned} meals planned{weekCents ? ` · ${dollars(weekCents, 0)} estimated` : ""}
+              {plan.score ? ` · ${plan.score.total}/100` : ""}
             </Text>
             {yourShare !== undefined ? (
               <Text style={{ ...typography.body, color: colors.text }}>
                 Your share: {dollars(yourShare)} of {housemates.length} people
               </Text>
             ) : null}
-            <EstimatedPricingBadge />
+            {weekCents ? <EstimatedPricingBadge /> : null}
             {plan.score ? <Text style={{ ...typography.caption, color: colors.textMuted }}>{plan.score.explanation}</Text> : null}
           </Card>
         </Appear>

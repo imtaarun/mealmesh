@@ -12,19 +12,20 @@ export const messageOf = (err: unknown) => (err instanceof ApiError ? err.messag
 export function useLoad<T>(load: () => Promise<T>, deps: unknown[] = [], { onFocus = true } = {}) {
   const [data, setData] = useState<T | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
-  const loaded = useRef(false);
+  const loadedWith = useRef<(() => void) | null>(null);
 
   const reload = useCallback(() => {
     setError(null);
-    load().then((value) => {
-      loaded.current = true;
-      setData(value);
-    }, (err) => setError(messageOf(err)));
+    load().then(setData, (err) => setError(messageOf(err)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
   useFocusEffect(
     useCallback(() => {
-      if (onFocus || !loaded.current) reload();
+      // reload changes identity when deps change, so a new id always loads.
+      if (onFocus || loadedWith.current !== reload) {
+        loadedWith.current = reload;
+        reload();
+      }
     }, [reload, onFocus]),
   );
 

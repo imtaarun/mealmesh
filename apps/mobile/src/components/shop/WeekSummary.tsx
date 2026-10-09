@@ -18,23 +18,33 @@ export function WeekSummary({ list, onPlanChanged }: { list: GroceryList; onPlan
   const { colors, spacing, typography } = useTheme();
   const [optimization, setOptimization] = useState<Optimization | null>(null);
   const [dealCount, setDealCount] = useState(0);
+  const [failed, setFailed] = useState(false);
+  const [attemptNo, setAttemptNo] = useState(0);
 
   // Ticking items off doesn't change what to buy, so only quantities and "Already have" re-price.
   const basket = list.items.map((i) => `${i.id}:${i.quantity}:${i.alreadyHave}`).join();
   // A short wait so tapping + three times re-prices once.
   useEffect(() => {
+    let current = true;
+    setFailed(false);
     const wait = setTimeout(() => {
-      api.optimizeGroceryList(list.id).then(setOptimization, () => {});
-      api.getDeals(list.id).then((radar) => setDealCount(radar.deals.length), () => {});
+      api.optimizeGroceryList(list.id).then((o) => current && setOptimization(o), () => current && setFailed(true));
+      api.getDeals(list.id).then((radar) => current && setDealCount(radar.deals.length), () => {});
     }, optimization ? 400 : 0);
-    return () => clearTimeout(wait);
-  }, [list.id, basket]);
+    return () => {
+      current = false;
+      clearTimeout(wait);
+    };
+  }, [list.id, basket, attemptNo]);
 
   if (!optimization) {
     return (
       <Card style={{ marginBottom: spacing.lg, gap: spacing.xs }}>
         <Text style={{ ...typography.label, color: colors.textMuted }}>THIS WEEK</Text>
-        <Text style={{ ...typography.body, color: colors.textMuted }}>Pricing your week across five stores…</Text>
+        <Text style={{ ...typography.body, color: colors.textMuted }}>
+          {failed ? "We couldn't check prices just now." : "Pricing your week across five stores…"}
+        </Text>
+        {failed ? <TextLink label="Try again" onPress={() => setAttemptNo((n) => n + 1)} /> : null}
       </Card>
     );
   }
