@@ -209,12 +209,12 @@ you took and why. Never resolve one of these silently in code.
     them to the pantry. That needs "finished shopping" as a moment (and ideally
     receipts, P2). Until then the pantry is filled by hand.
 
-27. **Which total is "the week's cost" — DECIDED 2026-10-04.** The budget card on Shop
-    uses **Best overall**: what we'd actually recommend buying, at no more than two
-    stores. The Week tab's "estimated" figure is still the one saved when Plan My Week
-    ran, which works out to the Cheapest strategy (every item from wherever it's
-    cheapest). The two are a few dollars apart, and the Week figure doesn't update
-    when meals change. Worth unifying in Phase 8.
+27. **Which total is "the week's cost" — RESOLVED 2026-10-09.** It's **Best overall**:
+    what we'd actually recommend buying, at no more than two stores. Home, Week, Shop
+    and Profile all show it, and the housemate split on Week and Profile divides that
+    same figure (`splitCents`, on the device). The plan's saved `estimatedCostCents`
+    keeps meaning "as planned" for History and the score. The members API's own
+    `weekShareCents` is no longer shown by the app.
 
 28. **Budget swaps — DECIDED 2026-10-04.** Only shown when the week is over budget. Up to
     two, each pairing one of the priciest dinners with a different cheaper dinner the

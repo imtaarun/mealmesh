@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { MealCard } from "@/components/recipe/MealCard";
 import { useTheme } from "@/theme";
 import { api, type Recipe } from "@/lib/api";
-import { ApiError } from "@/lib/api-client";
+import { messageOf } from "@/lib/useLoad";
 
 const CUISINE_FILTERS = ["indian", "mediterranean", "north_american"];
 
@@ -56,8 +56,7 @@ export default function RecipePickerScreen() {
 
       router.back();
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Something went wrong — try again.";
-      Alert.alert("Couldn't add this meal", message);
+      Alert.alert("Couldn't add this meal", messageOf(err));
     } finally {
       setSelecting(false);
     }

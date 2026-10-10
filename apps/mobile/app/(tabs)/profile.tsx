@@ -1,15 +1,17 @@
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Share, Text, View } from "react-native";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Screen, LoadingScreen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
 import { Card } from "@/components/ui/Card";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { Button, Pill, TextField } from "@/components/ui/Form";
 import { Chip } from "@/components/ui/Chip";
 import { useAuth } from "@/auth/AuthProvider";
 import { confirm } from "@/lib/confirm";
-import { api, type Housemate, type Me, type Members } from "@/lib/api";
+import { api, type Housemate, type Members } from "@/lib/api";
+import { useLoad } from "@/lib/useLoad";
+import { loadWeekCost, sharesOf } from "@/lib/weekCost";
 import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
 
@@ -18,17 +20,27 @@ const METHOD_LABELS: Record<string, string> = { email: "email", google: "Google"
 export default function ProfileScreen() {
   const { colors, spacing, typography, palette, setPalette, minTouch } = useTheme();
   const { logout } = useAuth();
-  const [me, setMe] = useState<Me | null>(null);
-  const [members, setMembers] = useState<Members | null>(null);
+  const { data, setData, error: loadError, reload } = useLoad(async () => {
+    const [me, members, plan] = await Promise.all([api.getMe(), api.getMembers(), api.getCurrentPlan()]);
+    return { me, members, plan };
+  });
+  const [weekCents, setWeekCents] = useState<number | null>(null);
+  const me = data?.me;
+  const members = data?.members;
+  const setMembers = (next: Members) => setData((d) => d && { ...d, members: next });
   const [invite, setInvite] = useState<{ code: string; expiresAt: string } | null>(null);
   const [joinCode, setJoinCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(() => {
-    api.getMe().then(setMe);
-    api.getMembers().then(setMembers);
-  }, []);
-  useFocusEffect(useCallback(() => load(), [load]));
+  // The split uses the same Best overall figure Week and Shop show.
+  useEffect(() => {
+    let current = true;
+    if (!data?.plan) setWeekCents(null);
+    else loadWeekCost(data.plan.id).then((cents) => current && setWeekCents(cents), () => current && setWeekCents(null));
+    return () => {
+      current = false;
+    };
+  }, [data?.plan]);
 
   async function attempt(action: () => Promise<unknown>) {
     setError(null);
@@ -39,9 +51,9 @@ export default function ProfileScreen() {
     }
   }
 
-  if (!me || !members) {
-    return <LoadingScreen />;
-  }
+  if (loadError && !data) return <ErrorScreen title="Profile" message={loadError} onRetry={reload} />;
+  if (!me || !members) return <LoadingScreen messages={["Getting your household…"]} />;
+  const shares = weekCents ? sharesOf(weekCents, members.members) : null;
 
   const isOwner = me.member.role === "owner";
   const alone = members.members.length === 1;
@@ -59,7 +71,7 @@ export default function ProfileScreen() {
     if (await confirm(`Leave ${me!.household.name}?`, "You'll keep your account and start a household of your own.", "Leave")) {
       await attempt(async () => {
         await api.leaveHousehold();
-        load();
+        reload();
       });
     }
   }
@@ -69,7 +81,7 @@ export default function ProfileScreen() {
       await attempt(async () => {
         await api.joinHousehold(joinCode.trim());
         setJoinCode("");
-        load();
+        reload();
       });
     }
   }
@@ -105,10 +117,10 @@ export default function ProfileScreen() {
 
       <Text style={{ ...typography.heading, color: colors.text, marginBottom: spacing.sm }}>{me.household.name}</Text>
       <Card style={{ marginBottom: spacing.lg, gap: spacing.md }}>
-        {members.weekEstimateCents !== null && !alone ? (
+        {weekCents && !alone ? (
           <View style={{ gap: spacing.xs }}>
             <Text style={{ ...typography.caption, color: colors.textMuted }}>
-              This week's groceries, about {dollars(members.weekEstimateCents)}, split by share
+              This week's groceries, about {dollars(weekCents)}, split by share
             </Text>
             <EstimatedPricingBadge />
           </View>
@@ -122,8 +134,8 @@ export default function ProfileScreen() {
                 {person.isYou ? " (you)" : ""}
                 {person.role === "owner" ? " · owner" : ""}
               </Text>
-              {person.weekShareCents !== null && !alone ? (
-                <Text style={{ ...typography.bodyStrong, color: colors.text }}>{dollars(person.weekShareCents)}</Text>
+              {shares && !alone ? (
+                <Text style={{ ...typography.bodyStrong, color: colors.text }}>{dollars(shares[person.id]!)}</Text>
               ) : null}
             </View>
             {isOwner && !alone ? (

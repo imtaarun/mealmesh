@@ -17,25 +17,36 @@ export function setAuthToken(token: string | null): void {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
-      ...init?.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...(currentToken ? { Authorization: `Bearer ${currentToken}` } : {}),
+        ...init?.headers,
+      },
+    });
+  } catch {
+    throw new ApiError(0, "Can't reach MealMesh right now. Check your connection and try again.");
+  }
 
   if (!res.ok) {
     // The backend explains itself in a `message` field; show that, not raw JSON.
     const text = await res.text();
     let message = text;
+    let explained = false;
     try {
       const parsed = JSON.parse(text) as { message?: string | string[] };
-      if (parsed.message) message = Array.isArray(parsed.message) ? parsed.message.join("\n") : parsed.message;
+      if (parsed.message) {
+        message = Array.isArray(parsed.message) ? parsed.message.join("\n") : parsed.message;
+        explained = true;
+      }
     } catch {
       // not JSON — keep the text as is
     }
+    // A crash says nothing useful; a deliberate 5xx ("Google sign-in isn't set up yet") does.
+    if (res.status >= 500 && (!explained || message === "Internal server error")) message = "Something went wrong on our side. Try again in a moment.";
     throw new ApiError(res.status, message);
   }
 

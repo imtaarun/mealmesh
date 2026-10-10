@@ -166,12 +166,27 @@ in light and dark (recipe → cooking mode was verified in Phase 5). Plus 22 HTT
 store subtotals adding up, swaps, leftovers following a swap, other households
 blocked).
 
-## Phase 8 — Polish
+## Phase 8 — Polish — DONE
 
-Empty states, loading copy, motion, error handling, responsive pass, accessibility,
-README, integration test for the demo flow.
+- **Home tells a story**: a greeting that changes with the hour and the day, Tonight,
+  a seven-day strip, and up to three suggestions each backed by a number (something
+  expiring, a deal on your list, how much of tomorrow's dinner you already have,
+  tomorrow's leftovers, shopping progress).
+- **Feel**: content arrives in sequence, ticked items glide to the bottom, savings
+  count up, cooking steps slide with a progress bar, and finishing the list or dinner
+  gets a moment. Haptics on the moments that matter. All of it off with Reduce Motion
+  (`design-system.md` §5).
+- **Errors and loading**: skeletons with copy that says what's happening; every load
+  can fail gracefully with Try again; every action failure says why in a toast; a crash
+  screen as the last line of defence.
+- **Discover** is a real recipe browser (search, cuisines, under 30 minutes).
+- One weekly cost everywhere (open-questions item 27).
+- **README** rewritten and tested from a clean clone; `pnpm test:demo` runs the demo
+  scenario against a real API and database.
 
-**DoD:** a stranger can run the app from a clean clone using the README alone.
+**DoD met:** fresh clone → `pnpm install` → migrate → seed → `pnpm test:demo` passes.
+Phone-sized browser run in light and dark: 16 checks, including a blocked request
+showing Try again and a rejected tap showing a toast; touch targets ≥ 44.
 
 ---
 

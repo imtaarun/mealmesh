@@ -14,7 +14,8 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "db:migrate": "pnpm --filter @mealmesh/backend db:migrate",
-    "db:seed": "pnpm --filter @mealmesh/backend db:seed"
+    "db:seed": "pnpm --filter @mealmesh/backend db:seed",
+    "test:demo": "pnpm --filter @mealmesh/domain build && pnpm --filter @mealmesh/backend test:demo"
   },
   "devDependencies": {
     "turbo": "^2.1.0",

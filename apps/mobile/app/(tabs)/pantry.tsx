@@ -1,12 +1,13 @@
-import { useCallback, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
-import { router, useFocusEffect } from "expo-router";
+import { Pressable, Text, View } from "react-native";
+import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Screen } from "@/components/ui/Screen";
+import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
+import { Appear } from "@/components/ui/Motion";
+import { useLoad } from "@/lib/useLoad";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TextLink } from "@/components/ui/Form";
-import { api, type Pantry } from "@/lib/api";
+import { api } from "@/lib/api";
 import { expiryText, pantryAmount } from "@/lib/pantry";
 import { useTheme } from "@/theme";
 
@@ -18,13 +19,7 @@ const LOCATIONS = [
 
 export default function PantryScreen() {
   const { colors, spacing, typography, minTouch } = useTheme();
-  const [pantry, setPantry] = useState<Pantry | undefined>(undefined);
-
-  useFocusEffect(
-    useCallback(() => {
-      api.getPantry().then(setPantry);
-    }, []),
-  );
+  const { data: pantry, error, reload } = useLoad(api.getPantry);
 
   const header = (
     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: spacing.md }}>
@@ -33,14 +28,8 @@ export default function PantryScreen() {
     </View>
   );
 
-  if (!pantry) {
-    return (
-      <Screen>
-        {header}
-        <ActivityIndicator color={colors.brandAccent} />
-      </Screen>
-    );
-  }
+  if (error && !pantry) return <ErrorScreen title="Pantry" message={error} onRetry={reload} />;
+  if (!pantry) return <LoadingScreen title="Pantry" messages={["Checking the fridge…", "Looking for anything about to expire…"]} />;
   if (pantry.items.length === 0) {
     return (
       <Screen>
@@ -54,23 +43,25 @@ export default function PantryScreen() {
     <Screen>
       {header}
 
-      {pantry.useItFirst.map((use) => (
-        <Card key={use.ingredientId} style={{ marginBottom: spacing.md, backgroundColor: colors.accentTint, borderWidth: 0 }}>
-          <Text style={{ ...typography.heading, color: colors.text }}>
-            Use your {use.name.toLowerCase()} soon — {use.recipeCount} {use.recipeCount === 1 ? "recipe uses" : "recipes use"} it
-          </Text>
-          <Text style={{ ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs }}>{expiryText(use.expiresAt)}</Text>
-          {use.recipes.map((recipe) => (
-            <TextLink key={recipe.id} label={`${recipe.title} ›`} onPress={() => router.push({ pathname: "/recipe/[id]", params: { id: recipe.id } })} />
-          ))}
-        </Card>
+      {pantry.useItFirst.map((use, i) => (
+        <Appear key={use.ingredientId} index={i}>
+          <Card style={{ marginBottom: spacing.md, backgroundColor: colors.accentTint, borderWidth: 0 }}>
+            <Text style={{ ...typography.heading, color: colors.text }}>
+              Use your {use.name.toLowerCase()} soon — {use.recipeCount} {use.recipeCount === 1 ? "recipe uses" : "recipes use"} it
+            </Text>
+            <Text style={{ ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs }}>{expiryText(use.expiresAt)}</Text>
+            {use.recipes.map((recipe) => (
+              <TextLink key={recipe.id} label={`${recipe.title} ›`} onPress={() => router.push({ pathname: "/recipe/[id]", params: { id: recipe.id } })} />
+            ))}
+          </Card>
+        </Appear>
       ))}
 
-      {LOCATIONS.map(({ id, label }) => {
+      {LOCATIONS.map(({ id, label }, section) => {
         const items = pantry.items.filter((i) => i.location === id);
         if (items.length === 0) return null;
         return (
-          <View key={id} style={{ marginBottom: spacing.lg }}>
+          <Appear key={id} index={pantry.useItFirst.length + section} style={{ marginBottom: spacing.lg }}>
             <Text style={{ ...typography.label, color: colors.textMuted, marginBottom: spacing.sm }}>{label.toUpperCase()}</Text>
             <Card style={{ paddingVertical: spacing.xs }}>
               {items.map((item) => (
@@ -94,7 +85,7 @@ export default function PantryScreen() {
                 </Pressable>
               ))}
             </Card>
-          </View>
+          </Appear>
         );
       })}
     </Screen>

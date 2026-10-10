@@ -116,11 +116,32 @@ Recipe placeholders (until there are photos) are an `accentTint` →
   hairline rim, and a soft shadow. Android gets a Material tonal surface
   (`surfaceElevated`, elevation 3) instead.
 
-## 5. Motion
+## 5. Motion and feedback
 
-`PressableScale` wraps every card, button, pill, and chip. While pressed, it scales to
-0.97 and fades to 85%, using a quick spring with no bounce, run on the native thread.
-With **Reduce Motion** on, there's no animation.
+Motion marks moments that mean something; it never decorates. All of it lives in
+`src/components/ui/Motion.tsx`, and with **Reduce Motion** on there's none.
+
+| What | Where | How |
+|---|---|---|
+| Press | Every card, button, pill, chip | `PressableScale`: 0.97 scale, 85% opacity, no bounce |
+| Arriving content | Home, Week days, store and deal cards | `Appear`: 380 ms rise and fade, 60 ms stagger by position |
+| A plan being made | Week after Plan My Week | Days arrive one by one, after rotating "Balancing your week…" copy |
+| Reordering | Ticked items sinking, items moving to Already have | `reorder` layout spring |
+| Money | Weekly estimate, savings | `CountUp` from 0 over 700 ms |
+| Cooking steps | Next / Back | Slides in from the direction you're going; progress bar fills |
+| Finishing | Last item ticked, Done on the last step | Check mark springs in; "That's everything" / "Dinner's ready." |
+
+**Haptics** (`src/lib/feedback.ts`, nothing on web): a selection tick for ticking items,
+chips and servings; a light tap per cooking step; success when a plan is made, a swap
+is applied, the list is finished or dinner's done; a warning when something fails or a
+timer ends.
+
+**Loading** never shows a bare spinner: `LoadingState` breathes three placeholder cards
+under a line that says what's happening ("Comparing five stores…"), rotating when
+there's more than one. **Errors**: a load that fails shows `ErrorState` (the reason in
+plain words, and Try again); an action that fails shows a glass `Toast` at the top; a
+screen that crashes shows `CrashScreen`. Network and server failures are reworded in
+the API client, so no screen ever shows a raw error.
 
 ## 6. Accessibility
 

@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { router } from "expo-router";
+import { IconBadge } from "@/components/ui/IconBadge";
+import { Appear } from "@/components/ui/Motion";
+import { haptic } from "@/lib/feedback";
 import { Screen } from "@/components/ui/Screen";
 import { Button, TextField, TextLink } from "@/components/ui/Form";
 import { AppleSignInButton, GoogleSignInButton, googleConfigured, type SocialResult } from "@/auth/SocialSignIn";
 import { useAuth } from "@/auth/AuthProvider";
 import { useTheme } from "@/theme";
+
+const PROMISES = [
+  { icon: "calendar-outline", text: "Pick the week's dinners — or let MealMesh plan them." },
+  { icon: "list-outline", text: "One shopping list, with what you already have taken off." },
+  { icon: "pricetag-outline", text: "The cheapest way to buy it, store by store." },
+  { icon: "flame-outline", text: "Cook step by step, timers included." },
+] as const;
 
 export default function WelcomeScreen() {
   const { colors, spacing, typography } = useTheme();
@@ -28,6 +38,7 @@ export default function WelcomeScreen() {
       // The tabs layout sends a new account on to profile setup.
       router.replace("/(tabs)");
     } catch (err) {
+      haptic.warning();
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setBusy(false);
@@ -38,11 +49,18 @@ export default function WelcomeScreen() {
 
   return (
     <Screen>
-      <View style={{ paddingTop: spacing.xxl }}>
-        <Text style={{ ...typography.display, color: colors.text, marginBottom: spacing.xs }}>Welcome to MealMesh</Text>
-        <Text style={{ ...typography.body, color: colors.textMuted, marginBottom: spacing.xl }}>
-          Plan the week, shop once, waste less.
-        </Text>
+      <View style={{ paddingTop: spacing.xl }}>
+        <Appear>
+          <Text style={{ ...typography.display, color: colors.text, marginBottom: spacing.xs }}>Dinner, sorted.</Text>
+          <Text style={{ ...typography.body, color: colors.textMuted, marginBottom: spacing.lg }}>Plan the week, shop once, waste less.</Text>
+        </Appear>
+        {PROMISES.map((promise, i) => (
+          <Appear key={promise.icon} index={i + 1} style={{ flexDirection: "row", alignItems: "center", gap: spacing.smd, marginBottom: spacing.smd }}>
+            <IconBadge name={promise.icon} />
+            <Text style={{ ...typography.body, color: colors.text, flex: 1 }}>{promise.text}</Text>
+          </Appear>
+        ))}
+        <View style={{ height: spacing.lg }} />
 
         <AppleSignInButton onResult={onSocial} onError={setError} />
         {googleConfigured ? <GoogleSignInButton onResult={onSocial} onError={setError} /> : null}

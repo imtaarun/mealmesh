@@ -29,6 +29,7 @@ export default function TabsLayout() {
       safeAreaInsets={android ? undefined : { bottom: 0 }}
       screenOptions={{
         headerShown: false,
+        animation: "fade",
         tabBarActiveTintColor: colors.brandAccent,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: android
