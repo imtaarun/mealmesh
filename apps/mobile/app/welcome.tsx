@@ -6,8 +6,10 @@ import { Appear } from "@/components/ui/Motion";
 import { haptic } from "@/lib/feedback";
 import { Screen } from "@/components/ui/Screen";
 import { Button, TextField, TextLink } from "@/components/ui/Form";
+import { DateOfBirthField } from "@/components/ui/DateOfBirthField";
 import { AppleSignInButton, GoogleSignInButton, googleConfigured, type SocialResult } from "@/auth/SocialSignIn";
 import { useAuth } from "@/auth/AuthProvider";
+import { ApiError } from "@/lib/api-client";
 import { useTheme } from "@/theme";
 
 const PROMISES = [
@@ -19,10 +21,14 @@ const PROMISES = [
 
 export default function WelcomeScreen() {
   const { colors, spacing, typography } = useTheme();
-  const { signup, login, oauth } = useAuth();
+  const { signup, login, oauth, ageBlocked } = useAuth();
   const [emailMode, setEmailMode] = useState<"closed" | "login" | "signup">("closed");
+  const mode = ageBlocked ? "login" : emailMode;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  // A first Google/Apple sign-in waits here while we ask for a date of birth.
+  const [pendingSocial, setPendingSocial] = useState<SocialResult | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteCode, setInviteCode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -39,13 +45,23 @@ export default function WelcomeScreen() {
       router.replace("/(tabs)");
     } catch (err) {
       haptic.warning();
+      if (err instanceof ApiError && err.code === "UNDER_AGE") setPendingSocial(null);
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setBusy(false);
     }
   }
 
-  const onSocial = (result: SocialResult) => run(() => oauth({ ...result, ...invite }));
+  const onSocial = (result: SocialResult) =>
+    run(async () => {
+      try {
+        await oauth({ ...result, ...invite });
+      } catch (err) {
+        if (err instanceof ApiError && err.code === "AGE_REQUIRED") setPendingSocial(result);
+        throw err;
+      }
+    });
+  const needDate = (action: () => Promise<void>) => () => (dateOfBirth ? run(action) : setError("Add your date of birth."));
 
   return (
     <Screen>
@@ -62,32 +78,48 @@ export default function WelcomeScreen() {
         ))}
         <View style={{ height: spacing.lg }} />
 
-        <AppleSignInButton onResult={onSocial} onError={setError} />
-        {googleConfigured ? <GoogleSignInButton onResult={onSocial} onError={setError} /> : null}
+        {ageBlocked ? (
+          <Text style={{ ...typography.body, color: colors.text, marginBottom: spacing.md }}>Sorry — MealMesh isn't available for you yet.</Text>
+        ) : pendingSocial ? (
+          <View>
+            <DateOfBirthField onChange={setDateOfBirth} />
+            <Button label={busy ? "Setting up…" : "Continue"} disabled={busy} onPress={needDate(() => oauth({ ...pendingSocial, ...invite, dateOfBirth }))} />
+          </View>
+        ) : (
+          <>
+            <AppleSignInButton onResult={onSocial} onError={setError} />
+            {googleConfigured ? <GoogleSignInButton onResult={onSocial} onError={setError} /> : null}
+          </>
+        )}
 
-        {emailMode === "closed" ? (
+        {pendingSocial ? null : mode === "closed" ? (
           <Button label="Continue with email" variant="outline" onPress={() => setEmailMode("signup")} />
         ) : (
           <View style={{ marginTop: spacing.md }}>
             <TextField placeholder="Email" autoCapitalize="none" keyboardType="email-address" autoComplete="email" value={email} onChangeText={setEmail} />
             <TextField placeholder="Password (8+ characters)" secureTextEntry value={password} onChangeText={setPassword} />
-            {emailMode === "signup" ? (
-              <Button label={busy ? "Creating your account…" : "Create account"} disabled={busy} onPress={() => run(() => signup({ email, password, ...invite }))} />
+            {mode === "signup" ? (
+              <>
+                <DateOfBirthField onChange={setDateOfBirth} />
+                <Button label={busy ? "Creating your account…" : "Create account"} disabled={busy} onPress={needDate(() => signup({ email, password, dateOfBirth, ...invite }))} />
+              </>
             ) : (
               <Button label={busy ? "Logging in…" : "Log in"} disabled={busy} onPress={() => run(() => login(email, password))} />
             )}
-            <TextLink
-              align="center"
-              label={emailMode === "signup" ? "Already have an account? Log in" : "New here? Create an account"}
-              onPress={() => setEmailMode(emailMode === "signup" ? "login" : "signup")}
-            />
+            {ageBlocked ? null : (
+              <TextLink
+                align="center"
+                label={mode === "signup" ? "Already have an account? Log in" : "New here? Create an account"}
+                onPress={() => setEmailMode(mode === "signup" ? "login" : "signup")}
+              />
+            )}
           </View>
         )}
 
         {error ? <Text style={{ ...typography.caption, color: colors.criticalError, marginVertical: spacing.sm }}>{error}</Text> : null}
 
         <View style={{ marginTop: spacing.lg }}>
-          {inviteOpen ? (
+          {ageBlocked ? null : inviteOpen ? (
             <>
               <Text style={{ ...typography.caption, color: colors.textMuted, marginBottom: spacing.sm }}>
                 Joining a housemate? Enter their code, then sign up above.

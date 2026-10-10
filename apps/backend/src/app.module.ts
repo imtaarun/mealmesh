@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { AuthModule } from "./modules/auth/auth.module.js";
 import { HouseholdsModule } from "./modules/households/households.module.js";
 import { MeModule } from "./modules/me/me.module.js";
@@ -12,10 +13,12 @@ import { AiProviderModule } from "./providers/ai/ai-provider.module.js";
 import { GroceryProviderModule } from "./providers/grocery/grocery-provider.module.js";
 import { PrismaModule } from "./common/prisma.module.js";
 import { AuthGuard } from "./common/auth.guard.js";
+import { DEFAULT_LIMIT } from "./common/rate-limits.js";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([DEFAULT_LIMIT]),
     PrismaModule,
     AiProviderModule,
     GroceryProviderModule,
@@ -27,6 +30,10 @@ import { AuthGuard } from "./common/auth.guard.js";
     PantryModule,
     GroceryListModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: AuthGuard }],
+  // Rate limit first, so floods are turned away before any database work.
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: AuthGuard },
+  ],
 })
 export class AppModule {}

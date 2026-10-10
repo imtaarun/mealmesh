@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { PantryLocation } from "@prisma/client";
-import { IsEnum, IsISO8601, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsEnum, IsISO8601, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { PantryService } from "./pantry.service.js";
 import { CurrentHousehold, type RequestHousehold } from "../../common/household-context.js";
 
@@ -9,6 +9,7 @@ class UpdatePantryItemDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(1_000_000)
   quantity?: number;
 
   @IsOptional()
@@ -24,10 +25,12 @@ class UpdatePantryItemDto {
 class AddPantryItemDto extends UpdatePantryItemDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(60)
   ingredientId!: string;
 
   @IsNumber()
   @Min(0)
+  @Max(1_000_000)
   declare quantity: number;
 
   @IsEnum(PantryLocation)

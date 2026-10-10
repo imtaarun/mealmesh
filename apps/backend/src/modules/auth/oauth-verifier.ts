@@ -63,8 +63,9 @@ export class OAuthVerifier {
     let keySet = this.keySets.get(provider);
     if (!keySet) {
       const config = PROVIDERS[provider];
-      // The env override exists for local end-to-end testing against keys we control.
-      keySet = createRemoteJWKSet(new URL(process.env[config.jwksUrlEnv] ?? config.jwksUrl));
+      // The env override exists for local end-to-end testing against keys we control; never in production.
+      const override = process.env.NODE_ENV === "production" ? undefined : process.env[config.jwksUrlEnv];
+      keySet = createRemoteJWKSet(new URL(override ?? config.jwksUrl));
       this.keySets.set(provider, keySet);
     }
     return keySet;

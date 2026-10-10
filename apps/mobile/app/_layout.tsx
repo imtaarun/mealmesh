@@ -16,6 +16,7 @@ export default function RootLayout() {
         <Stack screenOptions={{ headerShown: false, animation: Platform.OS === "android" ? "fade_from_bottom" : "default" }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="welcome" />
+          <Stack.Screen name="confirm-age" />
           <Stack.Screen name="profile-setup" />
           <Stack.Screen name="history" />
           <Stack.Screen name="my-data" />

@@ -1,24 +1,40 @@
 import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Type } from "class-transformer";
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { RecipesService } from "./recipes.service.js";
 import { CurrentHousehold, type RequestHousehold } from "../../common/household-context.js";
+
+class ListRecipesQuery {
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  cuisine?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  dietTag?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @Max(600)
+  maxPrepMinutes?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  query?: string;
+}
 
 @Controller("api/recipes")
 export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}
 
   @Get()
-  list(
-    @Query("cuisine") cuisine?: string,
-    @Query("dietTag") dietTag?: string,
-    @Query("maxPrepMinutes") maxPrepMinutes?: string,
-    @Query("query") query?: string,
-  ) {
-    return this.recipesService.list({
-      cuisine,
-      dietTag,
-      maxPrepMinutes: maxPrepMinutes ? Number(maxPrepMinutes) : undefined,
-      query,
-    });
+  list(@Query() filters: ListRecipesQuery) {
+    return this.recipesService.list(filters);
   }
 
   @Get(":id")

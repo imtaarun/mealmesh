@@ -24,6 +24,7 @@ import type { RequestHousehold } from "../../common/household-context.js";
 
 type ItemPatch = { checked?: boolean; alreadyHave?: boolean; userOverrideQuantity?: number | null; buyAnyway?: boolean };
 
+const MAX_CUSTOM_ITEMS = 100;
 const STRATEGIES: OptimizationStrategy[] = ["min_cost", "min_stores", "best_overall"];
 
 @Injectable()
@@ -96,6 +97,9 @@ export class GroceryListService {
   async addItem(household: RequestHousehold, groceryListId: string, name: string) {
     const list = await this.prisma.groceryList.findFirst({ where: { id: groceryListId, mealPlan: { householdId: household.householdId } } });
     if (!list) throw new NotFoundException("That list isn't in your household");
+    if ((await this.prisma.groceryListItem.count({ where: { groceryListId, isCustom: true } })) >= MAX_CUSTOM_ITEMS) {
+      throw new BadRequestException(`That's ${MAX_CUSTOM_ITEMS} of your own items — tick some off first`);
+    }
     const item = await this.prisma.groceryListItem.create({
       data: { groceryListId, customName: name.trim(), isCustom: true, category: "Other", unit: "piece", neededQuantity: 1, pantryCovered: 0, finalQuantity: 1 },
       include: { ingredient: true },

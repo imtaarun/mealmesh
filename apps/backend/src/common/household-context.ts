@@ -5,6 +5,7 @@ import { createParamDecorator, type ExecutionContext } from "@nestjs/common";
 export interface RequestHousehold {
   householdId: string;
   userId: string;
+  sessionId: string;
 }
 
 export const CurrentHousehold = createParamDecorator((_data: unknown, ctx: ExecutionContext): RequestHousehold => {

@@ -7,7 +7,7 @@ import { useTheme } from "@/theme";
 import { useAuth } from "@/auth/AuthProvider";
 import { Glass } from "@/components/ui/Glass";
 
-// Signed-out → /welcome; new accounts finish profile setup first.
+// Signed-out → /welcome; older accounts confirm their age, new ones finish profile setup first.
 export default function TabsLayout() {
   const { colors, spacing } = useTheme();
   const { status } = useAuth();
@@ -19,6 +19,9 @@ export default function TabsLayout() {
   }
   if (status === "signed-out") {
     return <Redirect href="/welcome" />;
+  }
+  if (status === "needs-age") {
+    return <Redirect href="/confirm-age" />;
   }
   if (status === "needs-profile") {
     return <Redirect href="/profile-setup" />;

@@ -99,12 +99,15 @@ async function main() {
   await prisma.deal.deleteMany({ where: { productId: { in: productIds }, mealPlanId: null } });
   await prisma.deal.createMany({ data: catalog.deals });
 
-  await seedDemoHousehold(now);
+  // The demo account's password is public (README), so it never goes into production by accident.
+  const withDemo = process.env.NODE_ENV !== "production" || process.env.ALLOW_DEMO_SEED === "true";
+  if (withDemo) await seedDemoHousehold(now);
+  else console.log("NODE_ENV=production: skipping the demo account (set ALLOW_DEMO_SEED=true to include it).");
 
   console.log(
     `Seeded ${ingredients.length} ingredients, ${recipes.length} recipes, ${stores.length} stores, ` +
       `${catalog.products.length} products, ${catalog.prices.length} prices, ${catalog.deals.length} deals, ` +
-      `and the demo household (${demoHousehold.email}).`,
+      (withDemo ? `and the demo household (${demoHousehold.email}).` : "and no demo account."),
   );
 }
 
@@ -127,6 +130,7 @@ async function seedDemoHousehold(now: Date) {
   const userId =
     existing?.id ??
     (await prisma.user.create({ data: { email: demo.email, passwordHash: await bcrypt.hash(demo.password, 10), householdId } })).id;
+  await prisma.user.update({ where: { id: userId }, data: { birthYear: 1990, ageConfirmedAt: now } });
   const member = { name: "Demo", role: "owner" as const, profileCompletedAt: now };
   await prisma.householdMember.upsert({ where: { userId }, create: { ...member, householdId, userId }, update: member });
 

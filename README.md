@@ -48,6 +48,7 @@ Email sign-in works without them.
 ```bash
 pnpm test         # unit tests: domain, seed data, backend
 pnpm test:demo    # the demo scenario end to end against a real API + seeded database
+pnpm test:security # security and age checks against a real API (docs/security-audit.md)
 pnpm typecheck    # every package
 pnpm build        # every package (turbo builds the domain package first)
 ```
@@ -74,5 +75,12 @@ design-system.md tokens, palettes, motion and accessibility rules
   "Estimated pricing" badge (`docs/open-questions.md` items 1 and 12).
 - **Free vs Pro.** Free households plan by hand from the recipe library; Pro adds
   Plan My Week. Lists, pantry, optimization and deals are free for everyone.
+- **16 and over.** Sign-up asks for a date of birth and keeps only the year
+  (`docs/open-questions.md` item 29).
+- **Production settings** (`apps/backend`): `CORS_ORIGINS` (comma-separated; leave unset
+  for the mobile app alone), `TRUST_PROXY` (set when behind a load balancer so rate limits
+  see real addresses), `RATE_LIMIT_PER_MINUTE`, `AUTH_RATE_LIMIT_PER_MINUTE`,
+  `HEAVY_RATE_LIMIT_PER_MINUTE`. The seed skips the demo account when
+  `NODE_ENV=production` unless `ALLOW_DEMO_SEED=true`.
 - **Status.** All eight roadmap phases are done (`docs/roadmap.md`). Known gaps and
   decisions taken along the way are in `docs/open-questions.md`.

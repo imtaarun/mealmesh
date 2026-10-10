@@ -123,6 +123,10 @@ model User {
   email        String   @unique
   passwordHash String? // null for accounts that only sign in with Google or Apple
   createdAt    DateTime @default(now())
+  // MealMesh is 16+ (docs/open-questions.md item 29). Only the year is kept, never the full
+  // date of birth. Null on accounts made before the age check: they're asked on next use.
+  birthYear      Int?
+  ageConfirmedAt DateTime?
 
   householdId String
   household   Household @relation(fields: [householdId], references: [id])
