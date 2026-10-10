@@ -15,7 +15,9 @@
 ## Entities
 
 **User** — id, email, passwordHash? (null when the account only uses Google or Apple),
-createdAt, householdId
+createdAt, householdId, birthYear?, ageConfirmedAt? (only the year is kept, never the full
+date of birth; both null on accounts from before the 16+ check, `docs/open-questions.md`
+item 29)
 
 **OAuthAccount** — id, userId, provider (`google` | `apple`), subject (the provider's
 stable user id), email?, createdAt. Unique on (provider, subject).

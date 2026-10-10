@@ -5,6 +5,8 @@ import { PrismaService } from "../../common/prisma.service.js";
 import { generateInviteCode, hashInviteCode, INVITE_TTL_MS } from "../../common/invite-code.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
+const MAX_OPEN_INVITES = 20;
+
 /** Removed or departing members keep their account, in a household of their own. */
 @Injectable()
 export class HouseholdsService {
@@ -21,6 +23,7 @@ export class HouseholdsService {
       this.prisma.mealPlan.findFirst({ where: { householdId: household.householdId }, orderBy: { weekStartDate: "desc" } }),
     ]);
 
+    const iAmOwner = members.some((m) => m.userId === household.userId && m.role === MemberRole.owner);
     const estimate = latestPlan?.estimatedCostCents ?? null;
     const shares =
       estimate !== null && members.some((m) => m.costShare > 0)
@@ -33,7 +36,8 @@ export class HouseholdsService {
       members: members.map((m) => ({
         id: m.id,
         name: m.name,
-        email: m.user?.email ?? null,
+        // Only the owner (who manages the household) sees housemates' emails.
+        email: iAmOwner || m.userId === household.userId ? (m.user?.email ?? null) : null,
         role: m.role,
         costShare: m.costShare,
         isYou: m.userId === household.userId,
@@ -44,6 +48,8 @@ export class HouseholdsService {
 
   async createInvite(household: RequestHousehold) {
     await this.requireOwner(household);
+    const open = await this.prisma.householdInvite.count({ where: { householdId: household.householdId, acceptedAt: null, expiresAt: { gt: new Date() } } });
+    if (open >= MAX_OPEN_INVITES) throw new BadRequestException(`You have ${open} invites waiting — use one or wait for them to expire`);
     const code = generateInviteCode();
     const expiresAt = new Date(Date.now() + INVITE_TTL_MS);
     await this.prisma.householdInvite.create({

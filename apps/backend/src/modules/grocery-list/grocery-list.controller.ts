@@ -1,5 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { Throttle } from "@nestjs/throttler";
+import { HEAVY_LIMIT } from "../../common/rate-limits.js";
 import { GroceryListService } from "./grocery-list.service.js";
 import { CurrentHousehold, type RequestHousehold } from "../../common/household-context.js";
 
@@ -16,6 +18,7 @@ class UpdateItemDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
+  @Max(1_000_000)
   userOverrideQuantity?: number | null;
 
   /** For a line the pantry covers: put it back on the list anyway. */
@@ -27,6 +30,7 @@ class UpdateItemDto {
 class AddItemDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(100)
   name!: string;
 }
 
@@ -54,11 +58,13 @@ export class GroceryListController {
     return this.groceryListService.removeItem(household, id);
   }
 
+  @Throttle(HEAVY_LIMIT)
   @Get("grocery-list/:id/optimize")
   optimize(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string) {
     return this.groceryListService.optimize(household, id);
   }
 
+  @Throttle(HEAVY_LIMIT)
   @Get("grocery-list/:id/deals")
   deals(@CurrentHousehold() household: RequestHousehold, @Param("id") id: string) {
     return this.groceryListService.deals(household, id);

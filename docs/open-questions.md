@@ -222,6 +222,13 @@ you took and why. Never resolve one of these silently in code.
     week). Never applied without a tap, and applying one also changes the leftover lunch
     that came from that dinner.
 
+29. **Minimum age 16 — DECIDED 2026-10-10.** Sign-up (email, Google or Apple) asks for a
+    date of birth; the server checks it and keeps only the year plus when it was
+    confirmed. Under 16 gets a neutral "isn't available for you yet" with no hint of the
+    limit, nothing is stored, and that phone stops offering sign-up. Accounts made before
+    the check are asked once on next use; an under-16 answer there deletes the account.
+    Still to do outside the code: set the age rating in App Store Connect and Google Play.
+
 ## Known gaps in the original spec
 
 - No unit-conversion strategy, which is the hardest part of aggregation

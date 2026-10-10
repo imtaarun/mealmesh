@@ -1,10 +1,9 @@
-import { spawn, type ChildProcess } from "node:child_process";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { startServer } from "./support/server.js";
 
 // The demo scenario from docs/product-spec.md, end to end against the built API and the
 // seeded database. Run with `pnpm test:demo` (needs `pnpm db:migrate && pnpm db:seed`).
-const PORT = 3999;
-const API = `http://localhost:${PORT}`;
+let API = "";
 
 async function call<T>(method: string, path: string, token?: string, body?: unknown): Promise<T> {
   const res = await fetch(API + path, {
@@ -17,20 +16,13 @@ async function call<T>(method: string, path: string, token?: string, body?: unkn
 }
 
 describe.skipIf(!process.env.DEMO_FLOW)("demo flow", () => {
-  let server: ChildProcess;
+  let stop = () => {};
 
   beforeAll(async () => {
-    server = spawn("node", ["dist/main.js"], { env: { ...process.env, PORT: String(PORT) }, stdio: "ignore" });
-    for (let i = 0; i < 60; i++) {
-      if (await fetch(`${API}/api/recipes`).then(() => true, () => false)) return;
-      await new Promise((r) => setTimeout(r, 250));
-    }
-    throw new Error("API didn't start");
+    ({ url: API, stop } = await startServer(3999));
   }, 20_000);
 
-  afterAll(() => {
-    server?.kill();
-  });
+  afterAll(() => stop());
 
   it("plans a week, builds one list, finds savings, and opens tonight's recipe", async () => {
     const { token } = await call<{ token: string }>("POST", "/api/auth/login", undefined, { email: "demo@mealmesh.app", password: "mealmesh-demo" });

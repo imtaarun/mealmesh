@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { MemberRole, PreferenceType, type Prisma } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import { PrismaService } from "../../common/prisma.service.js";
@@ -9,9 +9,20 @@ import type { LoginDto } from "./dto/login.dto.js";
 import type { OnboardingDto } from "./dto/onboarding.dto.js";
 import type { OAuthDto } from "./dto/oauth.dto.js";
 import { OAuthVerifier } from "./oauth-verifier.js";
-import { hashInviteCode } from "../../common/invite-code.js";
+import { claimInvite, hashInviteCode } from "../../common/invite-code.js";
+import { ageRequired, checkAge } from "../../common/age.js";
 
 const BCRYPT_ROUNDS = 10;
+// Compared against when the email is unknown, so every failed login takes the same time.
+const DUMMY_HASH = bcrypt.hashSync("not-a-real-password", BCRYPT_ROUNDS);
+// Per-email lockout, on top of the per-IP rate limit (in memory: one API instance).
+const MAX_FAILED_LOGINS = 10;
+const LOCKOUT_MS = 15 * 60 * 1000;
+
+/** bcrypt only reads the first 72 bytes, so a longer password would be silently cut. */
+function checkPasswordLength(password: string) {
+  if (Buffer.byteLength(password, "utf8") > 72) throw new BadRequestException("Please use a password of 72 characters or fewer");
+}
 
 export interface AuthResult {
   token: string;
@@ -19,11 +30,14 @@ export interface AuthResult {
   householdId: string;
   /** True until the person finishes profile setup — the app sends them there first. */
   needsProfile: boolean;
+  /** Accounts from before the age check confirm their date of birth first. */
+  needsAgeConfirmation: boolean;
 }
 
 interface NewAccount {
   email: string;
   passwordHash: string | null;
+  birthYear: number;
   name: string;
   inviteCode?: string | undefined;
   householdName?: string | undefined;
@@ -32,6 +46,8 @@ interface NewAccount {
 
 @Injectable()
 export class AuthService {
+  private readonly failedLogins = new Map<string, { count: number; until: number }>();
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly oauthVerifier: OAuthVerifier,
@@ -50,9 +66,12 @@ export class AuthService {
   }
 
   private async result(userId: string, householdId: string): Promise<AuthResult> {
-    const member = await this.prisma.householdMember.findUnique({ where: { userId } });
+    const [member, user] = await Promise.all([
+      this.prisma.householdMember.findUnique({ where: { userId } }),
+      this.prisma.user.findUniqueOrThrow({ where: { id: userId } }),
+    ]);
     const token = await this.createSession(userId);
-    return { token, userId, householdId, needsProfile: !member?.profileCompletedAt };
+    return { token, userId, householdId, needsProfile: !member?.profileCompletedAt, needsAgeConfirmation: !user.ageConfirmedAt };
   }
 
   private findUserByEmail(email: string) {
@@ -65,11 +84,7 @@ export class AuthService {
     let role: MemberRole = MemberRole.owner;
 
     if (account.inviteCode) {
-      const invite = await tx.householdInvite.findUnique({ where: { codeHash: hashInviteCode(account.inviteCode) } });
-      if (!invite || invite.acceptedAt || invite.expiresAt < new Date()) {
-        throw new BadRequestException("That invite code isn't valid any more — ask for a new one");
-      }
-      householdId = invite.householdId;
+      householdId = (await claimInvite(tx, account.inviteCode)).householdId;
       role = MemberRole.member;
     } else {
       const household = await tx.household.create({
@@ -83,19 +98,19 @@ export class AuthService {
     }
 
     const user = await tx.user.create({
-      data: { email: account.email, passwordHash: account.passwordHash, householdId },
+      data: { email: account.email, passwordHash: account.passwordHash, householdId, birthYear: account.birthYear, ageConfirmedAt: new Date() },
     });
     await tx.householdMember.create({ data: { name: account.name, householdId, userId: user.id, role } });
     if (account.inviteCode) {
-      await tx.householdInvite.update({
-        where: { codeHash: hashInviteCode(account.inviteCode) },
-        data: { acceptedAt: new Date(), acceptedByUserId: user.id },
-      });
+      await tx.householdInvite.update({ where: { codeHash: hashInviteCode(account.inviteCode) }, data: { acceptedByUserId: user.id } });
     }
     return user;
   }
 
   async signup(dto: SignupDto): Promise<AuthResult> {
+    // Under 16: refused before anything is stored.
+    const birthYear = checkAge(dto.dateOfBirth);
+    checkPasswordLength(dto.password);
     const email = dto.email.toLowerCase();
     if (await this.findUserByEmail(email)) throw new ConflictException("An account with this email already exists");
 
@@ -104,6 +119,7 @@ export class AuthService {
       this.createAccount(tx, {
         email,
         passwordHash,
+        birthYear,
         name: email.split("@")[0]!,
         inviteCode: dto.inviteCode,
         householdName: dto.householdName,
@@ -113,17 +129,38 @@ export class AuthService {
     return this.result(user.id, user.householdId);
   }
 
+  /** Same answer, and the same time, whether or not the email exists. */
   async login(dto: LoginDto): Promise<AuthResult> {
-    const user = await this.findUserByEmail(dto.email);
-    if (!user) throw new UnauthorizedException("Invalid email or password");
-    if (!user.passwordHash) {
-      throw new UnauthorizedException("This account signs in with Google or Apple — use that button instead");
+    const key = dto.email.toLowerCase();
+    const failed = this.failedLogins.get(key);
+    if (failed && failed.count >= MAX_FAILED_LOGINS && failed.until > Date.now()) {
+      throw new HttpException("Too many attempts. Try again in a few minutes.", HttpStatus.TOO_MANY_REQUESTS);
     }
 
-    const valid = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!valid) throw new UnauthorizedException("Invalid email or password");
+    const user = await this.findUserByEmail(dto.email);
+    const valid = await bcrypt.compare(dto.password, user?.passwordHash ?? DUMMY_HASH);
+    if (!user?.passwordHash || !valid) {
+      const count = failed && failed.until > Date.now() ? failed.count + 1 : 1;
+      if (this.failedLogins.size > 10_000) {
+        for (const [email, entry] of this.failedLogins) if (entry.until <= Date.now()) this.failedLogins.delete(email);
+      }
+      this.failedLogins.set(key, { count, until: Date.now() + LOCKOUT_MS });
+      throw new UnauthorizedException("Invalid email or password");
+    }
 
+    this.failedLogins.delete(key);
     return this.result(user.id, user.householdId);
+  }
+
+  async logout(household: RequestHousehold) {
+    await this.prisma.session.delete({ where: { id: household.sessionId } });
+    return { signedOut: true };
+  }
+
+  /** Every session on every device, this one included. */
+  async logoutEverywhere(household: RequestHousehold) {
+    await this.prisma.session.deleteMany({ where: { userId: household.userId } });
+    return { signedOut: true };
   }
 
   /** Linked → sign in; same verified email → link; otherwise create. Unverified emails never link. */
@@ -141,17 +178,21 @@ export class AuthService {
       throw new UnauthorizedException("Please verify your email with your provider first, then try again");
     }
 
-    const existing = await this.findUserByEmail(identity.email);
-    const user =
-      existing ??
-      (await this.prisma.$transaction((tx) =>
+    let user = await this.findUserByEmail(identity.email);
+    if (!user) {
+      // A new account needs a date of birth first; nothing is stored until it's given.
+      if (!dto.dateOfBirth) throw ageRequired();
+      const birthYear = checkAge(dto.dateOfBirth);
+      user = await this.prisma.$transaction((tx) =>
         this.createAccount(tx, {
           email: identity.email!,
           passwordHash: null,
+          birthYear,
           name: dto.name?.trim() || identity.name || identity.email!.split("@")[0]!,
           inviteCode: dto.inviteCode,
         }),
-      ));
+      );
+    }
     await this.prisma.oAuthAccount.create({
       data: { provider: identity.provider, subject: identity.subject, email: identity.email, userId: user.id },
     });
@@ -206,3 +247,4 @@ export class AuthService {
     });
   }
 }
+

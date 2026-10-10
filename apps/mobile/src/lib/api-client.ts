@@ -4,6 +4,8 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
+    /** A machine-readable reason some errors carry, e.g. "AGE_REQUIRED". */
+    public code?: string,
   ) {
     super(message);
   }
@@ -36,8 +38,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const text = await res.text();
     let message = text;
     let explained = false;
+    let code: string | undefined;
     try {
-      const parsed = JSON.parse(text) as { message?: string | string[] };
+      const parsed = JSON.parse(text) as { message?: string | string[]; code?: string };
+      code = parsed.code;
       if (parsed.message) {
         message = Array.isArray(parsed.message) ? parsed.message.join("\n") : parsed.message;
         explained = true;
@@ -47,7 +51,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     }
     // A crash says nothing useful; a deliberate 5xx ("Google sign-in isn't set up yet") does.
     if (res.status >= 500 && (!explained || message === "Internal server error")) message = "Something went wrong on our side. Try again in a moment.";
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, code);
   }
 
   // NestJS sends `null` as an empty body.

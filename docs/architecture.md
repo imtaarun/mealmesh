@@ -122,9 +122,11 @@ contract rule above.
 ## API surface
 
 ```
-POST /api/auth/signup | /login | /oauth      email+password, or a Google/Apple ID token
+POST /api/auth/signup | /login | /oauth      email+password, or a Google/Apple ID token (+ date of birth for new accounts)
+POST /api/auth/logout | /logout-all          end this session, or every session of yours
 POST /api/onboarding                          owner only: household name, budget, shared preferences
-GET  /api/me                                  you, your household, needsProfile
+GET  /api/me                                  you, your household, needsProfile, needsAgeConfirmation
+POST /api/me/age                              older accounts confirm their date of birth (403 AGE_REQUIRED until they do)
 PUT  /api/me/profile                          your name, allergies, dislikes
 GET  /api/me/history                          weeks planned, meals cooked, spend, scores
 GET  /api/me/data                             everything stored about you, as JSON
@@ -177,6 +179,10 @@ recomputed derived values (list totals, score) so the client never has to guess.
   (`GET /api/me/data`, secrets and housemates' emails left out) and delete their
   account (`DELETE /api/me`). The last person out takes the whole household's data
   with them.
+- **Abuse limits**: per-IP rate limits (stricter on sign-in and the heavy routes), a
+  15-minute lock after 10 wrong passwords for one email, size limits on every input,
+  helmet headers, and no CORS unless `CORS_ORIGINS` is set. Limits are kept in memory,
+  so they count per API instance; use a shared store before running more than one.
 - **Errors**: user-facing copy in `docs/ux.md`. Never silently show fabricated data;
   a stale price says it's stale.
 - **Tests**: domain functions unit-tested (that's most of the value), services tested

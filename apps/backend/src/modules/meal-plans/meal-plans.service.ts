@@ -35,6 +35,12 @@ export class MealPlansService {
 
   async createEmptyWeek(household: RequestHousehold, dto: CreateMealPlanDto) {
     const weekStartDate = new Date(dto.weekStartDate);
+    // One plan per week: asking again returns the one that's there.
+    const existing = await this.prisma.mealPlan.findFirst({
+      where: { householdId: household.householdId, weekStartDate },
+      include: { meals: { orderBy: [{ date: "asc" }, { slot: "asc" }] } },
+    });
+    if (existing) return existing;
     const householdRow = await this.prisma.household.findUniqueOrThrow({ where: { id: household.householdId } });
 
     return this.prisma.$transaction(async (tx) => {

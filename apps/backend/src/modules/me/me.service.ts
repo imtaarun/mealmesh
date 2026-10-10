@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 import { MemberRole, PreferenceType, type Prisma } from "@prisma/client";
 import { PrismaService } from "../../common/prisma.service.js";
-import { hashInviteCode } from "../../common/invite-code.js";
+import { claimInvite } from "../../common/invite-code.js";
+import { checkAge } from "../../common/age.js";
 import type { RequestHousehold } from "../../common/household-context.js";
 
 @Injectable()
@@ -33,7 +34,21 @@ export class MeService {
         preferences: user.household.preferences.map((p) => ({ type: p.type, value: p.value })),
       },
       needsProfile: member.profileCompletedAt === null,
+      needsAgeConfirmation: user.ageConfirmedAt === null,
     };
+  }
+
+  /** Under 16: the account and everything only they own is deleted, then refused. */
+  async confirmAge(household: RequestHousehold, dateOfBirth: string) {
+    let birthYear: number;
+    try {
+      birthYear = checkAge(dateOfBirth);
+    } catch (err) {
+      if (err instanceof ForbiddenException) await this.deleteAccount(household);
+      throw err;
+    }
+    await this.prisma.user.update({ where: { id: household.userId }, data: { birthYear, ageConfirmedAt: new Date() } });
+    return this.get(household);
   }
 
   /** Profile setup and editing: your name and your own allergies and dislikes. */
@@ -120,6 +135,8 @@ export class MeService {
       account: {
         email: user.email,
         createdAt: user.createdAt,
+        birthYear: user.birthYear,
+        ageConfirmedAt: user.ageConfirmedAt,
         signInMethods: signInMethods(user),
         linkedAccounts: user.oauthAccounts.map((a) => ({ provider: a.provider, email: a.email, linkedAt: a.createdAt })),
         sessions: user.sessions.map((s) => ({ signedInAt: s.createdAt, expiresAt: s.expiresAt })),
@@ -181,10 +198,7 @@ export class MeService {
       const members = await tx.householdMember.findMany({ where: { householdId: household.householdId } });
       if (members.length > 1) throw new BadRequestException("Leave your current household before joining another");
 
-      const invite = await tx.householdInvite.findUnique({ where: { codeHash: hashInviteCode(code) } });
-      if (!invite || invite.acceptedAt || invite.expiresAt < new Date()) {
-        throw new BadRequestException("That invite code isn't valid any more — ask for a new one");
-      }
+      const invite = await claimInvite(tx, code);
       if (invite.householdId === household.householdId) throw new BadRequestException("You're already in that household");
 
       await tx.user.update({ where: { id: household.userId }, data: { householdId: invite.householdId } });
@@ -192,7 +206,7 @@ export class MeService {
         where: { id: members[0]!.id },
         data: { householdId: invite.householdId, role: MemberRole.member, costShare: 1 },
       });
-      await tx.householdInvite.update({ where: { id: invite.id }, data: { acceptedAt: new Date(), acceptedByUserId: household.userId } });
+      await tx.householdInvite.update({ where: { id: invite.id }, data: { acceptedByUserId: household.userId } });
       await deleteHousehold(tx, household.householdId);
     });
     return { joined: true };

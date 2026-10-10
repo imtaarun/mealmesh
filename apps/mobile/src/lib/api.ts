@@ -7,11 +7,14 @@ export interface AuthResult {
   userId: string;
   householdId: string;
   needsProfile: boolean;
+  needsAgeConfirmation: boolean;
 }
 
 export interface SignupInput {
   email: string;
   password: string;
+  /** YYYY-MM-DD; only the year is kept. */
+  dateOfBirth: string;
   inviteCode?: string;
 }
 
@@ -20,6 +23,8 @@ export interface OAuthInput {
   idToken: string;
   name?: string;
   inviteCode?: string;
+  /** Needed only when this sign-in creates a new account. */
+  dateOfBirth?: string;
 }
 
 export interface Me {
@@ -35,6 +40,7 @@ export interface Me {
     preferences: Array<{ type: string; value: string }>;
   };
   needsProfile: boolean;
+  needsAgeConfirmation: boolean;
 }
 
 export interface Housemate {
@@ -243,6 +249,10 @@ export interface DealRadar {
 export const api = {
   signup: (input: SignupInput) => apiClient.post<AuthResult>("/api/auth/signup", input),
   login: (email: string, password: string) => apiClient.post<AuthResult>("/api/auth/login", { email, password }),
+  /** Ends this session on the server. */
+  logout: () => apiClient.post<{ signedOut: true }>("/api/auth/logout"),
+  /** For accounts made before the age check. Under 16, the server deletes the account. */
+  confirmAge: (dateOfBirth: string) => apiClient.post<Me>("/api/me/age", { dateOfBirth }),
   oauth: (input: OAuthInput) => apiClient.post<AuthResult>("/api/auth/oauth", input),
   onboard: (input: OnboardingInput) => apiClient.post("/api/onboarding", input),
 
