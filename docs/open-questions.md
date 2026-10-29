@@ -229,6 +229,19 @@ you took and why. Never resolve one of these silently in code.
     the check are asked once on next use; an under-16 answer there deletes the account.
     Still to do outside the code: set the age rating in App Store Connect and Google Play.
 
+30. **Recipe library: paged, filtered by the backend — DECIDED 2026-10-29.** With 228
+    recipes the app no longer downloads them all. `GET /api/recipes` takes `query`,
+    `cuisine`, `dietTags` (must match all), `mealSlot`, `difficulty`, `maxMinutes` (prep +
+    cook), `fitsHousehold`, `sort` (`title` | `quickest`), `limit` (default 20, max 50) and
+    `offset`, and returns `{ items, total }` without the steps. Offset paging, not cursors:
+    the library is small and changes only on re-seed. `fitsHousehold` hides dishes
+    containing anything the household or a housemate is allergic to *or* dislikes (same
+    substring matching as the conflict checker). `GET /api/recipes/filters` lists the
+    cuisines and diets that exist, with counts. `Recipe.totalMinutes` is stored (migration
+    backfills it) because the database can't filter on a sum of two columns. Discover and
+    the recipe picker share one browser; the picker opens on the meal's own slot. Not yet:
+    "uses what I have" (needs pantry coverage ranking) and sorting by cost.
+
 ## Known gaps in the original spec
 
 - No unit-conversion strategy, which is the hardest part of aggregation

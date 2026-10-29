@@ -1,5 +1,6 @@
-import { Modal, Pressable, Text } from "react-native";
+import { Modal, Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { PressableScale } from "@/components/ui/PressableScale";
 import { useTheme } from "@/theme";
 
@@ -7,6 +8,10 @@ export interface SheetAction {
   label: string;
   onPress: () => void;
   destructive?: boolean;
+  /** Shows a tick; for sheets that pick a value. */
+  selected?: boolean;
+  /** Leaves the sheet open, for picking several values. */
+  keepOpen?: boolean;
 }
 
 interface ActionSheetProps {
@@ -15,10 +20,11 @@ interface ActionSheetProps {
   onClose: () => void;
 }
 
-/** Bottom sheet of actions: the one place secondary actions live, instead of buttons on every card. */
+/** Bottom sheet of actions or choices: where secondary actions and dropdowns live, instead of buttons on every card. */
 export function ActionSheet({ title, actions, onClose }: ActionSheetProps) {
   const { colors, spacing, radius, typography, minTouch } = useTheme();
   const { bottom } = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
 
   return (
     <Modal visible={actions !== null} transparent animationType="slide" onRequestClose={onClose}>
@@ -31,6 +37,7 @@ export function ActionSheet({ title, actions, onClose }: ActionSheetProps) {
             borderCurve: "continuous",
             padding: spacing.md,
             paddingBottom: spacing.md + bottom,
+            maxHeight: height * 0.7,
           }}
         >
           {title ? (
@@ -38,18 +45,22 @@ export function ActionSheet({ title, actions, onClose }: ActionSheetProps) {
               {title}
             </Text>
           ) : null}
-          {actions?.map((action) => (
-            <PressableScale
-              key={action.label}
-              onPress={() => {
-                onClose();
-                action.onPress();
-              }}
-              style={{ minHeight: minTouch + spacing.sm, justifyContent: "center", paddingHorizontal: spacing.md }}
-            >
-              <Text style={{ ...typography.bodyStrong, color: action.destructive ? colors.criticalError : colors.text }}>{action.label}</Text>
-            </PressableScale>
-          ))}
+          <ScrollView>
+            {actions?.map((action) => (
+              <PressableScale
+                key={action.label}
+                accessibilityState={{ selected: action.selected }}
+                onPress={() => {
+                  if (!action.keepOpen) onClose();
+                  action.onPress();
+                }}
+                style={{ minHeight: minTouch + spacing.sm, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: spacing.md }}
+              >
+                <Text style={{ ...typography.bodyStrong, color: action.destructive ? colors.criticalError : action.selected ? colors.brandAccent : colors.text }}>{action.label}</Text>
+                {action.selected ? <Ionicons name="checkmark" size={20} color={colors.brandAccent} /> : <View />}
+              </PressableScale>
+            ))}
+          </ScrollView>
         </Pressable>
       </Pressable>
     </Modal>

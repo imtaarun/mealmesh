@@ -142,6 +142,8 @@ POST /api/meal-plans                          creates an empty week (Build My We
 POST /api/meal-plans/generate                 Pro only — auto-fills a week; 402/403 for Free
 POST /api/meal-plans/:id/meals/:mealId/regenerate   Pro only — AI re-pick; Free uses the PATCH below instead
 PATCH/api/meal-plans/:id/meals/:mealId        replace, skip, leftover, servings — how Build My Week writes picks
+GET  /api/recipes?query=&cuisine=&dietTags=&mealSlot=&difficulty=&maxMinutes=&fitsHousehold=&sort=&limit=&offset=   one page: { items, total }
+GET  /api/recipes/filters                     cuisines and diets that exist, with counts
 GET  /api/recipes/:id                         recipe + cost per serving + what's in your pantry
 POST /api/recipes/generate
 GET  /api/pantry                              items + Use It First

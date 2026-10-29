@@ -47,6 +47,7 @@ async function main() {
       servings: recipe.servings,
       prepMinutes: recipe.prepMinutes,
       cookMinutes: recipe.cookMinutes,
+      totalMinutes: recipe.prepMinutes + recipe.cookMinutes,
       difficulty: recipe.difficulty as Difficulty,
       cuisines: recipe.cuisines,
       dietTags: recipe.dietTags,

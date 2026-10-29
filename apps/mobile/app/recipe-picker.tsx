@@ -1,34 +1,16 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
+import { useState } from "react";
+import { Alert } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { Screen } from "@/components/ui/Screen";
-import { Chip } from "@/components/ui/Chip";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { MealCard } from "@/components/recipe/MealCard";
-import { useTheme } from "@/theme";
-import { api, type Recipe } from "@/lib/api";
+import { RecipeBrowser } from "@/components/recipe/RecipeBrowser";
+import { api, type MealSlot, type RecipeSummary } from "@/lib/api";
 import { messageOf } from "@/lib/useLoad";
 
-const CUISINE_FILTERS = ["indian", "mediterranean", "north_american"];
-
 export default function RecipePickerScreen() {
-  const { colors, spacing, typography } = useTheme();
-  const { mealPlanId, mealId } = useLocalSearchParams<{ mealPlanId: string; mealId: string }>();
+  const { mealPlanId, mealId, slot } = useLocalSearchParams<{ mealPlanId: string; mealId: string; slot?: MealSlot }>();
 
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [cuisine, setCuisine] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [selecting, setSelecting] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    api
-      .listRecipes(cuisine ? { cuisine } : {})
-      .then(setRecipes)
-      .finally(() => setLoading(false));
-  }, [cuisine]);
-
-  async function pick(recipe: Recipe, acknowledgeWarnings = false) {
+  async function pick(recipe: RecipeSummary, acknowledgeWarnings = false) {
     if (!mealPlanId || !mealId) return;
     setSelecting(true);
     try {
@@ -62,30 +44,5 @@ export default function RecipePickerScreen() {
     }
   }
 
-  return (
-    <Screen scroll={false}>
-      <Text style={{ ...typography.title, color: colors.text, marginBottom: spacing.md }}>Pick a dish</Text>
-
-      <View style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: spacing.md }}>
-        <Chip label="All" selected={cuisine === null} onPress={() => setCuisine(null)} />
-        {CUISINE_FILTERS.map((c) => (
-          <Chip key={c} label={c.replace(/_/g, " ")} selected={cuisine === c} onPress={() => setCuisine(c)} />
-        ))}
-      </View>
-
-      {loading ? (
-        <ActivityIndicator color={colors.brandAccent} />
-      ) : recipes.length === 0 ? (
-        <EmptyState message="No recipes match that filter yet." />
-      ) : (
-        <FlatList
-          data={recipes}
-          keyExtractor={(r) => r.id}
-          contentContainerStyle={{ paddingBottom: spacing.xxl }}
-          ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
-          renderItem={({ item }) => <MealCard recipe={item} onPress={() => !selecting && pick(item)} />}
-        />
-      )}
-    </Screen>
-  );
+  return <RecipeBrowser title="Pick a dish" initialSlot={slot ?? null} onPick={(recipe) => !selecting && pick(recipe)} />;
 }

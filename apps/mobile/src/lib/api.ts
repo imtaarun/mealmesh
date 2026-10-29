@@ -109,6 +109,34 @@ export interface Recipe {
   source: "seed" | "ai" | "user";
 }
 
+/** What a recipe card needs; the list leaves out the steps. */
+export type RecipeSummary = Omit<Recipe, "instructions">;
+
+export interface RecipeFilters {
+  query?: string;
+  cuisine?: string | null;
+  dietTags?: string[];
+  mealSlot?: MealSlot | null;
+  difficulty?: Recipe["difficulty"] | null;
+  maxMinutes?: number | null;
+  fitsHousehold?: boolean;
+  sort?: "title" | "quickest";
+  limit?: number;
+  offset?: number;
+}
+
+export interface RecipePage {
+  items: RecipeSummary[];
+  total: number;
+}
+
+export interface RecipeFilterOptions {
+  cuisines: Array<{ value: string; count: number }>;
+  dietTags: Array<{ value: string; count: number }>;
+  mealSlots: MealSlot[];
+  difficulties: Array<Recipe["difficulty"]>;
+}
+
 export interface RecipeDetail extends Recipe {
   ingredients: Array<{
     id: string;
@@ -271,14 +299,17 @@ export const api = {
   removeHousemate: (memberId: string) => apiClient.delete<Members>(`/api/households/current/members/${memberId}`),
   leaveHousehold: () => apiClient.post("/api/households/current/leave"),
 
-  listRecipes: (filters: { cuisine?: string; dietTag?: string; query?: string } = {}) => {
+  /** One page of the library; `total` counts every match, so the app knows when to stop asking. */
+  listRecipes: (filters: RecipeFilters = {}) => {
     const params = new URLSearchParams();
-    if (filters.cuisine) params.set("cuisine", filters.cuisine);
-    if (filters.dietTag) params.set("dietTag", filters.dietTag);
-    if (filters.query) params.set("query", filters.query);
+    for (const [key, value] of Object.entries(filters)) {
+      if (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0)) continue;
+      params.set(key, String(value));
+    }
     const qs = params.toString();
-    return apiClient.get<Recipe[]>(`/api/recipes${qs ? `?${qs}` : ""}`);
+    return apiClient.get<RecipePage>(`/api/recipes${qs ? `?${qs}` : ""}`);
   },
+  getRecipeFilters: () => apiClient.get<RecipeFilterOptions>("/api/recipes/filters"),
 
   getRecipe: (id: string) => apiClient.get<RecipeDetail>(`/api/recipes/${id}`),
 

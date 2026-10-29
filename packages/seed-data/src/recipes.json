@@ -6595,5 +6595,1177 @@
       { "step": 4, "text": "Add the cabbage, mushrooms, and pepper and stir-fry until crisp-tender.", "timerSeconds": 180 },
       { "step": 5, "text": "Season with soy sauce and sugar and serve over rice." }
     ]
+  },
+  {
+    "id": "japanese-salmon-breakfast-set",
+    "title": "Japanese Salmon Breakfast Set",
+    "servings": 2,
+    "prepMinutes": 10,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["japanese"],
+    "dietTags": ["pescatarian", "dairy_free", "nut_free", "high_protein", "healthy"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "salmon-fillet", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "white-rice", "quantity": 0.75, "unit": "cup" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "cucumber", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "rice-vinegar", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "spinach", "quantity": 100, "unit": "g" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the rice according to the package directions.", "timerSeconds": 1080 },
+      { "step": 2, "text": "Salt the salmon and broil or pan-sear until golden and just cooked.", "timerSeconds": 480 },
+      { "step": 3, "text": "Thinly slice the cucumber and toss with the rice vinegar and a pinch of salt." },
+      { "step": 4, "text": "Soft-boil the eggs.", "timerSeconds": 360 },
+      { "step": 5, "text": "Blanch the spinach, squeeze dry, and dress with soy sauce.", "timerSeconds": 60 },
+      { "step": 6, "text": "Serve the salmon with rice, egg, cucumber pickle, and spinach." }
+    ]
+  },
+  {
+    "id": "tamago-kake-gohan",
+    "title": "Tamago Kake Gohan (Egg over Rice)",
+    "servings": 2,
+    "prepMinutes": 2,
+    "cookMinutes": 18,
+    "difficulty": "easy",
+    "cuisines": ["japanese"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free", "nut_free"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "white-rice", "quantity": 0.75, "unit": "cup" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece", "note": "very fresh" },
+      { "ingredientId": "soy-sauce", "quantity": 2, "unit": "tsp" },
+      { "ingredientId": "green-onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "sesame-oil", "quantity": 0.5, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the rice according to the package directions.", "timerSeconds": 1080 },
+      { "step": 2, "text": "Spoon the steaming rice into bowls and make a well in the center." },
+      { "step": 3, "text": "Crack an egg into each well and add soy sauce." },
+      { "step": 4, "text": "Whip the egg into the hot rice with chopsticks until fluffy and pale." },
+      { "step": 5, "text": "Top with green onion and a few drops of sesame oil." }
+    ]
+  },
+  {
+    "id": "tamago-sando",
+    "title": "Tamago Sando (Egg Salad Sandwich)",
+    "servings": 2,
+    "prepMinutes": 10,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["japanese"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "greek-yogurt", "quantity": 0.25, "unit": "cup" },
+      { "ingredientId": "dijon-mustard", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "white-sugar", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "bread", "quantity": 4, "unit": "piece", "note": "soft white" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Hard-boil the eggs, cool in cold water, and peel.", "timerSeconds": 600 },
+      { "step": 2, "text": "Mash the yolks with the yogurt, mustard, sugar, salt, and pepper until creamy." },
+      { "step": 3, "text": "Finely chop the whites and fold them in." },
+      { "step": 4, "text": "Butter the bread, fill thickly with the egg salad, and cut off the crusts." },
+      { "step": 5, "text": "Cut each sandwich in half to serve." }
+    ]
+  },
+  {
+    "id": "okayu-egg-porridge",
+    "title": "Okayu (Japanese Rice Porridge with Egg)",
+    "servings": 2,
+    "prepMinutes": 2,
+    "cookMinutes": 30,
+    "difficulty": "easy",
+    "cuisines": ["japanese"],
+    "dietTags": ["dairy_free", "nut_free", "healthy"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "white-rice", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "chicken-broth", "quantity": 720, "unit": "ml" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "grated" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "green-onion", "quantity": 1, "unit": "piece" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Rinse the rice and simmer it in the broth with the ginger, stirring now and then, until soft and creamy.", "timerSeconds": 1680 },
+      { "step": 2, "text": "Stir in the beaten eggs and cook until just set in ribbons.", "timerSeconds": 60 },
+      { "step": 3, "text": "Season with soy sauce." },
+      { "step": 4, "text": "Top with sliced green onion." }
+    ]
+  },
+  {
+    "id": "japanese-souffle-pancakes",
+    "title": "Japanese Soufflé Pancakes",
+    "servings": 2,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "hard",
+    "cuisines": ["japanese"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 3, "unit": "piece" },
+      { "ingredientId": "all-purpose-flour", "quantity": 0.33, "unit": "cup" },
+      { "ingredientId": "milk", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "white-sugar", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "baking-powder", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "honey", "quantity": 2, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Separate the eggs. Whisk the yolks with the milk, then whisk in the flour and baking powder." },
+      { "step": 2, "text": "Beat the whites with the sugar to stiff, glossy peaks." },
+      { "step": 3, "text": "Gently fold the whites into the yolk batter in three additions." },
+      { "step": 4, "text": "Pile tall mounds into a buttered nonstick pan over low heat, add a splash of water, and cover.", "timerSeconds": 360 },
+      { "step": 5, "text": "Carefully flip, add another splash of water, cover, and cook until set.", "timerSeconds": 300 },
+      { "step": 6, "text": "Serve right away with butter and honey." }
+    ]
+  },
+  {
+    "id": "korean-street-toast",
+    "title": "Korean Street Toast",
+    "servings": 2,
+    "prepMinutes": 10,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["korean"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "bread", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "eggs", "quantity": 3, "unit": "piece" },
+      { "ingredientId": "cabbage", "quantity": 0.1, "unit": "piece" },
+      { "ingredientId": "carrot", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "green-onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "butter", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "white-sugar", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "cheddar-cheese", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "tomato-paste", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Finely shred the cabbage, carrot, and green onion and beat into the eggs with a pinch of salt." },
+      { "step": 2, "text": "Cook the egg mixture in half the butter as two thick, bread-sized omelettes.", "timerSeconds": 240 },
+      { "step": 3, "text": "Toast the bread in the remaining butter until golden.", "timerSeconds": 180 },
+      { "step": 4, "text": "Layer each sandwich with an omelette, a sprinkle of sugar, cheese, and a thin smear of tomato paste." }
+    ]
+  },
+  {
+    "id": "dakjuk",
+    "title": "Dakjuk (Korean Chicken Rice Porridge)",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 40,
+    "difficulty": "easy",
+    "cuisines": ["korean"],
+    "dietTags": ["dairy_free", "nut_free", "high_protein", "healthy"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "white-rice", "quantity": 0.75, "unit": "cup" },
+      { "ingredientId": "chicken-breast", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "chicken-broth", "quantity": 1.5, "unit": "l" },
+      { "ingredientId": "carrot", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 3, "unit": "clove" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "sesame-oil", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "green-onion", "quantity": 2, "unit": "piece" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Simmer the chicken with the garlic and ginger in the broth until cooked, then shred.", "timerSeconds": 1200 },
+      { "step": 2, "text": "Toast the rinsed rice in the sesame oil for a minute." },
+      { "step": 3, "text": "Add the rice and finely diced carrot to the broth and simmer, stirring often, until thick and creamy.", "timerSeconds": 1080 },
+      { "step": 4, "text": "Return the chicken and season with soy sauce." },
+      { "step": 5, "text": "Top with green onion." }
+    ]
+  },
+  {
+    "id": "gamja-jeon",
+    "title": "Gamja Jeon (Korean Potato Pancakes)",
+    "servings": 2,
+    "prepMinutes": 10,
+    "cookMinutes": 12,
+    "difficulty": "easy",
+    "cuisines": ["korean"],
+    "dietTags": ["vegetarian", "vegan", "pescatarian", "dairy_free", "nut_free"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "potato", "quantity": 3, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 0.25, "unit": "piece" },
+      { "ingredientId": "green-onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "vegetable-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "rice-vinegar", "quantity": 1, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Finely grate the potatoes and onion and drain off the liquid, keeping the starch that settles at the bottom." },
+      { "step": 2, "text": "Mix the potato with the starch, sliced green onion, and a pinch of salt." },
+      { "step": 3, "text": "Spoon thin rounds into the hot oil and fry until crisp and golden on both sides.", "timerSeconds": 480 },
+      { "step": 4, "text": "Serve with soy sauce mixed with rice vinegar." }
+    ]
+  },
+  {
+    "id": "jianbing-style-crepes",
+    "title": "Jianbing-Style Egg Crêpes",
+    "servings": 2,
+    "prepMinutes": 10,
+    "cookMinutes": 10,
+    "difficulty": "medium",
+    "cuisines": ["chinese"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free", "nut_free"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "all-purpose-flour", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "green-onion", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "tomato-paste", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "honey", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "lettuce", "quantity": 0.1, "unit": "piece" },
+      { "ingredientId": "vegetable-oil", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Whisk the flour with 150 ml water and a pinch of salt into a thin batter." },
+      { "step": 2, "text": "Spread half the batter thinly in a lightly oiled pan and crack an egg over it, spreading it out.", "timerSeconds": 60 },
+      { "step": 3, "text": "Scatter with green onion and cilantro and cook until set, then flip.", "timerSeconds": 60 },
+      { "step": 4, "text": "Stir the tomato paste, honey, and soy sauce into a sauce and brush it on." },
+      { "step": 5, "text": "Add lettuce, fold into a rectangle, and repeat with the rest." }
+    ]
+  },
+  {
+    "id": "dan-bing",
+    "title": "Dan Bing (Taiwanese Egg Crêpe Roll)",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 8,
+    "difficulty": "easy",
+    "cuisines": ["chinese"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "tortilla", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "green-onion", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Beat the eggs with the sliced green onion and a pinch of salt." },
+      { "step": 2, "text": "Pour half the egg into an oiled pan and immediately lay a tortilla on top." },
+      { "step": 3, "text": "When the egg sets, flip and toast the tortilla side until golden.", "timerSeconds": 120 },
+      { "step": 4, "text": "Roll it up, slice into pieces, and repeat." },
+      { "step": 5, "text": "Serve with soy sauce for dipping." }
+    ]
+  },
+  {
+    "id": "sweet-potato-congee",
+    "title": "Sweet Potato Congee",
+    "servings": 4,
+    "prepMinutes": 5,
+    "cookMinutes": 40,
+    "difficulty": "easy",
+    "cuisines": ["chinese"],
+    "dietTags": ["vegetarian", "vegan", "pescatarian", "gluten_free", "dairy_free", "nut_free", "healthy"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "white-rice", "quantity": 0.75, "unit": "cup" },
+      { "ingredientId": "sweet-potato", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece", "note": "sliced" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Rinse the rice and bring it to a boil with 2 l water and the ginger." },
+      { "step": 2, "text": "Simmer, stirring now and then, until the rice starts to break down.", "timerSeconds": 1200 },
+      { "step": 3, "text": "Add the peeled, cubed sweet potato and simmer until soft and the congee is creamy.", "timerSeconds": 1080 },
+      { "step": 4, "text": "Season lightly with salt, or keep it plain to serve with savory sides." }
+    ]
+  },
+  {
+    "id": "soy-fried-eggs-rice",
+    "title": "Soy Sauce Fried Eggs over Rice",
+    "servings": 2,
+    "prepMinutes": 2,
+    "cookMinutes": 18,
+    "difficulty": "easy",
+    "cuisines": ["chinese"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "white-rice", "quantity": 0.75, "unit": "cup" },
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "soy-sauce", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "white-sugar", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "green-onion", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the rice according to the package directions.", "timerSeconds": 1080 },
+      { "step": 2, "text": "Fry the eggs in hot oil until the edges are crisp and lacy.", "timerSeconds": 120 },
+      { "step": 3, "text": "Mix the soy sauce, sugar, and a splash of water, pour into the pan, and spoon over the eggs until glossy." },
+      { "step": 4, "text": "Serve over rice with sliced green onion." }
+    ]
+  },
+  {
+    "id": "khai-kata",
+    "title": "Khai Kata (Thai Pan Eggs)",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["thai"],
+    "dietTags": ["dairy_free", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "ground-chicken", "quantity": 150, "unit": "g" },
+      { "ingredientId": "green-onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "black-pepper", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "bread", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "vegetable-oil", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Brown the chicken in the oil with half the soy sauce.", "timerSeconds": 300 },
+      { "step": 2, "text": "Divide the chicken between two small pans or ramekins and crack two eggs into each." },
+      { "step": 3, "text": "Cook covered over low heat until the whites set and the yolks stay runny.", "timerSeconds": 240 },
+      { "step": 4, "text": "Top with green onion, pepper, and the remaining soy sauce." },
+      { "step": 5, "text": "Serve with toast for dipping." }
+    ]
+  },
+  {
+    "id": "khai-jiao-moo-sab",
+    "title": "Thai Omelette with Ground Chicken",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 8,
+    "difficulty": "easy",
+    "cuisines": ["thai"],
+    "dietTags": ["dairy_free", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "ground-chicken", "quantity": 150, "unit": "g" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "lime", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "vegetable-oil", "quantity": 60, "unit": "ml" },
+      { "ingredientId": "white-rice", "quantity": 0.75, "unit": "cup" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the rice according to the package directions.", "timerSeconds": 1080 },
+      { "step": 2, "text": "Beat the eggs with the raw chicken, soy sauce, and a squeeze of lime until frothy." },
+      { "step": 3, "text": "Heat the oil in a wok until very hot and pour in the egg mixture so it puffs up." },
+      { "step": 4, "text": "Cook until crisp and golden, flip, and cook until the chicken is done.", "timerSeconds": 300 },
+      { "step": 5, "text": "Serve over rice." }
+    ]
+  },
+  {
+    "id": "pa-thong-ko",
+    "title": "Pa Thong Ko (Thai Fried Dough)",
+    "servings": 4,
+    "prepMinutes": 20,
+    "cookMinutes": 15,
+    "difficulty": "medium",
+    "cuisines": ["thai"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "all-purpose-flour", "quantity": 2, "unit": "cup" },
+      { "ingredientId": "baking-powder", "quantity": 2, "unit": "tsp" },
+      { "ingredientId": "white-sugar", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "milk", "quantity": 180, "unit": "ml" },
+      { "ingredientId": "vegetable-oil", "quantity": 480, "unit": "ml" },
+      { "ingredientId": "honey", "quantity": 4, "unit": "tbsp", "note": "for dipping" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Mix the flour, baking powder, sugar, and a pinch of salt, then stir in the milk and knead into a soft dough. Rest, covered.", "timerSeconds": 900 },
+      { "step": 2, "text": "Roll out thin and cut into small strips. Press two strips together with a chopstick." },
+      { "step": 3, "text": "Fry in hot oil, turning, until puffed and golden.", "timerSeconds": 120 },
+      { "step": 4, "text": "Drain and serve warm with honey for dipping." }
+    ]
+  },
+  {
+    "id": "thai-basil-eggs-rice",
+    "title": "Thai Basil Scrambled Eggs over Rice",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 18,
+    "difficulty": "easy",
+    "cuisines": ["thai"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "white-rice", "quantity": 0.75, "unit": "cup" },
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "basil", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "garlic", "quantity": 2, "unit": "clove" },
+      { "ingredientId": "green-chili", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "soy-sauce", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the rice according to the package directions.", "timerSeconds": 1080 },
+      { "step": 2, "text": "Fry the garlic and chili in the oil until fragrant." },
+      { "step": 3, "text": "Add the beaten eggs and soy sauce and scramble gently.", "timerSeconds": 120 },
+      { "step": 4, "text": "Fold in the basil until wilted." },
+      { "step": 5, "text": "Serve over rice." }
+    ]
+  },
+  {
+    "id": "callaloo-and-eggs",
+    "title": "Callaloo-Style Spinach and Eggs",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 12,
+    "difficulty": "easy",
+    "cuisines": ["caribbean"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free", "low_carb", "high_protein", "healthy"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "spinach", "quantity": 200, "unit": "g" },
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "jalapeno", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 1, "unit": "clove" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the onion, garlic, and jalapeño in the butter until soft.", "timerSeconds": 180 },
+      { "step": 2, "text": "Add the tomato and cook until soft.", "timerSeconds": 120 },
+      { "step": 3, "text": "Add the spinach and cook until wilted.", "timerSeconds": 120 },
+      { "step": 4, "text": "Make wells, crack in the eggs, cover, and cook until the whites are set.", "timerSeconds": 240 }
+    ]
+  },
+  {
+    "id": "johnny-cakes-eggs",
+    "title": "Johnny Cakes with Eggs",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "medium",
+    "cuisines": ["caribbean"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "all-purpose-flour", "quantity": 2, "unit": "cup" },
+      { "ingredientId": "baking-powder", "quantity": 2, "unit": "tsp" },
+      { "ingredientId": "white-sugar", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "butter", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 240, "unit": "ml" },
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Rub the butter into the flour, baking powder, sugar, and a pinch of salt, then add water to make a firm dough. Rest.", "timerSeconds": 600 },
+      { "step": 2, "text": "Shape into small flat rounds." },
+      { "step": 3, "text": "Fry in the oil, turning, until golden and cooked through.", "timerSeconds": 480 },
+      { "step": 4, "text": "Fry or scramble the eggs.", "timerSeconds": 180 },
+      { "step": 5, "text": "Split the johnny cakes and serve with the eggs." }
+    ]
+  },
+  {
+    "id": "revoltillo",
+    "title": "Revoltillo (Caribbean Scrambled Eggs)",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["caribbean"],
+    "dietTags": ["gluten_free", "dairy_free", "nut_free", "low_carb", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 5, "unit": "piece" },
+      { "ingredientId": "bacon", "quantity": 80, "unit": "g" },
+      { "ingredientId": "onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "bell-pepper", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "bread", "quantity": 2, "unit": "piece", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Fry the diced bacon until crisp.", "timerSeconds": 300 },
+      { "step": 2, "text": "Add the diced onion, pepper, and tomato and cook until soft.", "timerSeconds": 180 },
+      { "step": 3, "text": "Pour in the beaten eggs and scramble gently until just set.", "timerSeconds": 120 },
+      { "step": 4, "text": "Serve with toasted bread." }
+    ]
+  },
+  {
+    "id": "jerk-sweet-potato-hash",
+    "title": "Jerk-Spiced Sweet Potato Hash with Eggs",
+    "servings": 2,
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "difficulty": "easy",
+    "cuisines": ["caribbean"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "dairy_free", "nut_free", "high_protein", "healthy"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "sweet-potato", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "bell-pepper", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "green-onion", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "cinnamon-ground", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "paprika", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "black-pepper", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "lime", "quantity": 0.5, "unit": "piece" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Dice the sweet potatoes small and toss with the cinnamon, paprika, pepper, and salt." },
+      { "step": 2, "text": "Fry in the oil until browned and tender.", "timerSeconds": 720 },
+      { "step": 3, "text": "Add the onion and bell pepper and cook until soft.", "timerSeconds": 240 },
+      { "step": 4, "text": "Make wells, crack in the eggs, cover, and cook until set.", "timerSeconds": 240 },
+      { "step": 5, "text": "Finish with green onion and lime juice." }
+    ]
+  },
+  {
+    "id": "jamaican-rice-porridge",
+    "title": "Jamaican Rice Porridge",
+    "servings": 4,
+    "prepMinutes": 2,
+    "cookMinutes": 30,
+    "difficulty": "easy",
+    "cuisines": ["caribbean"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "white-rice", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "milk", "quantity": 720, "unit": "ml" },
+      { "ingredientId": "cinnamon-ground", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "honey", "quantity": 3, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Simmer the rice in 480 ml water until it begins to soften.", "timerSeconds": 600 },
+      { "step": 2, "text": "Add the milk and cinnamon and simmer, stirring often, until thick and creamy.", "timerSeconds": 1080 },
+      { "step": 3, "text": "Stir in the honey and a pinch of salt." },
+      { "step": 4, "text": "Serve warm." }
+    ]
+  },
+  {
+    "id": "masoor-dal-chilla",
+    "title": "Masoor Dal Chilla (Lentil Pancakes)",
+    "servings": 4,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["indian"],
+    "dietTags": ["vegetarian", "vegan", "pescatarian", "gluten_free", "dairy_free", "nut_free", "high_protein", "healthy"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "lentils-red", "quantity": 1, "unit": "cup" },
+      { "ingredientId": "ginger", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "green-chili", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "cumin-seeds", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "plain-yogurt", "quantity": 0.5, "unit": "cup", "note": "for serving", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Soak the lentils in hot water until soft.", "timerSeconds": 900 },
+      { "step": 2, "text": "Drain and blend with the ginger, chili, and a little water into a thick, pourable batter. Season with salt and cumin seeds." },
+      { "step": 3, "text": "Stir in the finely chopped onion and cilantro." },
+      { "step": 4, "text": "Spread ladlefuls thinly on a hot oiled skillet and cook until golden on both sides.", "timerSeconds": 180 },
+      { "step": 5, "text": "Serve with yogurt." }
+    ]
+  },
+  {
+    "id": "bread-upma",
+    "title": "Bread Upma",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["indian"],
+    "dietTags": ["vegetarian", "vegan", "pescatarian", "dairy_free", "nut_free"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "bread", "quantity": 6, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "green-chili", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "mustard-seeds", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "turmeric", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "lemon", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cut the bread into small cubes." },
+      { "step": 2, "text": "Fry the mustard seeds in the oil until they pop, then add the onion and chili and cook until soft.", "timerSeconds": 240 },
+      { "step": 3, "text": "Add the tomato and turmeric and cook until soft.", "timerSeconds": 120 },
+      { "step": 4, "text": "Add the bread and toss until coated and lightly toasted.", "timerSeconds": 180 },
+      { "step": 5, "text": "Finish with lemon juice and cilantro." }
+    ]
+  },
+  {
+    "id": "bombay-masala-toast",
+    "title": "Bombay Masala Toast",
+    "servings": 2,
+    "prepMinutes": 15,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["indian"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "bread", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "potato", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "green-chili", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "turmeric", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "mustard-seeds", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "cucumber", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "butter", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "mint", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Boil the potatoes until tender, then mash.", "timerSeconds": 900 },
+      { "step": 2, "text": "Fry the mustard seeds in 1 tsp butter, add the onion, chili, and turmeric, then fold in the potato with salt." },
+      { "step": 3, "text": "Blend the mint and cilantro with a little water and salt into a green chutney." },
+      { "step": 4, "text": "Spread the bread with chutney, fill with potato and sliced cucumber and tomato." },
+      { "step": 5, "text": "Toast the sandwiches in the remaining butter until golden.", "timerSeconds": 300 }
+    ]
+  },
+  {
+    "id": "chickpea-fatteh",
+    "title": "Chickpea Fatteh",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["middle_eastern"],
+    "dietTags": ["vegetarian", "pescatarian", "high_protein"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "pita-bread", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "chickpeas-canned", "quantity": 1, "unit": "can" },
+      { "ingredientId": "greek-yogurt", "quantity": 1.5, "unit": "cup" },
+      { "ingredientId": "tahini", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "garlic", "quantity": 1, "unit": "clove" },
+      { "ingredientId": "lemon", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "cumin-ground", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "almonds", "quantity": 0.25, "unit": "cup" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "parsley", "quantity": 1, "unit": "handful" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Tear the pita into pieces and toast until crisp.", "timerSeconds": 480 },
+      { "step": 2, "text": "Warm the chickpeas in a little of their liquid with the cumin." },
+      { "step": 3, "text": "Whisk the yogurt, tahini, garlic, lemon juice, and salt." },
+      { "step": 4, "text": "Layer the pita, then the warm chickpeas, then the yogurt sauce." },
+      { "step": 5, "text": "Toast the almonds in the butter and pour over the top, then add parsley." }
+    ]
+  },
+  {
+    "id": "zaatar-pita",
+    "title": "Za'atar-Style Pita with Labneh",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 6,
+    "difficulty": "easy",
+    "cuisines": ["middle_eastern"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "pita-bread", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "olive-oil", "quantity": 3, "unit": "tbsp" },
+      { "ingredientId": "oregano-dried", "quantity": 2, "unit": "tsp" },
+      { "ingredientId": "cumin-ground", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "greek-yogurt", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "cucumber", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "mint", "quantity": 1, "unit": "handful" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Mix the oregano, cumin, and a pinch of salt with 2 tbsp olive oil." },
+      { "step": 2, "text": "Spread over the pitas and bake at 220°C (425°F) until crisp at the edges.", "timerSeconds": 360 },
+      { "step": 3, "text": "Season the yogurt with salt and the remaining oil." },
+      { "step": 4, "text": "Serve the warm pita with the yogurt, sliced cucumber and tomato, and mint." }
+    ]
+  },
+  {
+    "id": "labneh-breakfast-plate",
+    "title": "Labneh Breakfast Plate",
+    "servings": 2,
+    "prepMinutes": 10,
+    "cookMinutes": 6,
+    "difficulty": "easy",
+    "cuisines": ["middle_eastern"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "greek-yogurt", "quantity": 1, "unit": "cup" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "cucumber", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "kalamata-olives", "quantity": 0.25, "unit": "cup" },
+      { "ingredientId": "mint", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "pita-bread", "quantity": 2, "unit": "piece" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Season the yogurt with salt, spread on plates, and drizzle with olive oil." },
+      { "step": 2, "text": "Soft-boil the eggs.", "timerSeconds": 360 },
+      { "step": 3, "text": "Slice the cucumber and tomato." },
+      { "step": 4, "text": "Arrange the eggs, vegetables, olives, and mint around the yogurt and serve with warm pita." }
+    ]
+  },
+  {
+    "id": "greek-yogurt-honey-walnuts",
+    "title": "Greek Yogurt with Honey and Walnuts",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 3,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "low_carb", "healthy"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "greek-yogurt", "quantity": 1.5, "unit": "cup" },
+      { "ingredientId": "honey", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "walnuts", "quantity": 0.33, "unit": "cup" },
+      { "ingredientId": "cinnamon-ground", "quantity": 0.25, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Toast the walnuts in a dry pan until fragrant, then roughly chop.", "timerSeconds": 180 },
+      { "step": 2, "text": "Spoon the yogurt into bowls." },
+      { "step": 3, "text": "Drizzle with honey and top with walnuts and a pinch of cinnamon." }
+    ]
+  },
+  {
+    "id": "pan-con-tomate",
+    "title": "Pan con Tomate",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 5,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean"],
+    "dietTags": ["vegetarian", "vegan", "pescatarian", "dairy_free", "nut_free"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "bread", "quantity": 4, "unit": "piece", "note": "rustic" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 1, "unit": "clove" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Toast the bread until crisp and golden.", "timerSeconds": 240 },
+      { "step": 2, "text": "Rub each slice with the cut side of a garlic clove." },
+      { "step": 3, "text": "Halve the tomatoes and grate them, discarding the skins." },
+      { "step": 4, "text": "Spoon the tomato onto the toast, drizzle with olive oil, and sprinkle with flaky salt." }
+    ]
+  },
+  {
+    "id": "strapatsada",
+    "title": "Strapatsada (Greek Tomato and Feta Eggs)",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 12,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free", "low_carb", "high_protein"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 3, "unit": "piece" },
+      { "ingredientId": "feta-cheese", "quantity": 60, "unit": "g" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "oregano-dried", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "bread", "quantity": 2, "unit": "piece", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Grate the tomatoes and cook them in the olive oil until thick and jammy.", "timerSeconds": 420 },
+      { "step": 2, "text": "Add the beaten eggs and stir gently until softly set.", "timerSeconds": 120 },
+      { "step": 3, "text": "Fold in the crumbled feta and oregano." },
+      { "step": 4, "text": "Serve with toasted bread." }
+    ]
+  },
+  {
+    "id": "greek-spinach-feta-egg-muffins",
+    "title": "Greek Spinach and Feta Egg Muffins",
+    "servings": 6,
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "difficulty": "easy",
+    "cuisines": ["mediterranean"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free", "low_carb", "high_protein", "healthy"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 8, "unit": "piece" },
+      { "ingredientId": "spinach", "quantity": 150, "unit": "g" },
+      { "ingredientId": "feta-cheese", "quantity": 100, "unit": "g" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "red-onion", "quantity": 0.25, "unit": "piece" },
+      { "ingredientId": "oregano-dried", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "olive-oil", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oven to 190°C (375°F) and oil a 12-cup muffin tin." },
+      { "step": 2, "text": "Chop the spinach, tomato, and red onion and divide among the cups with the crumbled feta." },
+      { "step": 3, "text": "Whisk the eggs with the oregano, salt, and pepper and pour over the vegetables." },
+      { "step": 4, "text": "Bake until puffed and set.", "timerSeconds": 1200 },
+      { "step": 5, "text": "Keep in the fridge for quick breakfasts through the week." }
+    ]
+  },
+  {
+    "id": "eggs-in-purgatory",
+    "title": "Eggs in Purgatory",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 18,
+    "difficulty": "easy",
+    "cuisines": ["italian"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free", "low_carb", "high_protein"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "canned-diced-tomatoes", "quantity": 1, "unit": "can" },
+      { "ingredientId": "garlic", "quantity": 2, "unit": "clove" },
+      { "ingredientId": "red-pepper-flakes", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "olive-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "parmesan-cheese", "quantity": 20, "unit": "g" },
+      { "ingredientId": "basil", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "bread", "quantity": 2, "unit": "piece", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the garlic and pepper flakes in the oil until fragrant.", "timerSeconds": 60 },
+      { "step": 2, "text": "Add the tomatoes and simmer into a thick sauce.", "timerSeconds": 600 },
+      { "step": 3, "text": "Make wells, crack in the eggs, cover, and cook until the whites are set.", "timerSeconds": 300 },
+      { "step": 4, "text": "Top with parmesan and basil and serve with crusty bread." }
+    ]
+  },
+  {
+    "id": "caprese-omelette",
+    "title": "Caprese Omelette",
+    "servings": 1,
+    "prepMinutes": 5,
+    "cookMinutes": 5,
+    "difficulty": "easy",
+    "cuisines": ["italian"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free", "low_carb", "high_protein"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 3, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "mozzarella-cheese", "quantity": 0.25, "unit": "cup" },
+      { "ingredientId": "basil", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "olive-oil", "quantity": 1, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Beat the eggs with a pinch of salt." },
+      { "step": 2, "text": "Cook in the oil in a nonstick pan, stirring, until mostly set.", "timerSeconds": 120 },
+      { "step": 3, "text": "Scatter with diced tomato, mozzarella, and torn basil." },
+      { "step": 4, "text": "Fold and cook until the cheese melts.", "timerSeconds": 60 }
+    ]
+  },
+  {
+    "id": "zucchini-parmesan-egg-muffins",
+    "title": "Zucchini Parmesan Egg Muffins",
+    "servings": 6,
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "difficulty": "easy",
+    "cuisines": ["italian"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free", "low_carb", "high_protein", "healthy"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 8, "unit": "piece" },
+      { "ingredientId": "zucchini", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "parmesan-cheese", "quantity": 50, "unit": "g" },
+      { "ingredientId": "basil", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "milk", "quantity": 60, "unit": "ml" },
+      { "ingredientId": "olive-oil", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oven to 190°C (375°F) and oil a 12-cup muffin tin." },
+      { "step": 2, "text": "Grate the zucchini and squeeze out the water." },
+      { "step": 3, "text": "Whisk the eggs, milk, parmesan, chopped basil, salt, and pepper, then stir in the zucchini." },
+      { "step": 4, "text": "Divide among the cups and bake until set and golden.", "timerSeconds": 1200 }
+    ]
+  },
+  {
+    "id": "scrambled-eggs-bruschetta",
+    "title": "Soft Scrambled Eggs on Tomato Bruschetta",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 8,
+    "difficulty": "easy",
+    "cuisines": ["italian"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "bread", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "garlic", "quantity": 1, "unit": "clove" },
+      { "ingredientId": "basil", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "olive-oil", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Dice the tomatoes and toss with torn basil, olive oil, and salt." },
+      { "step": 2, "text": "Toast the bread and rub with garlic.", "timerSeconds": 240 },
+      { "step": 3, "text": "Scramble the eggs slowly in the butter over low heat until creamy.", "timerSeconds": 180 },
+      { "step": 4, "text": "Top the toasts with the eggs and spoon the tomatoes over." }
+    ]
+  },
+  {
+    "id": "oeufs-en-cocotte",
+    "title": "Oeufs en Cocotte (Baked Eggs with Spinach)",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 15,
+    "difficulty": "easy",
+    "cuisines": ["french"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free", "low_carb", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "spinach", "quantity": 100, "unit": "g" },
+      { "ingredientId": "heavy-cream", "quantity": 60, "unit": "ml" },
+      { "ingredientId": "parmesan-cheese", "quantity": 20, "unit": "g" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "bread", "quantity": 2, "unit": "piece", "optional": true }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oven to 190°C (375°F) and butter two ramekins." },
+      { "step": 2, "text": "Wilt the spinach in a pan, squeeze dry, and divide between the ramekins." },
+      { "step": 3, "text": "Crack two eggs into each, spoon over the cream, and top with parmesan." },
+      { "step": 4, "text": "Set the ramekins in a dish of hot water and bake until the whites are set.", "timerSeconds": 780 },
+      { "step": 5, "text": "Serve with toast soldiers." }
+    ]
+  },
+  {
+    "id": "huevos-a-la-mexicana",
+    "title": "Huevos a la Mexicana",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 8,
+    "difficulty": "easy",
+    "cuisines": ["mexican"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 5, "unit": "piece" },
+      { "ingredientId": "tomato", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "jalapeno", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "vegetable-oil", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "tortilla", "quantity": 4, "unit": "piece" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Finely dice the tomato, onion, and jalapeño — the colors of the Mexican flag." },
+      { "step": 2, "text": "Cook them in the oil until softened.", "timerSeconds": 180 },
+      { "step": 3, "text": "Add the beaten eggs and scramble until just set.", "timerSeconds": 120 },
+      { "step": 4, "text": "Serve with warm tortillas." }
+    ]
+  },
+  {
+    "id": "papas-con-huevo-tacos",
+    "title": "Papas con Huevo Breakfast Tacos",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 18,
+    "difficulty": "easy",
+    "cuisines": ["mexican", "north_american"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free", "nut_free"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "potato", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "eggs", "quantity": 6, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "chili-powder", "quantity": 0.5, "unit": "tsp" },
+      { "ingredientId": "vegetable-oil", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "tortilla", "quantity": 8, "unit": "piece" },
+      { "ingredientId": "avocado", "quantity": 1, "unit": "piece" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Dice the potatoes small and fry in the oil until golden and tender.", "timerSeconds": 720 },
+      { "step": 2, "text": "Add the onion and chili powder and cook until soft.", "timerSeconds": 120 },
+      { "step": 3, "text": "Add the beaten eggs and scramble until set.", "timerSeconds": 120 },
+      { "step": 4, "text": "Fill warm tortillas and top with sliced avocado." }
+    ]
+  },
+  {
+    "id": "molletes",
+    "title": "Molletes",
+    "servings": 4,
+    "prepMinutes": 10,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["mexican"],
+    "dietTags": ["vegetarian", "pescatarian", "nut_free"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "bread", "quantity": 4, "unit": "piece", "note": "rolls, split" },
+      { "ingredientId": "black-beans-canned", "quantity": 1, "unit": "can" },
+      { "ingredientId": "mozzarella-cheese", "quantity": 1, "unit": "cup" },
+      { "ingredientId": "tomato", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 0.25, "unit": "piece" },
+      { "ingredientId": "jalapeno", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "cilantro", "quantity": 1, "unit": "handful" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Mash the beans in a pan with a splash of their liquid until thick and spreadable.", "timerSeconds": 240 },
+      { "step": 2, "text": "Butter the cut rolls, spread with beans, and top with cheese." },
+      { "step": 3, "text": "Bake at 220°C (425°F) until the cheese melts.", "timerSeconds": 480 },
+      { "step": 4, "text": "Dice the tomato, onion, and jalapeño with cilantro and salt for pico de gallo." },
+      { "step": 5, "text": "Top the molletes with pico de gallo." }
+    ]
+  },
+  {
+    "id": "bacon-egg-cheese-sandwich",
+    "title": "Bacon, Egg, and Cheese Sandwich",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 10,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["nut_free", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "burger-bun", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "bacon", "quantity": 100, "unit": "g" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "cheddar-cheese", "quantity": 0.5, "unit": "cup" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Cook the bacon until crisp.", "timerSeconds": 420 },
+      { "step": 2, "text": "Toast the buns in the butter." },
+      { "step": 3, "text": "Fry the eggs and top with the cheese, covering the pan so it melts.", "timerSeconds": 180 },
+      { "step": 4, "text": "Build the sandwiches with egg, cheese, and bacon." }
+    ]
+  },
+  {
+    "id": "avocado-egg-toast",
+    "title": "Avocado Toast with Fried Egg",
+    "servings": 2,
+    "prepMinutes": 5,
+    "cookMinutes": 5,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free", "nut_free", "healthy"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "bread", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "avocado", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "lemon", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "eggs", "quantity": 2, "unit": "piece" },
+      { "ingredientId": "red-pepper-flakes", "quantity": 0.25, "unit": "tsp" },
+      { "ingredientId": "olive-oil", "quantity": 1, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Toast the bread." },
+      { "step": 2, "text": "Mash the avocado with the lemon juice and salt and spread on the toast." },
+      { "step": 3, "text": "Fry the eggs in the oil until the whites set.", "timerSeconds": 180 },
+      { "step": 4, "text": "Top each toast with an egg and the pepper flakes." }
+    ]
+  },
+  {
+    "id": "home-fries-eggs-skillet",
+    "title": "Home Fries and Eggs Skillet",
+    "servings": 2,
+    "prepMinutes": 10,
+    "cookMinutes": 25,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["vegetarian", "pescatarian", "gluten_free", "nut_free", "high_protein"],
+    "mealSlots": ["breakfast"],
+    "ingredients": [
+      { "ingredientId": "potato", "quantity": 3, "unit": "piece" },
+      { "ingredientId": "onion", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "bell-pepper", "quantity": 0.5, "unit": "piece" },
+      { "ingredientId": "paprika", "quantity": 1, "unit": "tsp" },
+      { "ingredientId": "butter", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "eggs", "quantity": 4, "unit": "piece" },
+      { "ingredientId": "cheddar-cheese", "quantity": 0.5, "unit": "cup" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Dice the potatoes and parboil until just tender, then drain.", "timerSeconds": 360 },
+      { "step": 2, "text": "Fry in the butter until crisp and golden.", "timerSeconds": 720 },
+      { "step": 3, "text": "Add the onion, pepper, and paprika and cook until soft.", "timerSeconds": 240 },
+      { "step": 4, "text": "Make wells, crack in the eggs, top with cheese, cover, and cook until set.", "timerSeconds": 240 }
+    ]
+  },
+  {
+    "id": "spinach-cheddar-egg-bites",
+    "title": "Spinach Cheddar Egg Bites",
+    "servings": 6,
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["gluten_free", "nut_free", "low_carb", "high_protein"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "eggs", "quantity": 8, "unit": "piece" },
+      { "ingredientId": "spinach", "quantity": 100, "unit": "g" },
+      { "ingredientId": "cheddar-cheese", "quantity": 1, "unit": "cup" },
+      { "ingredientId": "bacon", "quantity": 100, "unit": "g" },
+      { "ingredientId": "milk", "quantity": 60, "unit": "ml" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Heat the oven to 190°C (375°F) and grease a 12-cup muffin tin." },
+      { "step": 2, "text": "Cook and crumble the bacon, and chop the spinach.", "timerSeconds": 420 },
+      { "step": 3, "text": "Whisk the eggs and milk with salt and pepper." },
+      { "step": 4, "text": "Divide the bacon, spinach, and cheese among the cups and pour in the eggs." },
+      { "step": 5, "text": "Bake until puffed and set.", "timerSeconds": 1200 }
+    ]
+  },
+  {
+    "id": "peanut-butter-honey-toast",
+    "title": "Peanut Butter Honey Toast",
+    "servings": 2,
+    "prepMinutes": 3,
+    "cookMinutes": 3,
+    "difficulty": "easy",
+    "cuisines": ["north_american"],
+    "dietTags": ["vegetarian", "pescatarian", "dairy_free"],
+    "mealSlots": ["breakfast", "snack"],
+    "ingredients": [
+      { "ingredientId": "bread", "quantity": 2, "unit": "piece", "note": "whole grain" },
+      { "ingredientId": "peanut-butter", "quantity": 2, "unit": "tbsp" },
+      { "ingredientId": "honey", "quantity": 1, "unit": "tbsp" },
+      { "ingredientId": "cinnamon-ground", "quantity": 0.25, "unit": "tsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Toast the bread.", "timerSeconds": 180 },
+      { "step": 2, "text": "Spread with peanut butter." },
+      { "step": 3, "text": "Drizzle with honey and dust with cinnamon." }
+    ]
+  },
+  {
+    "id": "pastina-with-egg",
+    "title": "Pastina with Egg and Parmesan",
+    "servings": 2,
+    "prepMinutes": 2,
+    "cookMinutes": 12,
+    "difficulty": "easy",
+    "cuisines": ["italian"],
+    "dietTags": ["nut_free"],
+    "mealSlots": ["breakfast", "lunch"],
+    "ingredients": [
+      { "ingredientId": "pasta", "quantity": 100, "unit": "g", "note": "pastina or other tiny shapes" },
+      { "ingredientId": "chicken-broth", "quantity": 600, "unit": "ml" },
+      { "ingredientId": "eggs", "quantity": 1, "unit": "piece" },
+      { "ingredientId": "parmesan-cheese", "quantity": 30, "unit": "g" },
+      { "ingredientId": "butter", "quantity": 1, "unit": "tbsp" }
+    ],
+    "instructions": [
+      { "step": 1, "text": "Bring the broth to a boil and add the pasta." },
+      { "step": 2, "text": "Simmer, stirring often, until tender and most of the broth is absorbed.", "timerSeconds": 480 },
+      { "step": 3, "text": "Off the heat, quickly stir in the beaten egg so it turns silky without scrambling." },
+      { "step": 4, "text": "Stir in the butter and parmesan and season with pepper." }
+    ]
   }
 ]

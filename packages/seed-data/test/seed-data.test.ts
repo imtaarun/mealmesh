@@ -40,9 +40,11 @@ describe("seed data", () => {
     expect(validateSeedData()).toEqual([]);
   });
 
-  it("has the P0 volume: 20+ recipes per cuisine, 100+ ingredients, 5 stores, 150+ products", () => {
+  it("has the P0 volume: 20+ recipes (6+ breakfasts) per cuisine, 100+ ingredients, 5 stores, 150+ products", () => {
     for (const cuisine of taxonomies.cuisines) {
-      expect(recipes.filter((r) => r.cuisines.includes(cuisine)).length, cuisine).toBeGreaterThanOrEqual(20);
+      const inCuisine = recipes.filter((r) => r.cuisines.includes(cuisine));
+      expect(inCuisine.length, cuisine).toBeGreaterThanOrEqual(20);
+      expect(inCuisine.filter((r) => r.mealSlots.includes("breakfast")).length, `${cuisine} breakfasts`).toBeGreaterThanOrEqual(6);
     }
     expect(new Set(recipes.map((r) => r.id)).size).toBe(recipes.length);
     expect(ingredientsById.size).toBeGreaterThanOrEqual(100);

@@ -119,13 +119,13 @@ describe.skipIf(!run)("security", () => {
       const { token } = await signup();
       const plan = (await call("POST", "/api/meal-plans", token, { weekStartDate: "2026-10-05" })).body;
       const dinner = plan.meals.find((m: { slot: string }) => m.slot === "dinner");
-      const recipe = (await call("GET", "/api/recipes", token)).body[0];
+      const recipe = (await call("GET", "/api/recipes", token)).body.items[0];
       const list = (await call("GET", `/api/grocery-list?mealPlanId=${plan.id}`, token)).body;
       const cases: Array<[string, string, object | undefined]> = [
         ["PATCH", `/api/meal-plans/${plan.id}/meals/${dinner.id}`, { action: "replace", recipeId: recipe.id, servings: 2_000_000_000 }],
         ["POST", "/api/pantry/items", { ingredientId: "onion", quantity: 1e308, location: "fridge" }],
         ["POST", "/api/onboarding", { weeklyBudgetCents: 99_999_999_999 }],
-        ["GET", "/api/recipes?maxPrepMinutes=abc", undefined],
+        ["GET", "/api/recipes?maxMinutes=abc", undefined],
         ["POST", `/api/grocery-list/${list.id}/items`, { name: "A".repeat(200) }],
         ["PUT", "/api/me/profile", { name: "Sam", allergies: Array(31).fill("x") }],
       ];

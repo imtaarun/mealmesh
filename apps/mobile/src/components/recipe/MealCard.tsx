@@ -2,10 +2,10 @@ import { Text, View } from "react-native";
 import { Card } from "@/components/ui/Card";
 import { CuisinePlaceholder } from "./CuisinePlaceholder";
 import { useTheme } from "@/theme";
-import type { Recipe } from "@/lib/api";
+import type { RecipeSummary } from "@/lib/api";
 
 interface MealCardProps {
-  recipe: Recipe;
+  recipe: RecipeSummary;
   onPress?: () => void;
 }
 

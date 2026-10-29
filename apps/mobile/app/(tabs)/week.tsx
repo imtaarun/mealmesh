@@ -157,7 +157,7 @@ export default function WeekScreen() {
   const housemates = data.members.members;
   const yourShare = weekCents && housemates.length > 1 ? sharesOf(weekCents, housemates)?.[housemates.find((m) => m.isYou)!.id] : undefined;
 
-  const pick = (meal: Meal) => router.push({ pathname: "/recipe-picker", params: { mealPlanId: plan.id, mealId: meal.id } });
+  const pick = (meal: Meal) => router.push({ pathname: "/recipe-picker", params: { mealPlanId: plan.id, mealId: meal.id, slot: meal.slot } });
   const view = (meal: Meal) =>
     router.push({
       pathname: "/recipe/[id]",

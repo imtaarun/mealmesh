@@ -261,6 +261,8 @@ model Recipe {
   servings     Int
   prepMinutes  Int
   cookMinutes  Int
+  // prepMinutes + cookMinutes, stored so the library can filter and sort on it.
+  totalMinutes Int          @default(0)
   difficulty   Difficulty
   cuisines     String[]
   dietTags     String[]
