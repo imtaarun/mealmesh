@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { Screen, LoadingScreen, ErrorScreen } from "@/components/ui/Screen";
 import { LoadingState } from "@/components/ui/States";
 import { Appear } from "@/components/ui/Motion";
@@ -10,14 +11,19 @@ import { useLoad } from "@/lib/useLoad";
 import { loadWeekCost, sharesOf } from "@/lib/weekCost";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Card } from "@/components/ui/Card";
-import { Pill, TextLink } from "@/components/ui/Form";
+import { TextLink } from "@/components/ui/Form";
+import { ActionSheet, type SheetAction } from "@/components/ui/ActionSheet";
+import { MealRow } from "@/components/recipe/MealRow";
+import { localDate } from "@/lib/home";
 import { EstimatedPricingBadge } from "@/components/ui/EstimatedPricingBadge";
 import { dollars } from "@/lib/format";
 import { useTheme } from "@/theme";
 import { api, type Meal, type MealPlan, type MealSlot } from "@/lib/api";
 
-const SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
-const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const SIDE_SLOTS: MealSlot[] = ["breakfast", "lunch", "snack"];
+
+const dayLabel = (date: string) =>
+  date === localDate() ? "Today" : new Date(`${date}T00:00:00Z`).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 
 function mostRecentMonday(): Date {
   const today = new Date();
@@ -41,6 +47,7 @@ export default function WeekScreen() {
   const [planning, setPlanning] = useState(false);
   const [planFailed, setPlanFailed] = useState(false);
   const [repickingId, setRepickingId] = useState<string | null>(null);
+  const [sheet, setSheet] = useState<{ title: string; actions: SheetAction[] } | null>(null);
   const [weekCents, setWeekCents] = useState<number | null>(null);
   const plan = data?.plan;
   const setPlan = (next: MealPlan) => setData((d) => d && { ...d, plan: next });
@@ -150,98 +157,84 @@ export default function WeekScreen() {
   const housemates = data.members.members;
   const yourShare = weekCents && housemates.length > 1 ? sharesOf(weekCents, housemates)?.[housemates.find((m) => m.isYou)!.id] : undefined;
 
+  const pick = (meal: Meal) => router.push({ pathname: "/recipe-picker", params: { mealPlanId: plan.id, mealId: meal.id } });
+  const view = (meal: Meal) =>
+    router.push({
+      pathname: "/recipe/[id]",
+      params: { id: meal.recipe!.id, servings: String(meal.servings), ...(meal.type === "leftover" ? { leftover: "1" } : {}) },
+    });
+  const isEmpty = (meal: Meal) => !meal.recipe && meal.type !== "eat_out";
+
+  const mealActions = (meal: Meal): SheetAction[] => [
+    ...(meal.recipe ? [{ label: "View recipe", onPress: () => view(meal) }] : []),
+    { label: meal.recipe ? "Change recipe" : "Pick a recipe", onPress: () => pick(meal) },
+    ...(isPro && meal.slot === "dinner" && meal.type === "cook" ? [{ label: "New pick", onPress: () => repick(meal) }] : []),
+    ...(meal.recipe ? [{ label: "Skip this meal", destructive: true, onPress: () => skip(meal) }] : []),
+  ];
+
   return (
     <Screen>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing.lg }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <Text style={{ ...typography.title, color: colors.text }}>Week</Text>
-        {isPro ? (
-          <TextLink label="Plan My Week" onPress={planMyWeek} />
-        ) : null}
+        {isPro ? <TextLink label="Plan My Week" onPress={planMyWeek} /> : null}
       </View>
-
       {mealsPlanned > 0 ? (
         <Appear>
-          <Card style={{ marginBottom: spacing.lg, gap: spacing.sm }}>
-            <Text style={{ ...typography.bodyStrong, color: colors.text }}>
-              {mealsPlanned} meals planned{weekCents ? ` · ${dollars(weekCents, 0)} estimated` : ""}
-              {plan.score ? ` · ${plan.score.total}/100` : ""}
+          <Text style={{ ...typography.bodyStrong, color: colors.text }}>
+            {mealsPlanned} meals{weekCents ? ` · ${dollars(weekCents, 0)} estimated` : ""}
+            {plan.score ? ` · ${plan.score.total}/100` : ""}
+          </Text>
+          {yourShare !== undefined ? (
+            <Text style={{ ...typography.body, color: colors.textMuted }}>
+              Your share: {dollars(yourShare)} of {housemates.length} people
             </Text>
-            {yourShare !== undefined ? (
-              <Text style={{ ...typography.body, color: colors.text }}>
-                Your share: {dollars(yourShare)} of {housemates.length} people
-              </Text>
-            ) : null}
-            {weekCents ? <EstimatedPricingBadge /> : null}
-            {plan.score ? <Text style={{ ...typography.caption, color: colors.textMuted }}>{plan.score.explanation}</Text> : null}
-          </Card>
+          ) : null}
+          {plan.score ? <Text style={{ ...typography.caption, color: colors.textMuted, marginTop: spacing.xs }}>{plan.score.explanation}</Text> : null}
+          {weekCents ? (
+            <View style={{ marginTop: spacing.sm }}>
+              <EstimatedPricingBadge />
+            </View>
+          ) : null}
         </Appear>
       ) : null}
 
-      {dates.map((date, dayIndex) => (
-        <Appear key={date} index={dayIndex + 1} style={{ marginBottom: spacing.lg }}>
-          <Text style={{ ...typography.bodyStrong, color: colors.textMuted, marginBottom: spacing.sm }}>
-            {DAY_LABELS[dayIndex] ?? date} · {date}
-          </Text>
+      {dates.map((date, dayIndex) => {
+        const meals = mealsByDate.get(date) ?? [];
+        const dinner = meals.find((m) => m.slot === "dinner");
+        const sides = SIDE_SLOTS.map((slot) => meals.find((m) => m.slot === slot)).filter((m): m is Meal => !!m);
+        const shownSides = sides.filter((m) => !isEmpty(m));
+        const emptySides = sides.filter(isEmpty);
 
-          {SLOTS.map((slot) => {
-            const meal = mealsByDate.get(date)?.find((m) => m.slot === slot);
-            if (!meal) return null;
-
-            return (
-              <Card key={meal.id} style={{ marginBottom: spacing.sm }}>
-                {/* A picked meal has room for its full name, with its actions on a row below;
-                    an empty slot keeps its single Add button inline. */}
-                <View
-                  style={
-                    meal.recipe
-                      ? { gap: spacing.sm }
-                      : { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }
-                  }
+        return (
+          <Appear key={date} index={dayIndex + 1} style={{ marginTop: spacing.lg, gap: spacing.sm }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text style={{ ...typography.label, color: date === localDate() ? colors.brandAccent : colors.textMuted }}>{dayLabel(date).toUpperCase()}</Text>
+              {emptySides.length > 0 ? (
+                <Pressable
+                  onPress={() => setSheet({ title: dayLabel(date), actions: emptySides.map((m) => ({ label: `Add ${m.slot}`, onPress: () => pick(m) })) })}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Add a meal on ${dayLabel(date)}`}
+                  style={{ width: minTouch, height: minTouch, marginVertical: -spacing.smd, alignItems: "flex-end", justifyContent: "center" }}
                 >
-                  <View style={{ flexShrink: 1 }}>
-                    <Text style={{ ...typography.label, color: colors.textMuted }}>{slot.toUpperCase()}</Text>
-                    {meal.type === "eat_out" ? (
-                      <Text style={{ ...typography.body, color: colors.textMuted }}>Eating out</Text>
-                    ) : meal.recipe ? (
-                      <Pressable
-                        onPress={() =>
-                          router.push({
-                            pathname: "/recipe/[id]",
-                            params: { id: meal.recipe!.id, servings: String(meal.servings), ...(meal.type === "leftover" ? { leftover: "1" } : {}) },
-                          })
-                        }
-                        accessibilityRole="link"
-                        style={{ minHeight: minTouch, justifyContent: "center" }}
-                      >
-                        <Text style={{ ...typography.bodyStrong, color: colors.text }} numberOfLines={1}>
-                          {meal.type === "leftover" ? `Leftovers · ${meal.recipe.title}` : meal.recipe.title}
-                        </Text>
-                        <Text style={{ ...typography.caption, color: colors.brandAccent }}>
-                          {meal.type === "leftover" ? "View recipe ›" : `${meal.recipe.prepMinutes + meal.recipe.cookMinutes} min · View recipe ›`}
-                        </Text>
-                      </Pressable>
-                    ) : (
-                      <Text style={{ ...typography.body, color: colors.textMuted }}>Nothing picked yet</Text>
-                    )}
-                  </View>
+                  <Ionicons name="add-circle-outline" size={24} color={colors.textMuted} />
+                </Pressable>
+              ) : null}
+            </View>
 
-                  <View style={{ flexDirection: "row", gap: spacing.sm, justifyContent: "flex-end" }}>
-                    {isPro && meal.slot === "dinner" && meal.type === "cook" ? (
-                      <Pill label={repickingId === meal.id ? "Picking…" : "New pick"} onPress={() => repick(meal)} disabled={repickingId !== null} />
-                    ) : null}
-                    <Pill
-                      label={meal.recipe ? "Change" : "Add"}
-                      accessibilityLabel={`${meal.recipe ? "Change" : "Add"} ${slot}`}
-                      onPress={() => router.push({ pathname: "/recipe-picker", params: { mealPlanId: plan.id, mealId: meal.id } })}
-                    />
-                    {meal.recipe ? <Pill label="Skip" variant="neutral" accessibilityLabel={`Skip ${slot}`} onPress={() => skip(meal)} /> : null}
-                  </View>
-                </View>
-              </Card>
-            );
-          })}
-        </Appear>
-      ))}
+            {[...(dinner ? [dinner] : []), ...shownSides].map((meal) => (
+              <MealRow
+                key={meal.id}
+                meal={meal}
+                main={meal.slot === "dinner"}
+                onPress={() => (meal.recipe ? view(meal) : pick(meal))}
+                onMenu={() => setSheet({ title: `${dayLabel(date)} · ${meal.slot}`, actions: mealActions(meal) })}
+              />
+            ))}
+          </Appear>
+        );
+      })}
+
+      <ActionSheet title={sheet?.title} actions={sheet?.actions ?? null} onClose={() => setSheet(null)} />
     </Screen>
   );
 }

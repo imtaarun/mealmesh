@@ -41,20 +41,20 @@ export default function HomeScreen() {
       {tonight?.recipe && tonight.type !== "eat_out" ? (
         <Appear index={1}>
           <Text style={{ ...typography.label, color: colors.textMuted, marginBottom: spacing.sm }}>TONIGHT</Text>
-          <Card style={{ gap: spacing.sm, marginBottom: spacing.lg }}>
-            <CuisinePlaceholder cuisine={tonight.recipe.cuisines[0] ?? "other"} />
-            <Text style={{ ...typography.title, color: colors.text }}>{tonight.type === "leftover" ? `Leftovers · ${tonight.recipe.title}` : tonight.recipe.title}</Text>
-            <Text style={{ ...typography.body, color: colors.textMuted }}>
-              {tonight.type === "leftover" ? "Just reheat" : `${tonight.recipe.prepMinutes + tonight.recipe.cookMinutes} min · ${tonight.recipe.difficulty}`} · serves {tonight.servings}
-            </Text>
-            {tonight.type === "cook" ? (
-              <Button label="Start cooking" onPress={() => router.push({ pathname: "/cook/[id]", params: { id: tonight.recipe!.id } })} />
-            ) : null}
-            <Button
-              label="View recipe"
-              variant="outline"
-              onPress={() => router.push({ pathname: "/recipe/[id]", params: { id: tonight.recipe!.id, servings: String(tonight.servings) } })}
-            />
+          <Card
+            onPress={() => router.push({ pathname: "/recipe/[id]", params: { id: tonight.recipe!.id, servings: String(tonight.servings) } })}
+            style={{ gap: spacing.sm, marginBottom: spacing.lg, padding: spacing.sm }}
+          >
+            <CuisinePlaceholder cuisine={tonight.recipe.cuisines[0] ?? "other"} height={190} />
+            <View style={{ padding: spacing.sm, gap: spacing.xs }}>
+              <Text style={{ ...typography.title, color: colors.text }}>{tonight.type === "leftover" ? `Leftovers · ${tonight.recipe.title}` : tonight.recipe.title}</Text>
+              <Text style={{ ...typography.body, color: colors.textMuted, marginBottom: spacing.sm }}>
+                {tonight.type === "leftover" ? "Just reheat" : `${tonight.recipe.prepMinutes + tonight.recipe.cookMinutes} min · ${tonight.recipe.difficulty}`} · serves {tonight.servings}
+              </Text>
+              {tonight.type === "cook" ? (
+                <Button label="Start cooking" onPress={() => router.push({ pathname: "/cook/[id]", params: { id: tonight.recipe!.id } })} />
+              ) : null}
+            </View>
           </Card>
         </Appear>
       ) : !plan ? (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { router } from "expo-router";
 import { IconBadge } from "@/components/ui/IconBadge";
 import { Appear } from "@/components/ui/Motion";
@@ -67,6 +67,7 @@ export default function WelcomeScreen() {
     <Screen>
       <View style={{ paddingTop: spacing.xl }}>
         <Appear>
+          <Image source={require("../assets/logo.png")} accessibilityLabel="MealMesh" style={{ width: 96, height: 81, marginBottom: spacing.md }} />
           <Text style={{ ...typography.display, color: colors.text, marginBottom: spacing.xs }}>Dinner, sorted.</Text>
           <Text style={{ ...typography.body, color: colors.textMuted, marginBottom: spacing.lg }}>Plan the week, shop once, waste less.</Text>
         </Appear>

@@ -5,10 +5,11 @@ import { useTheme } from "@/theme";
 
 interface CardProps extends PropsWithChildren {
   onPress?: () => void;
+  onLongPress?: () => void;
   style?: ViewProps["style"];
 }
 
-export function Card({ children, onPress, style }: CardProps) {
+export function Card({ children, onPress, onLongPress, style }: CardProps) {
   const { colors, spacing, radius, hairline } = useTheme();
   const base = {
     backgroundColor: colors.surfaceElevated,
@@ -21,7 +22,7 @@ export function Card({ children, onPress, style }: CardProps) {
 
   if (onPress) {
     return (
-      <PressableScale onPress={onPress} style={[base, style]}>
+      <PressableScale onPress={onPress} onLongPress={onLongPress} style={[base, style]}>
         {children}
       </PressableScale>
     );

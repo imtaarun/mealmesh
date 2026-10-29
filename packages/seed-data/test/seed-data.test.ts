@@ -20,6 +20,7 @@ import {
   recipesById,
   referencePrices,
   stores,
+  taxonomies,
   validateSeedData,
   type Catalog,
 } from "../src/index.js";
@@ -39,8 +40,11 @@ describe("seed data", () => {
     expect(validateSeedData()).toEqual([]);
   });
 
-  it("has the P0 volume: 30 recipes, 100+ ingredients, 5 stores, 150+ products", () => {
-    expect(recipes).toHaveLength(30);
+  it("has the P0 volume: 20+ recipes per cuisine, 100+ ingredients, 5 stores, 150+ products", () => {
+    for (const cuisine of taxonomies.cuisines) {
+      expect(recipes.filter((r) => r.cuisines.includes(cuisine)).length, cuisine).toBeGreaterThanOrEqual(20);
+    }
+    expect(new Set(recipes.map((r) => r.id)).size).toBe(recipes.length);
     expect(ingredientsById.size).toBeGreaterThanOrEqual(100);
     expect(stores).toHaveLength(5);
     expect(catalog.products.length).toBeGreaterThanOrEqual(150);

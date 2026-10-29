@@ -6,8 +6,12 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#FFF8F1",
-    "platforms": ["ios", "android"],
+    "backgroundColor": "#FBF8E9",
+    "icon": "./assets/icon.png",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.mealmesh.app",
@@ -16,10 +20,18 @@
     "android": {
       "package": "com.mealmesh.app",
       "adaptiveIcon": {
-        "backgroundColor": "#FFF8F1"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FBF8E9"
       }
     },
-    "plugins": ["expo-router", "expo-apple-authentication"],
+    "plugins": [
+      "expo-router",
+      "expo-apple-authentication",
+      "expo-secure-store",
+      "expo-status-bar",
+      "expo-web-browser",
+      "expo-splash-screen"
+    ],
     "experiments": {
       "typedRoutes": true
     }
